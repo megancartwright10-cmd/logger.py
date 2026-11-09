@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Ride Next",
+    "slug": "ride-next",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.ridenext.app"
+    },
+    "android": {
+      "package": "com.ridenext.app"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Ride Next uses your location to add walking time to ride suggestions."
+        }
+      ]
+    ]
+  }
+}

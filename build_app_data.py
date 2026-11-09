@@ -108,6 +108,25 @@ def location_of(entity_id, cache):
     return loc
 
 
+def opening_hours(entity_id, days=7):
+    """{"YYYY-MM-DD": [["08:00", "21:00"], ...]} for the next few days, park-local times"""
+    try:
+        sched = fetch(f"/entity/{entity_id}/schedule").get("schedule", [])
+    except Exception as ex:
+        print(f"  no schedule for {entity_id}: {ex}")
+        return {}
+    out = {}
+    for s in sched:
+        if s.get("type") != "OPERATING":
+            continue
+        start, end, date = s.get("openingTime") or "", s.get("closingTime") or "", s.get("date") or ""
+        if len(start) < 16 or len(end) < 16 or not date:
+            continue
+        out.setdefault(date, []).append([start[11:16], end[11:16]])
+    keep = sorted(out)[:days]
+    return {d: out[d] for d in keep}
+
+
 def typical_waits(resort, tz):
     """median standby wait per ride, per (weekday|weekend), per local hour"""
     buckets = defaultdict(list)
@@ -174,12 +193,16 @@ def main():
                 if t["resort"] == resort and t["park"] == park_name \
                         and t["service"] in ("quick", "snack", "table"):
                     food.append({"id": rid, "name": t["name"], "service": t["service"],
-                                 "moods": t["moods"], "loc": location_of(rid, cache)})
+                                 "moods": t["moods"], "loc": location_of(rid, cache),
+                                 "hours": opening_hours(rid)})
             rides.sort(key=lambda r: (r["landOrder"], (r["name"] or "").strip('"').lower()))
             food.sort(key=lambda r: r["name"])
             out["parks"].append({"id": park_id, "name": park_name,
+                                 "hours": opening_hours(park_id),
                                  "rides": rides, "food": food})
-            print(f"{park_name}: {len(rides)} rides, {len(food)} places to eat")
+            with_hours = sum(1 for f in food if f["hours"])
+            print(f"{park_name}: {len(rides)} rides, {len(food)} places to eat "
+                  f"({with_hours} with opening hours)")
 
         target = DATA / "app" / f"{slugify(resort)}.json"
         target.parent.mkdir(parents=True, exist_ok=True)

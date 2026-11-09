@@ -1599,17 +1599,20 @@ export default function App() {
               <Text style={s.muted}>Not enough history yet. This fills in as your logger collects data over the next few days.</Text>
             ) : (
               <>
-                <View style={s.chart} accessibilityLabel="Bar chart of typical waits by hour">
-                  {hours.map((x) => (
-                    <View key={x.h} style={s.barCol}>
-                      <View style={[s.bar, { height: Math.max(3, Math.round((x.v / max) * 120)), backgroundColor: x.h === now.hour ? C.accent : '#CBD5E1' }]} />
-                    </View>
-                  ))}
-                </View>
-                <View style={s.chartLabels}>
-                  {hours.map((x) => (
-                    <Text key={x.h} style={s.chartLabel}>{x.h % 3 === 0 ? (CLOCK24 ? pad2(x.h) : fmtHour(x.h).replace('noon', '12p').replace('am', 'a').replace('pm', 'p')) : ''}</Text>
-                  ))}
+                <View style={{ gap: 4, marginTop: 4 }} accessibilityLabel="Typical wait for each hour">
+                  {hours.map((x) => {
+                    const isNow = x.h === now.hour;
+                    return (
+                      <View key={x.h} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 24 }}
+                        accessibilityLabel={`${fmtHour(x.h)}, about ${x.v} minutes${isNow ? ', this hour' : ''}`}>
+                        <Text style={{ width: 62, fontSize: 13, fontWeight: isNow ? '800' : '600', color: isNow ? C.accent : C.ink }}>{fmtHour(x.h)}</Text>
+                        <View style={{ flex: 1, height: 12, borderRadius: 6, backgroundColor: '#F1F5F9', overflow: 'hidden' }}>
+                          <View style={{ width: `${Math.max(3, Math.round((x.v / max) * 100))}%`, height: 12, borderRadius: 6, backgroundColor: isNow ? C.accent : '#94A3B8' }} />
+                        </View>
+                        <Text style={{ width: 52, textAlign: 'right', fontSize: 13, fontWeight: isNow ? '800' : '600', color: isNow ? C.accent : C.muted }}>{x.v} min</Text>
+                      </View>
+                    );
+                  })}
                 </View>
                 <Text style={s.mutedSmall}>Orange = this hour</Text>
               </>

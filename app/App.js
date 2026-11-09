@@ -1468,13 +1468,14 @@ export default function App() {
             ['multiPass', 'I have Lightning Lane Multi Pass', 'Get tips on what to book and when'],
             ['rain', 'Rainy day mode', 'Put indoor rides first'],
           ].map(([key, title, sub]) => (
-            <View key={key} style={s.optionRow}>
+            <Pressable key={key} style={s.optionRow} onPress={() => setOpt(key, !saved[key])}
+              accessibilityRole="switch" accessibilityState={{ checked: !!saved[key] }} accessibilityLabel={title}>
               <View style={{ flex: 1 }}>
                 <Text style={s.rowTitle}>{title}</Text>
                 <Text style={s.mutedSmall}>{sub}</Text>
               </View>
-              <Switch value={!!saved[key]} onValueChange={(v) => setOpt(key, v)} accessibilityLabel={title} />
-            </View>
+              <Switch value={!!saved[key]} onValueChange={(v) => setOpt(key, v)} />
+            </Pressable>
           ))}
           <Text style={[s.rowTitle, { marginTop: 8 }]}>Shortest rider in your group</Text>
           <View style={s.chips}>
@@ -1517,13 +1518,14 @@ export default function App() {
         })}
       </ScrollView>
       <View style={s.footer}>
-        <View style={s.rowBetween}>
+        <Pressable style={s.rowBetween} onPress={() => toggleLoc(!saved.useLoc)}
+          accessibilityRole="switch" accessibilityState={{ checked: !!saved.useLoc }} accessibilityLabel="Use my location">
           <View style={{ flex: 1 }}>
             <Text style={s.rowTitle}>Use my location</Text>
             <Text style={s.mutedSmall}>Adds walking time and areas visited</Text>
           </View>
-          <Switch value={saved.useLoc} onValueChange={toggleLoc} />
-        </View>
+          <Switch value={!!saved.useLoc} onValueChange={toggleLoc} />
+        </Pressable>
         <Pressable style={[s.btnDark, selected.length === 0 && { opacity: 0.5 }]} disabled={selected.length === 0}
           onPress={() => { startDay(); setScreen('next'); }} accessibilityRole="button">
           <Text style={s.btnDarkText}>Start my day · {selected.length} rides</Text>

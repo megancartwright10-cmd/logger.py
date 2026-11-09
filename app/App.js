@@ -609,6 +609,36 @@ export default function App() {
     const saved = p.hours && p.hours[dateKey];
     return { known: !!p.hours && Object.keys(p.hours).length > 0, main: saved || [], extras: [] };
   };
+  // Crowd level: an estimate from live posted waits (Disney doesn't publish real park capacity)
+  const crowdFor = (p) => {
+    if (!p || !now) return null;
+    const waits = [], usual = [];
+    p.rides.forEach((r) => {
+      const l = live[r.id];
+      if (!l || l.status !== 'OPERATING' || l.wait == null) return;
+      waits.push(l.wait);
+      const t = typicalFor(r, now.dow, now.dayType);
+      if (t && t[now.hour] != null) usual.push(t[now.hour]);
+    });
+    if (waits.length < 4) return null; // closed, or too few rides reporting
+    const avg = waits.reduce((a, b) => a + b, 0) / waits.length;
+    const steps = [8, 13, 18, 24, 30, 37, 44, 52, 62];
+    const level = 1 + steps.filter((x) => avg >= x).length;
+    let vsUsual = null;
+    if (usual.length >= Math.max(4, waits.length * 0.5)) {
+      const typ = usual.reduce((a, b) => a + b, 0) / usual.length;
+      const ratio = avg / Math.max(1, typ);
+      const when = `a typical ${DAY_NAMES[now.dow]} at ${fmtHour(now.hour)}`;
+      vsUsual = ratio < 0.8 ? `Quieter than ${when}` : ratio > 1.2 ? `Busier than ${when}` : `About normal for ${when}`;
+    }
+    const tip = level <= 3 ? 'Quiet: a great time to do the headliners'
+      : level <= 6 ? 'Steady: stick to your plan and use Single Rider where you can'
+        : level <= 8 ? `Busy: use Single Rider and ${R.payShort}`
+          : `Very busy: ${R.payShort} for headliners, and do food and shows now`;
+    const label = level <= 3 ? 'Quiet' : level <= 6 ? 'Moderate' : level <= 8 ? 'Busy' : 'Very busy';
+    return { level, avg: Math.round(avg), vsUsual, tip, label };
+  };
+
   const hoursLine = (p) => {
     const h = hoursFor(p);
     if (h.main.length) return `Open today ${h.main.map(fmtRange).join(', ')}`;
@@ -926,6 +956,10 @@ export default function App() {
       dateLabel, resortShort: R.short, autoIdx, pickedLine,
       openLine: todayLog.length ? "You went big today. Let's see just how big." : "Here's how your day is shaping up so far.",
       rides: todayLog.length, topRide: top ? { name: top[0], n: top[1] } : null,
+      crowdLine: (() => {
+        const lv = todayLog.map((x) => x.crowd).filter((x) => x);
+        return lv.length ? `on a ${Math.round(lv.reduce((a, b) => a + b, 0) / lv.length)} out of 10 crowd day` : null;
+      })(),
       shortestLine: shortest ? `Shortest wait of the day: ${shortest.wait} min, at ${clock(shortest.at)}` : 'Log rides to see your best waits',
       queueLabel: fmtDuration(q), queueLine, queueChip,
       dist: recap.dist || 0, distUnit: recap.unit, stepsLabel: recap.stepCount ? `${recap.stepCount.toLocaleString()} steps` : 'Steps count once your day starts',
@@ -984,7 +1018,8 @@ export default function App() {
     const keep = Object.fromEntries(Object.entries(s.done).filter(([k]) => k.startsWith(now.dateKey)));
     const log = { [now.dateKey]: [...((s.log || {})[now.dateKey] || []),
       { id: ride.id, name: ride.name, parkId: ride.parkId, land: ride.land, wait: ride.posted ? ride.wait : 0, at: Date.now(),
-        srSaved: ride.viaSingle ? Math.max(0, ride.standby - ride.wait) : 0 }] };
+        srSaved: ride.viaSingle ? Math.max(0, ride.standby - ride.wait) : 0,
+        crowd: (crowdFor(data.parks.find((p) => p.id === (ride.parkId || park.id))) || {}).level || null }] };
     return { ...s, done: { ...keep, [key]: [...(keep[key] || []), ride.id] }, log };
   });
 
@@ -1240,6 +1275,7 @@ export default function App() {
                       <Text style={s.parkCardArrow}>›</Text>
                     </View>
                     <Text style={[s.parkCardMeta, { color: C.ink, fontWeight: '600' }]}>{hoursLine(p)}</Text>
+                    {crowdFor(p) ? <CrowdMeter c={crowdFor(p)} compact /> : null}
                     {hoursFor(p).extras.map((x, k) => (
                       <Text key={k} style={s.parkCardMeta}>{x.label}: {fmtRange(x.range)}</Text>
                     ))}
@@ -1880,6 +1916,11 @@ export default function App() {
             ))}
           </ScrollView>
 
+          {!plan.parkClosed && crowdFor(park) ? (
+            <View style={s.card}>
+              <CrowdMeter c={crowdFor(park)} />
+            </View>
+          ) : null}
           {plan.parkClosed ? (
             <View style={s.card}><Text style={s.h3}>The park looks closed right now</Text><Text style={s.muted}>Waits will appear here when it opens.</Text></View>
           ) : top ? (
@@ -2367,6 +2408,7 @@ function WrapRides({ k, c, d }) {
         <Text style={tx(k, 20, c.fg, { fontWeight: '800' })}>You rode</Text>
         <Text numberOfLines={1} adjustsFontSizeToFit style={tx(k, 160, c.fg, { fontWeight: '900', lineHeight: 165 * k, letterSpacing: -4 * k })}>{d.rides}</Text>
         <Text style={tx(k, 28, c.fg, { fontWeight: '800' })}>{d.rides === 1 ? 'ride today' : 'rides today'}</Text>
+        {d.crowdLine ? <Text style={tx(k, 17, c.fg, { fontWeight: '600', opacity: 0.85 })}>{d.crowdLine}</Text> : null}
       </View>
       <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, bottom: 40 * k, backgroundColor: c.card, borderRadius: 18 * k, padding: 16 * k, gap: 3 * k }}>
         <Text style={tx(k, 12, c.cardKicker, { fontWeight: '800', letterSpacing: 1 * k })}>YOUR TOP RIDE</Text>
@@ -2509,6 +2551,30 @@ function WrapSummary({ k, c, d }) {
 }
 
 const WRAP_COMPONENTS = { open: WrapOpen, rides: WrapRides, queue: WrapQueue, walk: WrapWalk, snacks: WrapSnacks, persona: WrapPersona, summary: WrapSummary };
+
+// Crowd level out of 10, as a 10-step meter
+const CROWD_COLOURS = ['#15803D', '#15803D', '#15803D', '#CA8A04', '#CA8A04', '#CA8A04', '#C2410C', '#C2410C', '#B91C1C', '#B91C1C'];
+function CrowdMeter({ c, compact = false }) {
+  const col = CROWD_COLOURS[c.level - 1];
+  return (
+    <View style={{ gap: compact ? 4 : 6 }} accessibilityLabel={`Crowd level ${c.level} out of 10, ${c.label}. ${c.vsUsual || ''}`}>
+      <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: compact ? 14 : 16, fontWeight: '800', color: C.ink }}>
+          Crowd level <Text style={{ color: col }}>{c.level}/10</Text> · {c.label}
+        </Text>
+        {compact ? null : <Text style={s.mutedSmall}>avg wait {c.avg} min</Text>}
+      </View>
+      <View style={{ flexDirection: 'row', gap: 3 }}>
+        {Array.from({ length: 10 }, (_, i) => (
+          <View key={i} style={{ flex: 1, height: compact ? 6 : 8, borderRadius: 4, backgroundColor: i < c.level ? col : '#E2E8F0' }} />
+        ))}
+      </View>
+      {c.vsUsual ? <Text style={[s.mutedSmall, { color: C.ink, fontWeight: '600' }]}>{c.vsUsual}</Text> : null}
+      {compact ? null : <Text style={s.body}>{c.tip}</Text>}
+      {compact ? null : <Text style={s.mutedSmall}>An estimate from live wait times. Disney doesn't publish park attendance.</Text>}
+    </View>
+  );
+}
 
 // − 2 + counter used on the Day Recap
 function Counter({ n, label, onMinus, onPlus }) {

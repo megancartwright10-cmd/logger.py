@@ -1,4 +1,4 @@
-// Ride Next — version 4 (Disneyland Resort + Disneyland Paris, with Day Wrapped)
+// Ride Next — version 5 (Disneyland Resort, Disneyland Paris and Walt Disney World, with Day Wrapped)
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -22,6 +22,7 @@ const RESORTS = {
     diningUrl: 'https://disneyland.disney.go.com/dining/', cur: '$', payName: 'Lightning Lane Single Pass',
     payShort: 'Lightning Lane', hasMulti: true, metric: false, switchName: 'Rider Switch',
     heightOptions: [null, 32, 35, 38, 40, 42, 46, 48], // inches
+    hopMin: 12, hopLabel: 'Walk',
   },
   dlp: {
     key: 'dlp', name: 'Disneyland Paris', short: 'Disneyland Paris', city: 'Paris', country: 'France',
@@ -29,6 +30,15 @@ const RESORTS = {
     diningUrl: 'https://www.disneylandparis.com/en-gb/dining/advance-table-booking', cur: '€', payName: 'Premier Access One',
     payShort: 'Premier Access', hasMulti: false, metric: true, switchName: 'Baby Switch',
     heightOptions: [null, 81, 95, 102, 107, 120, 132, 140], // cm
+    hopMin: 10, hopLabel: 'Walk',
+  },
+  wdw: {
+    key: 'wdw', name: 'Walt Disney World', short: 'Disney World', city: 'Orlando', country: 'Florida, USA',
+    parks: 'Magic Kingdom · EPCOT · Hollywood Studios · Animal Kingdom', dataUrl: `${DATA_BASE}walt-disney-world.json`,
+    diningUrl: 'https://disneyworld.disney.go.com/dining/', cur: '$', payName: 'Lightning Lane Single Pass',
+    payShort: 'Lightning Lane', hasMulti: true, metric: false, switchName: 'Rider Switch',
+    heightOptions: [null, 32, 35, 38, 40, 42, 44, 48], // inches
+    hopMin: 40, hopLabel: 'Travel', // parks are miles apart: bus, monorail or Skyliner
   },
 };
 const toCm = (R, h) => (h == null ? null : R.metric ? h : Math.round(h * 2.54));
@@ -40,7 +50,6 @@ const STORE_KEY = 'ridenext:v1';
 const REFRESH_MS = 3 * 60 * 1000;
 const LL_WAIT = 10; // rough Lightning Lane wait, minutes
 const FAST_REFRESH_MS = 60 * 1000; // while a ride you care about is down
-const HOP_MIN = 12; // rough walk between the two parks, minutes
 const MULTI_PASS_GAP_MIN = 120; // Disney: book again after using it, or 2 hours after booking
 
 // Rides people rush to at opening, in rough priority order (used when there's no history yet)
@@ -57,6 +66,15 @@ const HEADLINERS = {
   'dlp:Disney Adventure World': ['Frozen Ever After', 'Ratatouille : L’Aventure Totalement Toquée de Rémy',
     'Spider-Man W.E.B. Adventure', 'Avengers Assemble: Flight Force', "Crush's Coaster",
     'The Twilight Zone Tower of Terror', 'RC Racer'],
+  'wdw:Magic Kingdom Park': ['TRON Lightcycle / Run', 'Seven Dwarfs Mine Train', "Peter Pan's Flight", "Tiana's Bayou Adventure",
+    'Space Mountain', 'Big Thunder Mountain Railroad', 'Haunted Mansion', 'Jungle Cruise', 'The Many Adventures of Winnie the Pooh'],
+  'wdw:EPCOT': ['Guardians of the Galaxy: Cosmic Rewind', 'Test Track', 'Frozen Ever After', "Remy's Ratatouille Adventure",
+    "Soarin' Across America", "Soarin' Around the World", 'Mission: SPACE', 'Spaceship Earth'],
+  "wdw:Disney's Hollywood Studios": ['Star Wars: Rise of the Resistance', 'Slinky Dog Dash', "Mickey & Minnie's Runaway Railway",
+    'Rock ’n’ Roller Coaster Starring The Muppets', 'The Twilight Zone™ Tower of Terror', 'Millennium Falcon: Smugglers Run',
+    'Toy Story Mania!', 'Alien Swirling Saucers'],
+  "wdw:Disney's Animal Kingdom Theme Park": ['Avatar Flight of Passage', "Na'vi River Journey", 'Kilimanjaro Safaris',
+    'Expedition Everest - Legend of the Forbidden Mountain', 'Zootopia: Better Zoogether!', 'Kali River Rapids'],
 };
 
 // Most popular things people order. Menus change, so people can add their own too.
@@ -97,6 +115,43 @@ const SNACKS = {
   'dlp:Disney Adventure World': [
     { id: 'ice-cream', name: 'Themed ice cream', where: 'Ice Cream Creations' },
     { id: 'crepe', name: 'Nutella crêpe', where: 'Snack stands' },
+    { id: 'churro', name: 'Churro', where: 'Snack carts' },
+    { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
+  ],
+  'wdw:Magic Kingdom Park': [
+    { id: 'dole-whip', name: 'Dole Whip', where: 'Aloha Isle' },
+    { id: 'churro', name: 'Churro', where: 'Snack carts around the park' },
+    { id: 'turkey-leg', name: 'Turkey leg', where: 'Frontierland carts' },
+    { id: 'mickey-bar', name: 'Mickey ice cream bar', where: 'Ice cream carts' },
+    { id: 'cinnamon-roll', name: 'Cinnamon roll', where: 'Gaston\'s Tavern' },
+    { id: 'lefous-brew', name: "LeFou's Brew", where: 'Gaston\'s Tavern' },
+    { id: 'waffle', name: 'Waffle sandwich', where: 'Sleepy Hollow' },
+    { id: 'corn-dog', name: 'Corn dog nuggets', where: "Casey's Corner" },
+    { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
+  ],
+  'wdw:EPCOT': [
+    { id: 'school-bread', name: 'School bread', where: 'Kringla Bakeri og Kafe (Norway)' },
+    { id: 'croissant', name: 'Croissant or pastry', where: 'Les Halles Boulangerie-Patisserie (France)' },
+    { id: 'pretzel', name: 'Pretzel', where: 'Germany pavilion' },
+    { id: 'caramel', name: 'Caramel treat', where: 'Karamell-Küche (Germany)' },
+    { id: 'gelato', name: 'Gelato', where: 'Italy pavilion' },
+    { id: 'churro', name: 'Churro', where: 'Mexico pavilion' },
+    { id: 'poutine', name: 'Poutine', where: 'La Poutinerie (Canada)' },
+    { id: 'crepe', name: 'Crêpe', where: 'Crêpes À Emporter (France)' },
+    { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
+  ],
+  "wdw:Disney's Hollywood Studios": [
+    { id: 'blue-milk', name: 'Blue or green milk', where: 'Milk Stand' },
+    { id: 'ronto', name: 'Ronto Wrap', where: 'Ronto Roasters' },
+    { id: 'lunch-box-tart', name: 'Lunch Box Tart', where: "Woody's Lunch Box" },
+    { id: 'kettle-corn', name: 'Outpost popcorn mix', where: "Kat Saka's Kettle" },
+    { id: 'churro', name: 'Churro', where: 'Snack carts' },
+    { id: 'ice-cream', name: 'Ice cream', where: 'Hollywood Scoops' },
+  ],
+  "wdw:Disney's Animal Kingdom Theme Park": [
+    { id: 'pongu', name: 'Night Blossom drink', where: 'Pongu Pongu' },
+    { id: 'pod', name: 'Pongu Lumpia', where: 'Pongu Pongu' },
+    { id: 'cheeseburger-pod', name: 'Cheeseburger pod', where: "Satu'li Canteen" },
     { id: 'churro', name: 'Churro', where: 'Snack carts' },
     { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
   ],
@@ -226,6 +281,11 @@ const LAND_PALETTE = {
   'San Fransokyo Square': 'parisian', 'Pixar Pier': 'riviera', 'Paradise Gardens Park': 'riviera', 'Grizzly Peak': 'lily',
   'Discoveryland': 'champagne', 'World Premiere Plaza': 'champagne', 'Marvel Avengers Campus': 'parisian',
   'Worlds of Pixar': 'riviera', 'World of Frozen': 'lakeside', 'Adventure Way': 'lily',
+  // Walt Disney World
+  'Liberty Square': 'haunted', 'World Celebration': 'lakeside', 'World Discovery': 'parisian', 'World Nature': 'lily',
+  'World Showcase': 'candlelit', 'Hollywood Boulevard': 'champagne', 'Sunset Boulevard': 'haunted', 'Echo Lake': 'lakeside',
+  'Toy Story Land': 'riviera', 'Animation Courtyard': 'champagne', 'Oasis': 'lily', 'Discovery Island': 'lily',
+  'Pandora – The World of Avatar': 'haunted', 'Africa': 'harvest', "Rafiki's Planet Watch": 'harvest', 'Asia': 'christmas',
 };
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const WRAP_SLIDES = ['open', 'rides', 'queue', 'walk', 'snacks', 'persona', 'summary'];
@@ -329,7 +389,8 @@ function parkHoursToday(schedule, dateKey) {
 const fmtRange = ([o, c]) => `${fmtTime(o)} – ${fmtTime(c)}`;
 const nextDateKey = (dateKey) => new Date(Date.parse(`${dateKey}T12:00:00Z`) + 86400000).toISOString().slice(0, 10);
 const fmtDuration = (min) => (min >= 60 ? `${Math.floor(min / 60)}h ${min % 60}m` : `${min}m`);
-const shortPark = (name) => (name || '').replace('Disney California Adventure Park', 'California Adventure').replace(' Park', '');
+const shortPark = (name) => (name || '').replace('Disney California Adventure Park', 'California Adventure')
+  .replace("Disney's ", '').replace(' Theme Park', '').replace(' Park', '');
 const clockFromMs = (ms, offsetMin) => {
   const d = new Date(ms + offsetMin * 60000);
   return fmtTime(`${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`);
@@ -812,7 +873,7 @@ export default function App() {
     const landCount = {};
     todayLog.forEach((x) => { if (x.land) landCount[x.land] = (landCount[x.land] || 0) + 1; });
     const topLand = Object.entries(landCount).sort((a, b) => b[1] - a[1])[0];
-    let autoId = R.key === 'dlp' ? 'parisian' : 'lakeside';
+    let autoId = R.key === 'dlp' ? 'parisian' : R.key === 'wdw' ? 'candlelit' : 'lakeside';
     let pickedLine = `Picked for you: your ${R.short} palette`;
     if (mm === 12) { autoId = 'christmas'; pickedLine = "Picked for you: it's Christmas time!"; }
     else if (topLand && LAND_PALETTE[topLand[0]]) { autoId = LAND_PALETTE[topLand[0]]; pickedLine = `Picked for you: most of your day was in ${topLand[0]}`; }
@@ -952,13 +1013,13 @@ export default function App() {
       const look = outlook(r, now, l.wait);
       const walk = saved.useLoc ? walkMinutes(coords, r.loc) : null;
       const otherPark = r.parkId !== park.id;
-      let score = wait + (walk || 0) + (otherPark && walk == null ? HOP_MIN : 0);
+      let score = wait + (walk || 0) + (otherPark && walk == null ? R.hopMin : 0);
       if (look.trend === 'up') score -= Math.min(15, Math.round(look.diff / 2));
       if (look.trend === 'down') score += Math.min(20, Math.round(-look.diff / 2));
       if (saved.rain && !r.indoor) score += 30;
       ranked.push({
         ...r, wait, standby, viaSingle: useSR, singleRider: l.singleRider, posted: l.wait != null,
-        look, walk, otherPark, score, multi: l.multi, multiReturn: l.multiReturn,
+        look, walk, otherPark, hop: otherPark ? R.hopMin : 0, score, multi: l.multi, multiReturn: l.multiReturn,
       });
     });
     ranked.sort((a, b) => {
@@ -1598,7 +1659,7 @@ export default function App() {
           {bannerView}
           {ropeDropCard(park)}
           {error ? <Text style={s.errorText}>{error}</Text> : null}
-          <Text style={s.mutedSmall}>{saved.hopper ? 'Both parks' : park.name} · {hoursLine(park)} · {updatedText}</Text>
+          <Text style={s.mutedSmall}>{saved.hopper ? (data.parks.length > 2 ? 'All parks' : 'Both parks') : park.name} · {hoursLine(park)} · {updatedText}</Text>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
             {!day ? (
@@ -1631,7 +1692,7 @@ export default function App() {
                   <Stat label="Wait now" value={top.posted ? `${top.wait} min` : 'No wait'} />
                 )}
                 {top.look.later != null ? <Stat label="Next few hours" value={`~${top.look.later} min`} /> : null}
-                {top.walk != null ? <Stat label="Walk" value={`${top.walk} min`} /> : top.otherPark ? <Stat label="Walk" value={`~${HOP_MIN} min`} /> : null}
+                {top.walk != null ? <Stat label="Walk" value={`${top.walk} min`} /> : top.otherPark ? <Stat label={R.hopLabel} value={`~${R.hopMin} min`} /> : null}
               </View>
               <Text style={s.heroBody}>{reasonFor(top, saved.rain)}</Text>
               {!saved.useSingle && top.singleRider != null && top.singleRider + 10 <= top.standby ? (
@@ -1885,7 +1946,7 @@ export default function App() {
         <View style={s.card}>
           <Text style={s.h3}>Your day</Text>
           {[
-            ['hopper', 'I have a Park Hopper', 'Suggest rides in both parks'],
+            ['hopper', 'I have a Park Hopper', data && data.parks.length > 2 ? 'Suggest rides in every park (travel time included)' : 'Suggest rides in both parks'],
             ['useSingle', 'Happy to ride Single Rider', 'Use it when it\'s quicker'],
             ['multiPass', 'I have Lightning Lane Multi Pass', 'Get tips on what to book and when'],
             ['rain', 'Rainy day mode', 'Put indoor rides first'],
@@ -1997,7 +2058,7 @@ function reasonFor(r, rain) {
   const extra = [
     r.viaSingle ? `Single Rider saves you about ${r.standby - r.wait} min.` : '',
     rain && r.indoor ? 'It\'s indoors, so you\'ll stay dry.' : '',
-    r.otherPark ? `It's in ${shortPark(r.parkName)}, about a ${HOP_MIN}-minute walk.` : '',
+    r.otherPark ? `It's in ${shortPark(r.parkName)}, about ${r.hop} minutes away.` : '',
   ].filter(Boolean).join(' ');
   return `${reasonText(r, near)}${extra ? ` ${extra}` : ''}`;
 }

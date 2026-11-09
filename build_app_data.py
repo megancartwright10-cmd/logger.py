@@ -23,7 +23,10 @@ from zoneinfo import ZoneInfo
 
 from logger import fetch, find_parks, slugify
 
-APP_RESORTS = {"Disneyland Resort": "America/Los_Angeles", "Disneyland Paris": "Europe/Paris"}
+APP_RESORTS = {"Disneyland Resort": "America/Los_Angeles", "Disneyland Paris": "Europe/Paris",
+               "Walt Disney World": "America/New_York"}
+# Parks in the feed that the app leaves out (few queues, would clutter the park list)
+SKIP_PARKS = {"Disney's Blizzard Beach Water Park", "Disney's Typhoon Lagoon Water Park"}
 
 # Areas ("lands"), listed in rough walking order round each park.
 # The live feed doesn't say which land a ride is in, so it's kept here.
@@ -210,11 +213,125 @@ FAVOURITES_DLP = {
     "The Regal View Restaurant": "Views over Adventure Bay",
 }
 
-LANDS = {"Disneyland Resort": LANDS_DLR, "Disneyland Paris": LANDS_DLP}
-HEIGHT_UNIT = {"Disneyland Resort": "in", "Disneyland Paris": "cm"}
-HEIGHTS = {"Disneyland Resort": HEIGHTS_DLR, "Disneyland Paris": HEIGHTS_DLP}
-INDOOR = {"Disneyland Resort": INDOOR_DLR, "Disneyland Paris": INDOOR_DLP}
-FAVOURITES = {"Disneyland Resort": FAVOURITES_DLR, "Disneyland Paris": FAVOURITES_DLP}
+
+# ----- Walt Disney World (Orlando), checked Nov 2026 -----
+LANDS_WDW = {
+    "Magic Kingdom Park": {
+        "Main Street, U.S.A.": ["Walt Disney World Railroad - Main Street, U.S.A.", "Main Street Vehicles"],
+        "Adventureland": ["Pirates of the Caribbean", "Jungle Cruise", "Jingle Cruise", "Walt Disney's Enchanted Tiki Room",
+                          "The Magic Carpets of Aladdin", "Swiss Family Treehouse", "A Pirate's Adventure ~ Treasures of the Seven Seas"],
+        "Frontierland": ["Big Thunder Mountain Railroad", "Tiana's Bayou Adventure", "Country Bear Musical Jamboree",
+                         "Walt Disney World Railroad - Frontierland", "Frontierland Shootin' Arcade"],
+        "Liberty Square": ["Haunted Mansion", "The Hall of Presidents", "Liberty Square Riverboat"],
+        "Fantasyland": ["Seven Dwarfs Mine Train", "Peter Pan's Flight", "\"it's a small world\"",
+                        "The Many Adventures of Winnie the Pooh", "Under the Sea - Journey of The Little Mermaid",
+                        "Mickey's PhilharMagic", "Mad Tea Party", "Dumbo the Flying Elephant", "The Barnstormer",
+                        "Prince Charming Regal Carrousel", "Casey Jr. Splash 'N' Soak Station", "Cinderella Castle",
+                        "Walt Disney World Railroad - Fantasyland", "Enchanted Tales with Belle", "Pete's Silly Sideshow"],
+        "Tomorrowland": ["TRON Lightcycle / Run", "Space Mountain", "Buzz Lightyear’s Space Ranger Spin",
+                         "Tomorrowland Transit Authority PeopleMover", "Astro Orbiter", "Tomorrowland Speedway",
+                         "Monsters, Inc. Laugh Floor", "Walt Disney's Carousel of Progress"],
+    },
+    "EPCOT": {
+        "World Celebration": ["Spaceship Earth", "Project Tomorrow: Inventing the Wonders of the Future",
+                              "Journey Into Imagination With Figment", "ImageWorks - The \"What If\" Labs",
+                              "Disney and Pixar Short Film Festival"],
+        "World Discovery": ["Guardians of the Galaxy: Cosmic Rewind", "Test Track", "Mission: SPACE"],
+        "World Nature": ["Soarin' Across America", "Soarin' Around the World", "Living with the Land", "Awesome Planet",
+                         "The Seas with Nemo & Friends", "Turtle Talk With Crush", "SeaBase Aquarium",
+                         "Bruce's Shark World", "Journey of Water, Inspired by Moana"],
+        "World Showcase": ["Frozen Ever After", "Remy's Ratatouille Adventure", "Gran Fiesta Tour Starring The Three Caballeros",
+                           "Reflections of China", "Canada Far and Wide in Circle-Vision 360", "Impressions de France",
+                           "The American Adventure", "Palais du Cinéma", "House of the Whispering Willows",
+                           "American Heritage Gallery", "Bijutsu-kan Gallery", "Gallery of Arts and History",
+                           "Mexico Folk Art Gallery", "Stave Church Gallery", "Kidcot Fun Stops"],
+    },
+    "Disney's Hollywood Studios": {
+        "Hollywood Boulevard": ["Mickey & Minnie's Runaway Railway"],
+        "Sunset Boulevard": ["The Twilight Zone™ Tower of Terror", "Rock ’n’ Roller Coaster Starring The Muppets",
+                             "Rock 'n' Roller Coaster Starring The Muppets"],
+        "Echo Lake": ["Star Tours – The Adventures Continue", "Vacation Fun - An Original Animated Short with Mickey & Minnie",
+                      "Indiana Jones™ Epic Stunt Spectacular!"],
+        "Star Wars: Galaxy's Edge": ["Star Wars: Rise of the Resistance", "Millennium Falcon: Smugglers Run"],
+        "Toy Story Land": ["Slinky Dog Dash", "Alien Swirling Saucers", "Toy Story Mania!"],
+        "Animation Courtyard": ["Walt Disney Presents", "Star Wars Launch Bay"],
+    },
+    "Disney's Animal Kingdom Theme Park": {
+        "Oasis": ["The Oasis Exhibits"],
+        "Discovery Island": ["Zootopia: Better Zoogether!", "Discovery Island Trails", "Wilderness Explorers"],
+        "Pandora – The World of Avatar": ["Avatar Flight of Passage", "Na'vi River Journey"],
+        "Africa": ["Kilimanjaro Safaris", "Gorilla Falls Exploration Trail", "Wildlife Express Train"],
+        "Rafiki's Planet Watch": ["Animal Care at Conservation Station", "Jumping Junction"],
+        "Asia": ["Expedition Everest - Legend of the Forbidden Mountain", "Kali River Rapids", "Maharajah Jungle Trek"],
+    },
+}
+
+HEIGHTS_WDW = {
+    "Seven Dwarfs Mine Train": 38, "Space Mountain": 44, "TRON Lightcycle / Run": 48, "Big Thunder Mountain Railroad": 40,
+    "Tiana's Bayou Adventure": 40, "The Barnstormer": 35, "Tomorrowland Speedway": 32,
+    "Guardians of the Galaxy: Cosmic Rewind": 42, "Test Track": 48, "Mission: SPACE": 40,
+    "Soarin' Across America": 40, "Soarin' Around the World": 40,
+    "Star Wars: Rise of the Resistance": 40, "Millennium Falcon: Smugglers Run": 38, "Slinky Dog Dash": 38,
+    "Alien Swirling Saucers": 32, "The Twilight Zone™ Tower of Terror": 40, "Star Tours – The Adventures Continue": 40,
+    "Rock ’n’ Roller Coaster Starring The Muppets": 48, "Rock 'n' Roller Coaster Starring The Muppets": 48,
+    "Avatar Flight of Passage": 44, "Expedition Everest - Legend of the Forbidden Mountain": 44, "Kali River Rapids": 38,
+}
+
+INDOOR_WDW = {
+    "Pirates of the Caribbean", "Walt Disney's Enchanted Tiki Room", "Country Bear Musical Jamboree", "Haunted Mansion",
+    "The Hall of Presidents", "Peter Pan's Flight", "\"it's a small world\"", "The Many Adventures of Winnie the Pooh",
+    "Under the Sea - Journey of The Little Mermaid", "Mickey's PhilharMagic", "Enchanted Tales with Belle", "Space Mountain",
+    "Buzz Lightyear’s Space Ranger Spin", "Monsters, Inc. Laugh Floor", "Walt Disney's Carousel of Progress",
+    "Spaceship Earth", "Project Tomorrow: Inventing the Wonders of the Future", "Journey Into Imagination With Figment",
+    "ImageWorks - The \"What If\" Labs", "Disney and Pixar Short Film Festival", "Guardians of the Galaxy: Cosmic Rewind",
+    "Test Track", "Mission: SPACE", "Soarin' Across America", "Soarin' Around the World", "Living with the Land",
+    "Awesome Planet", "The Seas with Nemo & Friends", "Turtle Talk With Crush", "SeaBase Aquarium", "Bruce's Shark World",
+    "Frozen Ever After", "Remy's Ratatouille Adventure", "Gran Fiesta Tour Starring The Three Caballeros",
+    "Reflections of China", "Canada Far and Wide in Circle-Vision 360", "Impressions de France", "The American Adventure",
+    "Palais du Cinéma", "House of the Whispering Willows", "American Heritage Gallery", "Bijutsu-kan Gallery",
+    "Gallery of Arts and History", "Mexico Folk Art Gallery", "Stave Church Gallery",
+    "Mickey & Minnie's Runaway Railway", "The Twilight Zone™ Tower of Terror", "Rock ’n’ Roller Coaster Starring The Muppets",
+    "Rock 'n' Roller Coaster Starring The Muppets", "Star Tours – The Adventures Continue",
+    "Vacation Fun - An Original Animated Short with Mickey & Minnie", "Star Wars: Rise of the Resistance",
+    "Millennium Falcon: Smugglers Run", "Toy Story Mania!", "Walt Disney Presents", "Star Wars Launch Bay",
+    "Avatar Flight of Passage", "Na'vi River Journey", "Zootopia: Better Zoogether!", "Animal Care at Conservation Station",
+}
+
+# Fan favourites (from Walt Disney World fan dining guides, Nov 2026)
+FAVOURITES_WDW = {
+    "Columbia Harbour House": "Fried shrimp and lobster roll, quiet upstairs seating",
+    "Pecos Bill Tall Tale Inn and Cafe": "Big burritos and a toppings bar",
+    "Casey's Corner": "Hot dogs and corn dog nuggets",
+    "Cosmic Ray's Starlight Café": "Burgers and chicken, lots of seats",
+    "Sleepy Hollow": "Waffle sandwiches and funnel cakes",
+    "Be Our Guest Restaurant": "Dinner inside the Beast's castle",
+    "Jungle Navigation Co. LTD Skipper Canteen": "Jungle Cruise jokes with dinner",
+    "Liberty Tree Tavern": "Thanksgiving-style family feast",
+    "Regal Eagle Smokehouse: Craft Drafts & Barbecue": "BBQ brisket and burnt ends",
+    "Yorkshire County Fish Shop": "Proper fish and chips",
+    "Space 220 Restaurant": "Dining 220 miles above Earth",
+    "Le Cellier Steakhouse": "Steak and cheddar soup in Canada",
+    "Via Napoli Ristorante e Pizzeria": "Wood-fired Neapolitan pizza",
+    "Takumi-Tei": "Elegant Japanese dining",
+    "Karamell-Küche": "Caramel treats in Germany",
+    "Docking Bay 7 Food and Cargo": "Galaxy's Edge themed dishes",
+    "Ronto Roasters": "The famous Ronto Wrap",
+    "Woody's Lunch Box": "Lunch Box Tarts and grilled sandwiches",
+    "50's Prime Time Café": "Comfort food, eat your veggies!",
+    "Sci-Fi Dine-In Theater Restaurant": "Eat in a car at a drive-in movie",
+    "Roundup Rodeo BBQ": "All-you-can-eat Toy Story BBQ",
+    "Satu'li Canteen": "Build-your-own bowls in Pandora",
+    "Flame Tree Barbecue": "Ribs and pulled pork with river views",
+    "Harambe Market": "Ribs and street food in Africa",
+    "Tiffins Restaurant": "The park's best sit-down meal",
+    "Yak & Yeti™ Restaurant": "Pan-Asian plates near Everest",
+}
+
+LANDS = {"Disneyland Resort": LANDS_DLR, "Disneyland Paris": LANDS_DLP, "Walt Disney World": LANDS_WDW}
+HEIGHT_UNIT = {"Disneyland Resort": "in", "Disneyland Paris": "cm", "Walt Disney World": "in"}
+HEIGHTS = {"Disneyland Resort": HEIGHTS_DLR, "Disneyland Paris": HEIGHTS_DLP, "Walt Disney World": HEIGHTS_WDW}
+INDOOR = {"Disneyland Resort": INDOOR_DLR, "Disneyland Paris": INDOOR_DLP, "Walt Disney World": INDOOR_WDW}
+FAVOURITES = {"Disneyland Resort": FAVOURITES_DLR, "Disneyland Paris": FAVOURITES_DLP, "Walt Disney World": FAVOURITES_WDW}
 
 
 def norm(text):
@@ -313,7 +430,7 @@ def main():
                "builtAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
                "parks": []}
         for park_id, park_name, label in parks:
-            if label != resort:
+            if label != resort or park_name in SKIP_PARKS:
                 continue
             kids = fetch(f"/entity/{park_id}/children").get("children", [])
             lands = land_lookup(resort, park_name)

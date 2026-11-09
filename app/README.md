@@ -26,3 +26,6 @@ Needs an Apple Developer account (yearly fee) and/or a Google Play developer acc
 From **Your day** tap **See my Day Wrapped**: 7 story slides (9:16) in 9 palettes. Swipe the slide to change palette, tap its sides to move between slides. It opens in the palette for the land you spent most time in, or Christmas in December.
 - **Share to Stories** saves the slide as a 1080×1920 picture and opens the share menu. Pick Instagram, then Story.
 - In Expo Go, **Save image** may ask for photo access. A real build is needed for a direct "Instagram Stories" button (it also needs a Meta app ID).
+
+## Walt Disney World (v5)
+Orlando is the third city on the "Where are you visiting?" screen: Magic Kingdom, EPCOT, Hollywood Studios and Animal Kingdom (the water parks are left out). With Park Hopper on, a ride in another park gets ~40 minutes of travel added, because the parks are miles apart.

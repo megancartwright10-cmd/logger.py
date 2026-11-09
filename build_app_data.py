@@ -23,11 +23,11 @@ from zoneinfo import ZoneInfo
 
 from logger import fetch, find_parks, slugify
 
-APP_RESORTS = {"Disneyland Resort": "America/Los_Angeles"}
+APP_RESORTS = {"Disneyland Resort": "America/Los_Angeles", "Disneyland Paris": "Europe/Paris"}
 
 # Areas ("lands"), listed in rough walking order round each park.
 # The live feed doesn't say which land a ride is in, so it's kept here.
-LANDS = {
+LANDS_DLR = {
     "Disneyland Park": {
         "Main Street, U.S.A.": [
             "Disneyland Railroad", "Main Street Vehicles", "Main Street Cinema",
@@ -83,7 +83,7 @@ LANDS = {
 
 
 # Minimum height in inches (only rides that have one). Check signs at the ride.
-HEIGHTS = {
+HEIGHTS_DLR = {
     "Matterhorn Bobsleds": 42, "Indiana Jones™ Adventure": 46, "Space Mountain": 40,
     "Big Thunder Mountain Railroad": 40, "Star Wars: Rise of the Resistance": 40,
     "Star Tours - The Adventures Continue": 40, "Millennium Falcon: Smugglers Run": 38,
@@ -95,7 +95,7 @@ HEIGHTS = {
 }
 
 # Rides that are mostly indoors (for rainy day mode).
-INDOOR = {
+INDOOR_DLR = {
     "Pirates of the Caribbean", "Haunted Mansion Holiday", "Haunted Mansion", "Indiana Jones™ Adventure",
     "Space Mountain", "Star Tours - The Adventures Continue", "Buzz Lightyear Astro Blasters",
     "Star Wars: Rise of the Resistance", "Millennium Falcon: Smugglers Run",
@@ -115,7 +115,7 @@ INDOOR = {
 # Fan favourites: restaurants that several Disney dining guides and review round-ups
 # consistently rate highly (researched Nov 2026; refresh every few months).
 # Notes are our own short summary of what each place is known for.
-FAVOURITES = {
+FAVOURITES_DLR = {
     # Disneyland Park
     "Tiana’s Palace": "Gumbo, shrimp & grits and beignets",
     "Hungry Bear Barbecue Jamboree": "BBQ sandwiches and banana pudding",
@@ -141,10 +141,89 @@ FAVOURITES = {
 }
 
 
-def land_lookup(park_name):
+# ---------- Disneyland Paris ----------
+LANDS_DLP = {
+    "Disneyland Park": {
+        "Main Street, U.S.A.": [
+            "Disneyland Railroad Main Street Station", "Horse-Drawn Streetcars", "Main Street Vehicles"],
+        "Frontierland": [
+            "Big Thunder Mountain", "Phantom Manor", "Thunder Mesa Riverboat Landing",
+            "Rustler Roundup Shootin' Gallery", "Frontierland Playground"],
+        "Adventureland": [
+            "Indiana Jones™ and the Temple of Peril", "Pirates of the Caribbean", "Adventure Isle",
+            "La Cabane des Robinson", "Le Passage Enchanté d'Aladdin", "Pirates' Beach"],
+        "Fantasyland": [
+            "Peter Pan's Flight", "\"it's a small world\"", "Blanche-Neige et les Sept Nains®",
+            "Le Carrousel de Lancelot", "Dumbo the Flying Elephant", "Mad Hatter's Tea Cups",
+            "Alice's Curious Labyrinth", "Casey Jr. – le Petit Train du Cirque",
+            "Le Pays des Contes de Fées, presented by Vittel", "La Tanière du Dragon",
+            "La Galerie de la Belle au Bois Dormant", "Disneyland Railroad Fantasyland Station"],
+        "Discoveryland": [
+            "Star Wars Hyperspace Mountain", "Star Tours: The Adventures Continue*", "Buzz Lightyear Laser Blast",
+            "Orbitron®", "Autopia, presented by Avis", "Les Mystères du Nautilus", "Mickey’s PhilharMagic"],
+    },
+    "Disney Adventure World": {
+        "World Premiere Plaza": [
+            "The Twilight Zone Tower of Terror", "Les Tapis Volants - Flying Carpets Over Agrabah®"],
+        "Marvel Avengers Campus": ["Avengers Assemble: Flight Force", "Spider-Man W.E.B. Adventure"],
+        "Worlds of Pixar": [
+            "Ratatouille : L’Aventure Totalement Toquée de Rémy", "Crush's Coaster", "RC Racer",
+            "Toy Soldiers Parachute Drop", "Slinky® Dog Zigzag Spin", "Cars ROAD TRIP", "Cars Quatre Roues Rallye"],
+        "World of Frozen": ["Frozen Ever After"],
+        "Adventure Way": ["Raiponce Tangled Spin"],
+    },
+}
+
+# Minimum height in cm. Check signs at the ride.
+HEIGHTS_DLP = {
+    "Star Wars Hyperspace Mountain": 120, "Big Thunder Mountain": 102, "Indiana Jones™ and the Temple of Peril": 140,
+    "Star Tours: The Adventures Continue*": 102, "Autopia, presented by Avis": 81, "RC Racer": 120,
+    "Crush's Coaster": 107, "The Twilight Zone Tower of Terror": 102, "Toy Soldiers Parachute Drop": 81,
+    "Avengers Assemble: Flight Force": 120,
+}
+
+INDOOR_DLP = {
+    "Phantom Manor", "Pirates of the Caribbean", "Peter Pan's Flight", "\"it's a small world\"",
+    "Blanche-Neige et les Sept Nains®", "La Tanière du Dragon", "La Galerie de la Belle au Bois Dormant",
+    "Le Passage Enchanté d'Aladdin", "Star Wars Hyperspace Mountain", "Star Tours: The Adventures Continue*",
+    "Buzz Lightyear Laser Blast", "Les Mystères du Nautilus", "Mickey’s PhilharMagic",
+    "The Twilight Zone Tower of Terror", "Avengers Assemble: Flight Force", "Spider-Man W.E.B. Adventure",
+    "Crush's Coaster", "Ratatouille : L’Aventure Totalement Toquée de Rémy", "Frozen Ever After",
+}
+
+# Fan favourites (researched Nov 2026 from Disneyland Paris dining guides)
+FAVOURITES_DLP = {
+    "Casa de Coco – Restaurante de Familia": "Burritos, fajitas and churros",
+    "Restaurant Hakuna Matata": "Spiced chicken and rice",
+    "Colonel Hathi’s Outpost Restaurant": "Mickey-shaped cheese pizza",
+    "Café Hyperion": "Burgers under the Discoveryland dome",
+    "Toad Hall Restaurant": "Fish and chips, easy with little ones",
+    "Captain Jack's - Restaurant des Pirates": "Dining beside the Pirates boats",
+    "Walt’s – an American restaurant": "A calm, classy break on Main Street",
+    "Auberge de Cendrillon": "Princess character dining",
+    "Silver Spur Steakhouse": "Hearty steaks in Frontierland",
+    "Bistrot Chez Rémy": "French bistro food at Ratatouille scale",
+    "Stark Factory": "Pizza and pasta in Avengers Campus",
+    "Super Diner": "Quick, reliable burgers",
+    "FAN-tastic Food Truck": "Fast, budget-friendly bites",
+    "The Regal View Restaurant": "Views over Adventure Bay",
+}
+
+LANDS = {"Disneyland Resort": LANDS_DLR, "Disneyland Paris": LANDS_DLP}
+HEIGHT_UNIT = {"Disneyland Resort": "in", "Disneyland Paris": "cm"}
+HEIGHTS = {"Disneyland Resort": HEIGHTS_DLR, "Disneyland Paris": HEIGHTS_DLP}
+INDOOR = {"Disneyland Resort": INDOOR_DLR, "Disneyland Paris": INDOOR_DLP}
+FAVOURITES = {"Disneyland Resort": FAVOURITES_DLR, "Disneyland Paris": FAVOURITES_DLP}
+
+
+def norm(text):
+    return " ".join((text or "").split())
+
+
+def land_lookup(resort, park_name):
     """ride name -> (land, order of that land in the park)"""
     out = {}
-    for i, (land, rides) in enumerate(LANDS.get(park_name, {}).items()):
+    for i, (land, rides) in enumerate(LANDS.get(resort, {}).get(park_name, {}).items()):
         for r in rides:
             out[" ".join(r.split())] = (land, i)
     return out
@@ -236,7 +315,8 @@ def main():
             if label != resort:
                 continue
             kids = fetch(f"/entity/{park_id}/children").get("children", [])
-            lands = land_lookup(park_name)
+            lands = land_lookup(resort, park_name)
+            heights, indoor = HEIGHTS.get(resort, {}), INDOOR.get(resort, set())
             rides = []
             for k in kids:
                 if k.get("entityType") != "ATTRACTION":
@@ -246,7 +326,9 @@ def main():
                     print(f"  no land for: {k.get('name')}")
                 clean = " ".join((k.get("name") or "").split())
                 rides.append({"id": k["id"], "name": k.get("name"), "land": land, "landOrder": order,
-                              "height": HEIGHTS.get(clean), "indoor": clean in INDOOR,
+                              "height": heights.get(clean), "indoor": clean in indoor,
+                              "heightCm": (round(heights[clean] * 2.54) if HEIGHT_UNIT[resort] == "in" else heights[clean])
+                              if clean in heights else None,
                               "loc": location_of(k["id"], cache),
                               "typical": history.get(k["id"])})
             food = []
@@ -255,7 +337,7 @@ def main():
                         and t["service"] in ("quick", "snack", "table"):
                     food.append({"id": rid, "name": t["name"], "service": t["service"],
                                  "moods": t["moods"], "loc": location_of(rid, cache),
-                                 "fav": FAVOURITES.get(" ".join(t["name"].split())),
+                                 "fav": FAVOURITES.get(resort, {}).get(norm(t["name"])),
                                  "hours": opening_hours(rid)})
             rides.sort(key=lambda r: (r["landOrder"], (r["name"] or "").strip('"').lower()))
             food.sort(key=lambda r: r["name"])

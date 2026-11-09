@@ -1,0 +1,39 @@
+name: Build app data
+
+on:
+  schedule:
+    - cron: "17 11 * * *"   # daily, ~3am in California, after the parks close
+  workflow_dispatch:
+  push:
+    paths:
+      - build_app_data.py
+      - .github/workflows/build-app-data.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build app data
+        run: python3 build_app_data.py
+
+      - name: Save to repo
+        run: |
+          git config user.name "wait-logger"
+          git config user.email "wait-logger@users.noreply.github.com"
+          git add data/app
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "App data $(date -u +%Y-%m-%d)"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          exit 1

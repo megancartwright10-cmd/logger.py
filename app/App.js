@@ -1,13 +1,15 @@
-// Ride Next — version 1 (Disneyland Resort)
+// Ride Next — version 2 (Disneyland Resort)
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator, Alert, Linking, Pressable, RefreshControl, SafeAreaView,
-  ScrollView, StyleSheet, Switch, Text, View,
+  ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
+import { Pedometer } from 'expo-sensors';
 
 const DATA_URL = 'https://raw.githubusercontent.com/megancartwright10-cmd/logger.py/main/data/app/disneyland-resort.json';
 const LIVE_URL = (id) => `https://api.themeparks.wiki/v1/entity/${id}/live`;
@@ -16,6 +18,76 @@ const DINING_URL = 'https://disneyland.disney.go.com/dining/';
 const STORE_KEY = 'ridenext:v1';
 const REFRESH_MS = 3 * 60 * 1000;
 const LL_WAIT = 10; // rough Lightning Lane wait, minutes
+const FAST_REFRESH_MS = 60 * 1000; // while a ride you care about is down
+const HOP_MIN = 12; // rough walk between the two parks, minutes
+const MULTI_PASS_GAP_MIN = 120; // Disney: book again after using it, or 2 hours after booking
+const HEIGHT_OPTIONS = [null, 32, 35, 38, 40, 42, 46, 48];
+
+// Rides people rush to at opening, in rough priority order (used when there's no history yet)
+const HEADLINERS = {
+  'Disneyland Park': ['Star Wars: Rise of the Resistance', 'Space Mountain', 'Indiana Jones™ Adventure',
+    "Mickey & Minnie's Runaway Railway", "Tiana's Bayou Adventure", 'Matterhorn Bobsleds', "Peter Pan's Flight",
+    'Millennium Falcon: Smugglers Run', 'Big Thunder Mountain Railroad'],
+  'Disney California Adventure Park': ['Radiator Springs Racers', 'WEB SLINGERS: A Spider-Man Adventure',
+    'Guardians of the Galaxy - Mission: BREAKOUT!', 'Incredicoaster', 'Toy Story Midway Mania!',
+    'Soarin’ Across America', 'Grizzly River Run'],
+};
+
+// Most popular things people order. Menus change, so people can add their own too.
+const SNACKS = {
+  'Disneyland Park': [
+    { id: 'dole-whip', name: 'Dole Whip', where: 'Tiki Juice Bar / The Tropical Hideaway' },
+    { id: 'mint-julep', name: 'Mint Julep (non-alcoholic)', where: 'Mint Julep Bar' },
+    { id: 'beignets', name: 'Mickey beignets', where: 'Mint Julep Bar' },
+    { id: 'churro', name: 'Churro', where: 'Snack carts around the park' },
+    { id: 'corn-dog', name: 'Hand-dipped corn dog', where: 'Little Red Wagon' },
+    { id: 'monte-cristo', name: 'Monte Cristo', where: 'Cafe Orleans' },
+    { id: 'chowder', name: 'Clam chowder bread bowl', where: 'Harbour Galley' },
+    { id: 'blue-milk', name: 'Blue or green milk', where: 'Milk Stand' },
+    { id: 'ronto', name: 'Ronto Wrap', where: 'Ronto Roasters' },
+    { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
+    { id: 'ice-cream', name: 'Ice cream', where: 'Gibson Girl Ice Cream Parlor' },
+  ],
+  'Disney California Adventure Park': [
+    { id: 'churro', name: 'Churro', where: 'Carts and Cozy Cone Motel' },
+    { id: 'cozy-cone', name: 'Cozy Cone treat', where: 'Cozy Cone Motel' },
+    { id: 'corn-dog', name: 'Corn dog', where: 'Corn Dog Castle' },
+    { id: 'lobster-nachos', name: 'Lobster nachos', where: 'Lamplight Lounge' },
+    { id: 'pym', name: 'Something giant (or tiny)', where: 'Pym Test Kitchen' },
+    { id: 'ice-cream', name: 'Ice cream', where: "Clarabelle's" },
+    { id: 'smoothie', name: 'Smoothie', where: 'Schmoozies!' },
+    { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
+  ],
+};
+const STEP_MILES = 0.000473; // average stride ~2.5 ft
+
+// ---------- notifications ----------
+try {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true, shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false,
+    }),
+  });
+} catch (e) { /* not available */ }
+const DATE_TRIGGER = (Notifications.SchedulableTriggerInputTypes && Notifications.SchedulableTriggerInputTypes.DATE) || 'date';
+async function askNotifyPermission() {
+  try {
+    const cur = await Notifications.getPermissionsAsync();
+    if (cur.granted) return true;
+    return (await Notifications.requestPermissionsAsync()).granted;
+  } catch (e) { return false; }
+}
+async function notifyNow(title, body) {
+  try { await Notifications.scheduleNotificationAsync({ content: { title, body }, trigger: null }); } catch (e) { /* ignore */ }
+}
+async function notifyAt(date, title, body) {
+  try {
+    return await Notifications.scheduleNotificationAsync({ content: { title, body }, trigger: { type: DATE_TRIGGER, date } });
+  } catch (e) { return null; }
+}
+async function cancelNotify(id) {
+  try { if (id) await Notifications.cancelScheduledNotificationAsync(id); } catch (e) { /* ignore */ }
+}
 
 const C = {
   ground: '#F6F7F9', card: '#FFFFFF', ink: '#0F172A', muted: '#475569', line: '#E2E8F0',
@@ -112,6 +184,36 @@ function parkHoursToday(schedule, dateKey) {
 }
 
 const fmtRange = ([o, c]) => `${fmtTime(o)} – ${fmtTime(c)}`;
+const nextDateKey = (dateKey) => new Date(Date.parse(`${dateKey}T12:00:00Z`) + 86400000).toISOString().slice(0, 10);
+const fmtDuration = (min) => (min >= 60 ? `${Math.floor(min / 60)}h ${min % 60}m` : `${min}m`);
+const shortPark = (name) => (name || '').replace('Disney California Adventure Park', 'California Adventure').replace(' Park', '');
+const clockFromMs = (ms, offsetMin) => {
+  const d = new Date(ms + offsetMin * 60000);
+  return fmtTime(`${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`);
+};
+const BIG_SHOW = /firework|parade|world of color|fantasmic|nighttime|spectacular|believe/i;
+
+// Rope drop: which picks gain the most wait between opening and midday?
+function ropeDropPicks(rides, openHour, parkName) {
+  const head = HEADLINERS[parkName] || [];
+  const scored = rides.map((r) => {
+    const curve = r.typical && (r.typical.weekday || r.typical.weekend);
+    let gain = null;
+    if (curve && curve[openHour] != null) {
+      const later = [1, 2, 3, 4].map((i) => curve[openHour + i]).filter((v) => v != null);
+      if (later.length) gain = Math.max(...later) - curve[openHour];
+    }
+    const h = head.indexOf(r.name);
+    return { r, gain, rank: h === -1 ? 99 : h };
+  });
+  scored.sort((a, b) => {
+    if (a.gain != null && b.gain != null) return b.gain - a.gain;
+    if (a.gain != null) return -1;
+    if (b.gain != null) return 1;
+    return a.rank - b.rank;
+  });
+  return scored.filter((x) => x.gain != null || x.rank < 99).slice(0, 3).map((x) => x.r);
+}
 
 function fmtHour(h) {
   if (h === 0) return 'midnight';
@@ -138,8 +240,13 @@ function parseLive(json) {
   (json.liveData || []).forEach((e) => {
     const q = e.queue || {};
     map[e.id] = {
+      name: e.name,
+      type: e.entityType,
       status: e.status,
       updated: e.lastUpdated || null,
+      singleRider: q.SINGLE_RIDER && q.SINGLE_RIDER.waitTime != null ? q.SINGLE_RIDER.waitTime : null,
+      multiReturn: q.RETURN_TIME && q.RETURN_TIME.returnStart ? q.RETURN_TIME.returnStart.slice(11, 16) : null,
+      showtimes: (e.showtimes || []).map((t) => t.startTime).filter(Boolean),
       wait: q.STANDBY && q.STANDBY.waitTime != null ? q.STANDBY.waitTime : null,
       multi: q.RETURN_TIME ? q.RETURN_TIME.state : null,
       single: q.PAID_RETURN_TIME
@@ -206,7 +313,19 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [screen, setScreen] = useState('welcome');
   const [detailId, setDetailId] = useState(null);
-  const [saved, setSaved] = useState({ selected: {}, done: {}, useLoc: false });
+  const [saved, setSaved] = useState({
+    selected: {}, done: {}, useLoc: false, hopper: false, useSingle: false, multiPass: false, rain: false,
+    minHeight: null, watch: [], customSnacks: [], log: {}, ll: null, reminders: {},
+    snackCounts: {}, meals: {}, areas: {}, day: null, stepsAndroid: {}, waitAlerts: {}, ratings: {},
+  });
+  const [snacksOpen, setSnacksOpen] = useState(false);
+  const [backTo, setBackTo] = useState('welcome');
+  const [steps, setSteps] = useState(null);
+  const [banner, setBanner] = useState(null);
+  const [showsOpen, setShowsOpen] = useState(false);
+  const [newSnack, setNewSnack] = useState('');
+  const savedRef = useRef(saved);
+  const prevLive = useRef({});
   const [skippedBy, setSkippedBy] = useState({});
   const [coords, setCoords] = useState(null);
   const [foodOpen, setFoodOpen] = useState(false);
@@ -227,7 +346,10 @@ export default function App() {
       .finally(() => { loaded.current = true; });
     fetch(DATA_URL)
       .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-      .then(setData)
+      .then((d) => {
+        d.parks.forEach((p) => p.rides.forEach((r) => { r.parkId = p.id; r.parkName = p.name; }));
+        setData(d);
+      })
       .catch((e) => setError(`Couldn't load park data (${e.message}).`));
   }, []);
 
@@ -242,8 +364,8 @@ export default function App() {
   }, [data]);
 
   // today's park hours: live schedule if we have it, otherwise last night's copy
-  const hoursFor = (p) => {
-    const dateKey = parkNow(data.utcOffsetMinutes).dateKey;
+  const hoursFor = (p, dateKeyIn) => {
+    const dateKey = dateKeyIn || parkNow(data.utcOffsetMinutes).dateKey;
     if (schedules[p.id]) return parkHoursToday(schedules[p.id], dateKey);
     const saved = p.hours && p.hours[dateKey];
     return { known: !!p.hours && Object.keys(p.hours).length > 0, main: saved || [], extras: [] };
@@ -255,6 +377,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    savedRef.current = saved;
     if (loaded.current) AsyncStorage.setItem(STORE_KEY, JSON.stringify(saved)).catch(() => {});
   }, [saved]);
 
@@ -262,29 +385,88 @@ export default function App() {
     if (!saved.useLoc) return;
     try {
       const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      setCoords([pos.coords.latitude, pos.coords.longitude]);
+      const here = [pos.coords.latitude, pos.coords.longitude];
+      setCoords(here);
+      if (data && savedRef.current.day) {
+        let best = null;
+        data.parks.forEach((p) => p.rides.forEach((r) => {
+          const w = walkMinutes(here, r.loc);
+          if (r.land && r.land !== 'Other' && w != null && w <= 3 && (!best || w < best.w)) best = { w, land: r.land };
+        }));
+        if (best) {
+          const key = parkNow(data.utcOffsetMinutes).dateKey;
+          setSaved((cur) => {
+            const list = (cur.areas || {})[key] || [];
+            return list.includes(best.land) ? cur : { ...cur, areas: { [key]: [...list, best.land] } };
+          });
+        }
+      }
     } catch (e) { /* keep last known */ }
-  }, [saved.useLoc]);
+  }, [saved.useLoc, data]);
 
   const refreshLive = useCallback(async () => {
-    if (!park) return;
+    if (!data) return;
     try {
-      const r = await fetch(LIVE_URL(park.id));
-      setLive(parseLive(await r.json()));
+      const all = await Promise.all(data.parks.map((p) => fetch(LIVE_URL(p.id)).then((r) => r.json())));
+      const merged = {};
+      all.forEach((j, i) => {
+        const m = parseLive(j);
+        Object.values(m).forEach((v) => { v.parkId = data.parks[i].id; });
+        Object.assign(merged, m);
+      });
+
+      // "It's back up!" — any watched ride, or any ride on your list, that just reopened
+      const sv = savedRef.current;
+      const watched = new Set([...(sv.watch || []), ...Object.values(sv.selected || {}).flat()]);
+      const reopened = [...watched].filter((id) => {
+        const before = prevLive.current[id], after = merged[id];
+        return before && after && before.status === 'DOWN' && after.status === 'OPERATING';
+      });
+      if (reopened.length) {
+        const names = reopened.map((id) => merged[id].name);
+        Vibration.vibrate([0, 300, 150, 300]);
+        setBanner(`It's back up! ${names.join(', ')} just reopened. Lines are short right now.`);
+        names.forEach((n) => notifyNow("It's back up!", `${n} just reopened. Lines are short right now, head over!`));
+      }
+      const alerts = sv.waitAlerts || {};
+      const hits = Object.entries(alerts).filter(([id, target]) => {
+        const v = merged[id];
+        return v && v.status === 'OPERATING' && v.wait != null && v.wait <= target;
+      });
+      if (hits.length) {
+        Vibration.vibrate([0, 300, 150, 300]);
+        const msgs = hits.map(([id, target]) => `${merged[id].name} is down to ${merged[id].wait} min (your target was ${target})`);
+        setBanner(`${msgs.join('. ')}. Go now!`);
+        hits.forEach(([id, target]) => notifyNow(`${merged[id].name}: ${merged[id].wait} min`, `It hit your ${target}-minute target. Go now!`));
+        setSaved((cur) => {
+          const next = { ...(cur.waitAlerts || {}) };
+          hits.forEach(([id]) => { delete next[id]; });
+          return { ...cur, waitAlerts: next };
+        });
+      }
+
+      prevLive.current = merged;
+      setLive(merged);
       setUpdatedAt(Date.now());
       setError(null);
     } catch (e) {
       setError('Couldn\'t get live wait times. Pull down to try again.');
     }
     refreshLocation();
-  }, [park, refreshLocation]);
+  }, [data, refreshLocation]);
+
+  // check every minute while something you care about is down, otherwise every 3
+  const watchedDown = useMemo(() => {
+    const ids = new Set([...(saved.watch || []), ...Object.values(saved.selected || {}).flat()]);
+    return [...ids].some((id) => live[id] && live[id].status === 'DOWN');
+  }, [live, saved.watch, saved.selected]);
 
   useEffect(() => {
     refreshLive();
-    const t = setInterval(refreshLive, REFRESH_MS);
+    const t = setInterval(refreshLive, watchedDown ? FAST_REFRESH_MS : REFRESH_MS);
     const clock = setInterval(() => setTick((n) => n + 1), 30000);
     return () => { clearInterval(t); clearInterval(clock); };
-  }, [refreshLive]);
+  }, [refreshLive, watchedDown]);
 
   const onPull = async () => { setRefreshing(true); await refreshLive(); setRefreshing(false); };
 
@@ -299,17 +481,115 @@ export default function App() {
   const selected = (park && saved.selected[park.id]) || [];
   const doneKey = park && now ? `${now.dateKey}:${park.id}` : '';
   const done = saved.done[doneKey] || [];
+  const doneFor = (pid) => (now && saved.done[`${now.dateKey}:${pid}`]) || [];
   const skipped = (park && skippedBy[park.id]) || [];
-  const skipRide = (id) => setSkippedBy((k) => {
-    const cur = (k[park.id] || []).filter((x) => x !== id);
-    return { ...k, [park.id]: [...cur, id] };
+  const skipRide = (ride) => setSkippedBy((k) => {
+    const pid = ride.parkId || park.id;
+    const cur = (k[pid] || []).filter((x) => x !== ride.id);
+    return { ...k, [pid]: [...cur, ride.id] };
   });
+  const setOpt = (key, value) => setSaved((cur) => ({ ...cur, [key]: value }));
+  const tooTall = (r) => saved.minHeight != null && r.height != null && r.height > saved.minHeight;
+
+  // ---------- Day Recap ----------
+  const today = now ? now.dateKey : '';
+  const todayLog = (saved.log && saved.log[today]) || [];
+  const queueToday = todayLog.reduce((sum, x) => sum + (x.wait || 0), 0);
+  const day = saved.day && saved.day.dateKey === today ? saved.day : null;
+  const snackCountsToday = (saved.snackCounts && saved.snackCounts[today]) || {};
+  const mealsToday = (saved.meals && saved.meals[today]) || {};
+  const allSnackNames = useMemo(() => {
+    const m = {};
+    Object.values(SNACKS).flat().forEach((x) => { m[x.id] = x.name; });
+    (saved.customSnacks || []).forEach((x) => { m[x.id] = x.name; });
+    return m;
+  }, [saved.customSnacks]);
+
+  const startDay = () => setSaved((cur) => (cur.day && cur.day.dateKey === today ? cur
+    : { ...cur, day: { dateKey: today, start: Date.now(), end: null } }));
+  const endDay = () => setSaved((cur) => ({ ...cur, day: cur.day ? { ...cur.day, end: Date.now() } : cur.day }));
+  const bumpSnack = (id, delta) => setSaved((cur) => {
+    const counts = { ...((cur.snackCounts || {})[today] || {}) };
+    counts[id] = Math.max(0, (counts[id] || 0) + delta);
+    if (!counts[id]) delete counts[id];
+    return { ...cur, snackCounts: { [today]: counts } };
+  });
+  const addCustomSnack = (name) => {
+    const clean = name.trim();
+    if (!clean) return;
+    const id = `custom-${Date.now()}`;
+    setSaved((cur) => ({ ...cur, customSnacks: [...(cur.customSnacks || []), { id, name: clean }] }));
+    setNewSnack('');
+  };
+  const removeCustomSnack = (id) => setSaved((cur) => ({ ...cur, customSnacks: (cur.customSnacks || []).filter((x) => x.id !== id) }));
+  const ateHere = (f) => setSaved((cur) => {
+    const m = { ...((cur.meals || {})[today] || {}) };
+    m[f.name] = (m[f.name] || 0) + 1;
+    return { ...cur, meals: { [today]: m } };
+  });
+
+  // steps: iPhone can count the whole day; Android only while the app is open
+  useEffect(() => {
+    if (!day) return undefined;
+    let sub = null, alive = true;
+    (async () => {
+      try {
+        if (!(await Pedometer.isAvailableAsync())) return;
+        await Pedometer.requestPermissionsAsync().catch(() => {});
+        const r = await Pedometer.getStepCountAsync(new Date(day.start), new Date(day.end || Date.now()));
+        if (alive) setSteps({ count: r.steps, whole: true });
+      } catch (e) {
+        // Android: no history, so count live while open
+        try {
+          let last = 0;
+          sub = Pedometer.watchStepCount((res) => {
+            const add = res.steps - last; last = res.steps;
+            if (add > 0) setSaved((cur) => ({ ...cur, stepsAndroid: { [today]: ((cur.stepsAndroid || {})[today] || 0) + add } }));
+          });
+        } catch (e2) { /* no step counter */ }
+      }
+    })();
+    return () => { alive = false; if (sub) sub.remove(); };
+  }, [day && day.start, day && day.end, today, Math.floor(Date.now() / 300000)]);
+
+  const recap = useMemo(() => {
+    if (!data || !now) return null;
+    const minutes = day ? Math.round(((day.end || Date.now()) - day.start) / 60000) : 0;
+    const stepCount = steps && steps.whole ? steps.count : ((saved.stepsAndroid || {})[today] || 0);
+    const parkIds = new Set(todayLog.map((x) => x.parkId));
+    if (park) parkIds.add(park.id);
+    const visitedLands = new Set([...todayLog.map((x) => x.land), ...((saved.areas || {})[today] || [])].filter(Boolean));
+    const allLands = new Set(data.parks.filter((p) => parkIds.has(p.id)).flatMap((p) => p.rides.map((r) => r.land)).filter((l) => l && l !== 'Other'));
+    const snackList = Object.entries(snackCountsToday).map(([id, n]) => ({ name: allSnackNames[id] || 'Snack', n }));
+    const mealList = Object.entries(mealsToday).map(([name, n]) => ({ name, n }));
+    return {
+      minutes, stepCount, miles: Math.round(stepCount * STEP_MILES * 10) / 10, stepsPartial: !(steps && steps.whole),
+      rides: todayLog.length, queue: queueToday,
+      areas: [...visitedLands].filter((l) => allLands.has(l)), areaTotal: allLands.size,
+      missed: [...allLands].filter((l) => !visitedLands.has(l)),
+      snacks: snackList, meals: mealList,
+    };
+  }, [data, now && now.minute, day, steps, saved, todayLog, park]);
+
+  const shareRecap = () => {
+    if (!recap) return;
+    const lines = ['My Disneyland Day ✨'];
+    if (recap.minutes) lines.push(`${fmtDuration(recap.minutes)} in the park`);
+    if (recap.miles) lines.push(`${recap.miles} miles walked`);
+    lines.push(`${recap.rides} ride${recap.rides === 1 ? '' : 's'} · ${fmtDuration(recap.queue)} queuing`);
+    if (recap.areaTotal) lines.push(`${recap.areas.length} of ${recap.areaTotal} areas visited`);
+    recap.meals.forEach((m) => lines.push(`${m.name} ×${m.n}`));
+    recap.snacks.forEach((x) => lines.push(`${x.name} ×${x.n}`));
+    lines.push('Planned with Ride Next');
+    Share.share({ message: lines.join('\n') }).catch(() => {});
+  };
 
   const resetPark = (p) => {
     setSaved((s) => ({
       ...s,
       selected: { ...s.selected, [p.id]: [] },
       done: Object.fromEntries(Object.entries(s.done).filter(([k]) => !k.endsWith(`:${p.id}`))),
+      log: Object.fromEntries(Object.entries(s.log || {}).map(([d, list]) => [d, list.filter((x) => x.parkId !== p.id)])),
     }));
     setSkippedBy((k) => ({ ...k, [p.id]: [] }));
   };
@@ -324,41 +604,105 @@ export default function App() {
     const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id];
     return { ...s, selected: { ...s.selected, [park.id]: next } };
   });
-  const markDone = (id) => setSaved((s) => {
+  const markDone = (ride) => setSaved((s) => {
     // keep only today's done lists so storage stays small
+    const key = `${now.dateKey}:${ride.parkId || park.id}`;
     const keep = Object.fromEntries(Object.entries(s.done).filter(([k]) => k.startsWith(now.dateKey)));
-    return { ...s, done: { ...keep, [doneKey]: [...(keep[doneKey] || []), id] } };
+    const log = { [now.dateKey]: [...((s.log || {})[now.dateKey] || []),
+      { id: ride.id, name: ride.name, parkId: ride.parkId, land: ride.land, wait: ride.posted ? ride.wait : 0, at: Date.now() }] };
+    return { ...s, done: { ...keep, [key]: [...(keep[key] || []), ride.id] }, log };
   });
+
+  const toggleWatch = async (id) => {
+    const on = (saved.watch || []).includes(id);
+    if (!on) await askNotifyPermission();
+    setSaved((cur) => ({ ...cur, watch: on ? cur.watch.filter((x) => x !== id) : [...(cur.watch || []), id] }));
+  };
+
+  const toggleReminder = async (key, startIso, name) => {
+    const existing = (saved.reminders || {})[key];
+    if (existing) {
+      await cancelNotify(existing);
+      setSaved((cur) => { const r = { ...cur.reminders }; delete r[key]; return { ...cur, reminders: r }; });
+      return;
+    }
+    if (!(await askNotifyPermission())) {
+      Alert.alert('Notifications are off', 'Turn on notifications for Expo Go / Ride Next in your phone settings to get reminders.');
+      return;
+    }
+    const lead = BIG_SHOW.test(name) ? 45 : 20;
+    const at = new Date(Date.parse(startIso) - lead * 60000);
+    if (at.getTime() < Date.now()) { Alert.alert('Starting soon', `${name} starts in less than ${lead} minutes, so head over now!`); return; }
+    const id = await notifyAt(at, `${name} in ${lead} minutes`,
+      BIG_SHOW.test(name) ? 'Start heading over now to get a good spot.' : 'Time to start heading over.');
+    if (id) setSaved((cur) => ({ ...cur, reminders: { ...(cur.reminders || {}), [key]: id } }));
+  };
+
+  const setWaitAlert = async (id, target) => {
+    if (target != null && !(await askNotifyPermission())) {
+      Alert.alert('Notifications are off', 'We\'ll still show an alert in the app, but turn on notifications to get a buzz.');
+    }
+    setSaved((cur) => {
+      const next = { ...(cur.waitAlerts || {}) };
+      if (target == null) delete next[id]; else next[id] = target;
+      return { ...cur, waitAlerts: next };
+    });
+  };
+  const rateMeal = (name, stars) => setSaved((cur) => ({ ...cur, ratings: { ...(cur.ratings || {}), [name]: stars } }));
+  const openRecap = (from) => { setBackTo(from); setScreen('recap'); };
+
+  const bookedMulti = async (ride) => {
+    await askNotifyPermission();
+    const bookedAt = Date.now();
+    const notifId = await notifyAt(new Date(bookedAt + MULTI_PASS_GAP_MIN * 60000), 'Book your next Lightning Lane',
+      'It has been 2 hours since your last Multi Pass booking, so you can book another now.');
+    setSaved((cur) => ({ ...cur, ll: { dateKey: now.dateKey, rideId: ride.id, rideName: ride.name, bookedAt, used: false, notifId } }));
+  };
+  const usedMulti = () => {
+    if (saved.ll) cancelNotify(saved.ll.notifId);
+    setSaved((cur) => ({ ...cur, ll: cur.ll ? { ...cur.ll, used: true } : null }));
+  };
 
   // ---------- ranking ----------
   const plan = useMemo(() => {
     if (!park || !now) return null;
-    const rides = park.rides.filter((r) => selected.includes(r.id));
+    const parks = saved.hopper ? data.parks : [park];
+    const rides = parks.flatMap((p) => p.rides.filter((r) => (saved.selected[p.id] || []).includes(r.id)))
+      .filter((r) => !tooTall(r));
+    const allSkipped = parks.flatMap((p) => skippedBy[p.id] || []);
     const ranked = [], down = [];
     rides.forEach((r) => {
       const l = live[r.id] || {};
-      if (done.includes(r.id)) return;
+      if (doneFor(r.parkId).includes(r.id)) return;
       if (l.status && l.status !== 'OPERATING') { down.push({ ...r, status: l.status }); return; }
-      const wait = l.wait != null ? l.wait : 5;
+      const standby = l.wait != null ? l.wait : 5;
+      const useSR = saved.useSingle && l.singleRider != null && l.singleRider < standby;
+      const wait = useSR ? l.singleRider : standby;
       const look = outlook(r, now, l.wait);
       const walk = saved.useLoc ? walkMinutes(coords, r.loc) : null;
-      let score = wait + (walk || 0);
+      const otherPark = r.parkId !== park.id;
+      let score = wait + (walk || 0) + (otherPark && walk == null ? HOP_MIN : 0);
       if (look.trend === 'up') score -= Math.min(15, Math.round(look.diff / 2));
       if (look.trend === 'down') score += Math.min(20, Math.round(-look.diff / 2));
-      ranked.push({ ...r, wait, posted: l.wait != null, look, walk, score });
+      if (saved.rain && !r.indoor) score += 30;
+      ranked.push({
+        ...r, wait, standby, viaSingle: useSR, singleRider: l.singleRider, posted: l.wait != null,
+        look, walk, otherPark, score, multi: l.multi, multiReturn: l.multiReturn,
+      });
     });
     ranked.sort((a, b) => {
-      const sa = skipped.indexOf(a.id), sb = skipped.indexOf(b.id);
+      const sa = allSkipped.indexOf(a.id), sb = allSkipped.indexOf(b.id);
       if (sa !== sb) { if (sa === -1) return -1; if (sb === -1) return 1; return sa - sb; }
       return a.score - b.score;
     });
     const parkClosed = rides.length > 0 && down.length === rides.length && down.every((d) => d.status === 'CLOSED');
     return { ranked, down, parkClosed };
-  }, [park, now && now.hour, live, selected, done, skipped, coords, saved.useLoc]);
+  }, [park, data, now && now.hour, live, saved, skippedBy, coords]);
 
   // ---------- render ----------
   if (screen === 'welcome') {
     const ready = !!data;
+    const anyToday = ready && (todayLog.length > 0 || !!day);
     return (
       <SafeAreaView style={s.welcome}>
         <StatusBar style="light" />
@@ -372,8 +716,8 @@ export default function App() {
           <View style={{ gap: 14 }}>
             {[
               ['1', 'Pick your rides', 'Tick everything you want to do today.'],
-              ['2', 'We tell you what to ride next', 'Live waits, walking time, and whether the line will get worse later.'],
-              ['3', 'Hungry or tired of queuing?', 'Find food by mood and see if Lightning Lane is worth it.'],
+              ['2', 'We tell you what to ride next', 'Live waits, Single Rider, walking time, and whether the line will get worse later.'],
+              ['3', 'Snacks, shows and your Day Recap', 'Track every churro, get show reminders, and share your day.'],
             ].map(([n, title, body]) => (
               <View key={n} style={s.stepRow}>
                 <View style={s.stepNum}><Text style={s.stepNumText}>{n}</Text></View>
@@ -418,6 +762,15 @@ export default function App() {
                 </View>
               );
             })}
+            {anyToday ? (
+              <Pressable style={s.recapLink} onPress={() => openRecap('welcome')} accessibilityRole="button">
+                <View style={{ flex: 1 }}>
+                  <Text style={s.recapLinkTitle}>Today's Day Recap</Text>
+                  <Text style={s.recapLinkMeta}>{todayLog.length} ride{todayLog.length === 1 ? '' : 's'} so far · tap to see and share</Text>
+                </View>
+                <Text style={s.recapLinkTitle}>›</Text>
+              </Pressable>
+            ) : null}
             <Text style={s.welcomeSmall}>Unofficial app. Not affiliated with or endorsed by Disney. Wait times are estimates.</Text>
           </View>
         </ScrollView>
@@ -435,10 +788,122 @@ export default function App() {
 
   const updatedText = updatedAt ? `Updated ${minutesAgo(updatedAt)}` : 'Loading live waits…';
   const refresh = <RefreshControl refreshing={refreshing} onRefresh={onPull} />;
+  const findRide = (id) => {
+    for (let i = 0; i < data.parks.length; i++) {
+      const r = data.parks[i].rides.find((x) => x.id === id);
+      if (r) return r;
+    }
+    return null;
+  };
+  const openRide = (id) => { setDetailId(id); setScreen('detail'); };
+  const alertFor = (id) => (saved.waitAlerts || {})[id];
+  const onMyList = (id) => Object.values(saved.selected || {}).some((list) => (list || []).includes(id));
+  const bannerView = banner ? (
+    <Pressable style={s.banner} onPress={() => setBanner(null)} accessibilityRole="button" accessibilityLabel="Dismiss alert">
+      <Text style={s.bannerText}>{banner}</Text>
+      <Text style={s.bannerClose}>Tap to dismiss</Text>
+    </Pressable>
+  ) : null;
+
+  // ----- Day Recap -----
+  if (screen === 'recap') {
+    const r = recap;
+    const ended = day && day.end;
+    return (
+      <SafeAreaView style={s.screen}>
+        <StatusBar style="dark" />
+        <View style={s.topBar}>
+          <Pressable style={s.ghostBtn} onPress={() => setScreen(backTo)} accessibilityRole="button">
+            <Text style={s.ghostBtnText}>‹ Back</Text>
+          </Pressable>
+        </View>
+        <ScrollView contentContainerStyle={s.pad}>
+          <View style={s.hero}>
+            <Text style={s.heroKicker}>MY DISNEYLAND DAY · {DAY_NAMES[now.dow].toUpperCase()}</Text>
+            <View style={s.recapGrid}>
+              <Stat label="In the park" value={r.minutes ? fmtDuration(r.minutes) : '—'} />
+              <Stat label="Walked" value={r.miles ? `${r.miles} mi` : '—'} />
+              <Stat label="Rides" value={String(r.rides)} />
+              <Stat label="Queuing" value={fmtDuration(r.queue)} />
+            </View>
+            {r.areaTotal ? (
+              <Text style={s.heroBody}>{r.areas.length} of {r.areaTotal} areas visited{r.missed.length && r.missed.length <= 3 ? `. You missed ${r.missed.join(', ')}!` : ''}</Text>
+            ) : null}
+            <Pressable style={s.btnLight} onPress={shareRecap} accessibilityRole="button">
+              <Text style={s.btnLightText}>Share my day</Text>
+            </Pressable>
+            <Text style={{ color: '#94A3B8', fontSize: 12 }}>Tip: screenshot this card to share it as a picture.</Text>
+          </View>
+
+          {!day ? (
+            <View style={s.card}>
+              <Text style={s.h3}>Start tracking your day</Text>
+              <Text style={s.muted}>Time in the park and steps start counting when you start your day.</Text>
+              <Pressable style={s.btnDark} onPress={startDay} accessibilityRole="button"><Text style={s.btnDarkText}>Start my day</Text></Pressable>
+            </View>
+          ) : (
+            <Text style={s.mutedSmall}>
+              {`Started ${clockFromMs(day.start, data.utcOffsetMinutes)}`}
+              {ended ? ` · ended ${clockFromMs(day.end, data.utcOffsetMinutes)}` : ''}
+              {r.stepsPartial && r.miles ? ' · on Android, steps only count while the app is open' : ''}
+            </Text>
+          )}
+
+          {todayLog.length ? (
+            <View style={s.card}>
+              <Text style={s.h3}>Rides</Text>
+              {todayLog.map((x, i) => (
+                <View key={`${x.id}-${i}`} style={s.listLine}>
+                  <Text style={[s.body, { flex: 1 }]}>{x.name}</Text>
+                  <Text style={s.mutedSmall}>{x.wait ? `${x.wait} min wait` : ''}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+
+          {r.areas.length ? (
+            <View style={s.card}>
+              <Text style={s.h3}>Areas visited</Text>
+              <View style={s.chips}>
+                {r.areas.map((a) => <View key={a} style={s.tag}><Text style={s.tagText}>{a}</Text></View>)}
+              </View>
+            </View>
+          ) : null}
+
+          {r.meals.length ? (
+            <View style={s.card}>
+              <Text style={s.h3}>Where you ate</Text>
+              {r.meals.map((m) => (
+                <View key={m.name} style={s.listLine}>
+                  <Text style={[s.body, { flex: 1 }]}>{m.name} ×{m.n}</Text>
+                  {(saved.ratings || {})[m.name] ? <Text style={s.mutedSmall}>{'★'.repeat(saved.ratings[m.name])}</Text> : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+
+          {r.snacks.length ? (
+            <View style={s.card}>
+              <Text style={s.h3}>Snacks</Text>
+              {r.snacks.map((x) => (
+                <View key={x.name} style={s.listLine}><Text style={s.body}>{x.name} ×{x.n}</Text></View>
+              ))}
+            </View>
+          ) : null}
+
+          {day && !ended ? (
+            <Pressable style={s.ghostBtnWide} onPress={endDay} accessibilityRole="button">
+              <Text style={s.ghostBtnText}>End my day</Text>
+            </Pressable>
+          ) : null}
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   // ----- Ride detail -----
   if (screen === 'detail') {
-    const ride = park.rides.find((r) => r.id === detailId);
+    const ride = findRide(detailId) || park.rides[0];
     const l = live[ride.id] || {};
     const look = outlook(ride, now, l.wait);
     const typ = typicalFor(ride, now.dow, now.dayType);
@@ -453,6 +918,8 @@ export default function App() {
     const max = Math.max(1, ...hours.map((x) => x.v));
     const ll = lightningLane(l, look);
     const tone = TONES[ll.tone];
+    const target = alertFor(ride.id);
+    const isDown = l.status === 'DOWN';
     return (
       <SafeAreaView style={s.screen}>
         <StatusBar style="dark" />
@@ -462,11 +929,59 @@ export default function App() {
           </Pressable>
         </View>
         <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
-          <Text style={s.kicker}>{ride.land}</Text>
+          {bannerView}
+          <Text style={s.kicker}>{ride.land}{ride.parkId !== park.id ? ` · ${shortPark(ride.parkName)}` : ''}{ride.indoor ? ' · Indoors' : ''}</Text>
           <Text style={s.h1}>{ride.name}</Text>
           <Text style={s.big}>{l.status && l.status !== 'OPERATING' ? 'Temporarily closed' : l.wait != null ? `${l.wait} min wait now` : 'No wait posted'}</Text>
-
+          {l.singleRider != null ? <Text style={[s.body, { fontWeight: '600', color: C.blue }]}>Single Rider: {l.singleRider} min</Text> : null}
           <Text style={s.mutedSmall}>{lastUpd ? `Wait time last updated ${lastUpd}` : updatedText}</Text>
+
+          <View style={s.card}>
+            <Text style={s.h3}>Wait alert</Text>
+            <Text style={s.muted}>
+              {target ? `We'll buzz you when it's ${target} min or less.` : "Pick a wait and we'll buzz you when it gets there."}
+            </Text>
+            <View style={s.chips}>
+              {[15, 20, 30, 45, 60].map((m) => (
+                <Pressable key={m} onPress={() => setWaitAlert(ride.id, target === m ? null : m)} accessibilityRole="button"
+                  accessibilityState={{ selected: target === m }} style={[s.chip, target === m && s.chipOn]}>
+                  <Text style={[s.chipText, target === m && { color: '#fff' }]}>≤ {m} min</Text>
+                </Pressable>
+              ))}
+              {target ? (
+                <Pressable onPress={() => setWaitAlert(ride.id, null)} accessibilityRole="button" style={s.chip}>
+                  <Text style={s.chipText}>Turn off</Text>
+                </Pressable>
+              ) : null}
+            </View>
+            <Text style={s.mutedSmall}>Works while the app is open. Alerts with the app closed are coming soon.</Text>
+          </View>
+
+          {isDown ? (
+            <View style={[s.card, { backgroundColor: C.redSoft, borderColor: '#FECACA' }]}>
+              <Text style={s.h3}>Temporarily down</Text>
+              {onMyList(ride.id) ? (
+                <Text style={s.body}>It's on your list, so we'll buzz you the moment it's back up.</Text>
+              ) : (
+                <>
+                  <Text style={s.body}>Want a buzz the moment it reopens? Lines are short for a few minutes after.</Text>
+                  <Pressable style={s.btnDark} onPress={() => toggleWatch(ride.id)} accessibilityRole="button">
+                    <Text style={s.btnDarkText}>{(saved.watch || []).includes(ride.id) ? "Watching: we'll buzz you" : "Tell me when it's back up"}</Text>
+                  </Pressable>
+                </>
+              )}
+            </View>
+          ) : null}
+
+          {ride.height ? (
+            <View style={s.card}>
+              <Text style={s.h3}>Height: {ride.height} in ({Math.round(ride.height * 2.54)} cm)</Text>
+              <Text style={s.body}>
+                Rider Switch: if someone in your group is too short, one adult waits with them while the others ride,
+                then swaps and rides without queuing again. Ask the Cast Member at the entrance.
+              </Text>
+            </View>
+          ) : null}
 
           {today ? (
             <View style={s.card}>
@@ -541,6 +1056,7 @@ export default function App() {
             </View>
             <Text style={s.body}>{ll.body}</Text>
             {ll.price ? <Text style={s.mutedSmall}>Single Pass price right now: ${ll.price} per person</Text> : null}
+            {l.multiReturn ? <Text style={s.mutedSmall}>Multi Pass return times currently from {fmtTime(l.multiReturn)}</Text> : null}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -551,8 +1067,11 @@ export default function App() {
   if (screen === 'next') {
     const top = plan.ranked[0];
     const rest = plan.ranked.slice(1);
-    const foodHere = park.food.filter((f) => !mood || f.moods.includes(mood));
-    const moodsHere = Object.keys(MOOD_LABELS).filter((m) => park.food.some((f) => f.moods.includes(m)));
+    const parksHere = saved.hopper ? data.parks : [park];
+
+    // food
+    const foodHere = park.food.filter((f) => !mood || (mood === 'fav' ? !!f.fav : f.moods.includes(mood)));
+    const moodsHere = ['fav', ...Object.keys(MOOD_LABELS).filter((m) => park.food.some((f) => f.moods.includes(m)))];
     const hoursToday = (f) => (f.hours && f.hours[now.dateKey]) || null;
     const isOpen = (f) => {
       const st = (live[f.id] || {}).status;
@@ -569,8 +1088,62 @@ export default function App() {
       .filter((f) => f.service !== 'table')
       .filter((f) => isOpen(f) !== false)
       .map((f) => ({ ...f, walk: saved.useLoc ? walkMinutes(coords, f.loc) : null, open: isOpen(f), until: closesAt(f) }))
-      .sort((a, b) => (a.walk != null && b.walk != null ? a.walk - b.walk : a.name.localeCompare(b.name)));
-    const sitDown = foodHere.filter((f) => f.service === 'table');
+      .sort((a, b) => {
+        if (a.walk != null && b.walk != null) return a.walk - b.walk;
+        if (!!a.fav !== !!b.fav) return a.fav ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      });
+    const sitDown = foodHere.filter((f) => f.service === 'table').sort((a, b) => (Number(!!b.fav) - Number(!!a.fav)) || a.name.localeCompare(b.name));
+
+    // shows
+    const showList = Object.entries(live)
+      .filter(([, v]) => v.type === 'SHOW' && parksHere.some((p) => p.id === v.parkId) && v.showtimes && v.showtimes.length)
+      .flatMap(([id, v]) => v.showtimes.map((t) => ({ id, name: v.name, start: t, parkId: v.parkId })))
+      .filter((x) => Date.parse(x.start) > Date.now() - 5 * 60000)
+      .sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
+
+    // snacks
+    const snackMenu = [
+      ...(SNACKS[park.name] || []),
+      ...(saved.customSnacks || []).map((x) => ({ ...x, where: 'Added by you', custom: true })),
+    ];
+    const snackTotal = Object.values(snackCountsToday).reduce((a, b) => a + b, 0);
+
+    // rope drop: before opening, the first 45 minutes, or tonight for tomorrow
+    const todayHours = hoursFor(park).main[0];
+    const opensMin = todayHours ? toMin(todayHours[0]) : null;
+    const closesMin = todayHours ? toMin(todayHours[1]) : null;
+    let ropeDrop = null;
+    const pool = (selected.length ? park.rides.filter((r) => selected.includes(r.id)) : park.rides).filter((r) => !tooTall(r));
+    if (opensMin != null && now.minute < opensMin + 45 && !(closesMin != null && closesMin < opensMin && now.minute < closesMin)) {
+      ropeDrop = { when: now.minute < opensMin ? 'today' : 'now', open: todayHours[0] };
+    } else {
+      const tomorrowKey = nextDateKey(now.dateKey);
+      const tomorrow = hoursFor(park, tomorrowKey).main[0];
+      const afterClose = !todayHours || (closesMin != null && closesMin > opensMin && now.minute >= closesMin);
+      if (tomorrow && afterClose) ropeDrop = { when: 'tomorrow', open: tomorrow[0] };
+    }
+    if (ropeDrop) {
+      const openHour = Math.floor(toMin(ropeDrop.open) / 60);
+      ropeDrop.picks = ropeDropPicks(pool, openHour, park.name);
+      ropeDrop.by = fmtHour(openHour + 2);
+      if (!ropeDrop.picks.length) ropeDrop = null;
+    }
+
+    // Lightning Lane coach
+    const llNow = saved.ll && saved.ll.dateKey === now.dateKey ? saved.ll : null;
+    const nextBookAt = llNow && !llNow.used ? llNow.bookedAt + MULTI_PASS_GAP_MIN * 60000 : null;
+    const canBook = !nextBookAt || Date.now() >= nextBookAt;
+    const llPick = plan.ranked
+      .filter((r) => r.multi === 'AVAILABLE' && r.standby >= 20 && (!llNow || r.id !== llNow.rideId || llNow.used))
+      .sort((a, b) => (b.standby + (b.look.trend === 'up' ? 15 : 0)) - (a.standby + (a.look.trend === 'up' ? 15 : 0)))[0];
+
+    // height
+    const hiddenTall = parksHere.flatMap((p) => p.rides.filter((r) => (saved.selected[p.id] || []).includes(r.id) && tooTall(r)));
+
+    const quickToggles = [
+      ['rain', 'Rainy day'], ['hopper', 'Park Hopper'], ['useSingle', 'Single Rider'], ['multiPass', 'Multi Pass'],
+    ];
 
     return (
       <SafeAreaView style={s.screen}>
@@ -583,35 +1156,76 @@ export default function App() {
             <Pressable style={s.ghostBtn} onPress={() => setScreen('setup')} accessibilityRole="button">
               <Text style={s.ghostBtnText}>Edit list</Text>
             </Pressable>
+            <Pressable style={s.ghostBtn} onPress={() => openRecap('next')} accessibilityRole="button">
+              <Text style={s.ghostBtnText}>My day</Text>
+            </Pressable>
           </View>
-          <Text style={s.mutedSmall}>{updatedText}</Text>
         </View>
         <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
+          {bannerView}
           {error ? <Text style={s.errorText}>{error}</Text> : null}
-          <Text style={s.mutedSmall}>{park.name} · {hoursLine(park)}</Text>
+          <Text style={s.mutedSmall}>{saved.hopper ? 'Both parks' : park.name} · {hoursLine(park)} · {updatedText}</Text>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+            {!day ? (
+              <Pressable onPress={startDay} accessibilityRole="button" style={[s.chip, s.chipOn]}>
+                <Text style={[s.chipText, { color: '#fff' }]}>Start my day</Text>
+              </Pressable>
+            ) : null}
+            {quickToggles.map(([key, label]) => (
+              <Pressable key={key} onPress={() => setOpt(key, !saved[key])} accessibilityRole="switch"
+                accessibilityState={{ checked: !!saved[key] }} style={[s.chip, saved[key] && s.chipOn]}>
+                <Text style={[s.chipText, saved[key] && { color: '#fff' }]}>{saved[key] ? '✓ ' : ''}{label}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+
+          {ropeDrop ? (
+            <View style={[s.card, { backgroundColor: '#FFF7ED', borderColor: '#FED7AA' }]}>
+              <Text style={s.kicker}>Rope drop plan{ropeDrop.when === 'tomorrow' ? ' for tomorrow' : ''}</Text>
+              <Text style={s.body}>
+                {ropeDrop.when === 'now' ? 'The park just opened. ' : `Opens ${fmtTime(ropeDrop.open)}${ropeDrop.when === 'tomorrow' ? ' tomorrow' : ''}. `}
+                Head to {ropeDrop.picks[0].name} first
+                {ropeDrop.picks[1] ? `, then ${ropeDrop.picks[1].name}` : ''}
+                {ropeDrop.picks[2] ? `, then ${ropeDrop.picks[2].name}` : ''} before {ropeDrop.by}.
+              </Text>
+              <Text style={s.mutedSmall}>These lines grow fastest after opening, so they're worth doing first.</Text>
+            </View>
+          ) : null}
+
           {plan.parkClosed ? (
             <View style={s.card}><Text style={s.h3}>The park looks closed right now</Text><Text style={s.muted}>Waits will appear here when it opens.</Text></View>
           ) : top ? (
             <View style={s.hero}>
-              <Text style={s.heroKicker}>RIDE NEXT</Text>
+              <Text style={s.heroKicker}>RIDE NEXT{top.otherPark ? ` · IN ${shortPark(top.parkName).toUpperCase()}` : ''}</Text>
               <Text style={s.heroTitle}>{top.name}</Text>
-              <Text style={{ color: '#CBD5E1', fontSize: 14, marginTop: -6 }}>{top.land}</Text>
+              <Text style={{ color: '#CBD5E1', fontSize: 14, marginTop: -6 }}>{top.land}{top.indoor ? ' · Indoors' : ''}</Text>
               <View style={s.statRow}>
-                <Stat label="Wait now" value={top.posted ? `${top.wait} min` : 'No wait'} />
+                {top.viaSingle ? (
+                  <>
+                    <Stat label="Single Rider" value={`${top.wait} min`} />
+                    <Stat label="Standby" value={`${top.standby} min`} />
+                  </>
+                ) : (
+                  <Stat label="Wait now" value={top.posted ? `${top.wait} min` : 'No wait'} />
+                )}
                 {top.look.later != null ? <Stat label="Next few hours" value={`~${top.look.later} min`} /> : null}
-                {top.walk != null ? <Stat label="Walk" value={`${top.walk} min`} /> : null}
+                {top.walk != null ? <Stat label="Walk" value={`${top.walk} min`} /> : top.otherPark ? <Stat label="Walk" value={`~${HOP_MIN} min`} /> : null}
               </View>
-              <Text style={s.heroBody}>{reasonFor(top)}</Text>
+              <Text style={s.heroBody}>{reasonFor(top, saved.rain)}</Text>
+              {!saved.useSingle && top.singleRider != null && top.singleRider + 10 <= top.standby ? (
+                <Text style={{ color: C.accentSoft, fontSize: 14 }}>Single Rider is only {top.singleRider} min here. Turn on Single Rider above to use it.</Text>
+              ) : null}
               <View style={s.row}>
-                <Pressable style={[s.btnLight, { flex: 1 }]} onPress={() => markDone(top.id)} accessibilityRole="button">
+                <Pressable style={[s.btnLight, { flex: 1 }]} onPress={() => markDone(top)} accessibilityRole="button">
                   <Text style={s.btnLightText}>Done, ridden it</Text>
                 </Pressable>
-                <Pressable style={s.btnOutlineDark} onPress={() => skipRide(top.id)} accessibilityRole="button">
+                <Pressable style={s.btnOutlineDark} onPress={() => skipRide(top)} accessibilityRole="button">
                   <Text style={s.btnOutlineDarkText}>Skip</Text>
                 </Pressable>
               </View>
-              <Pressable onPress={() => { setDetailId(top.id); setScreen('detail'); }} accessibilityRole="button" style={{ paddingVertical: 10 }}>
-                <Text style={{ color: C.accentSoft, fontWeight: '600' }}>Wait pattern & Lightning Lane advice ›</Text>
+              <Pressable onPress={() => openRide(top.id)} accessibilityRole="button" style={{ paddingVertical: 10 }}>
+                <Text style={{ color: C.accentSoft, fontWeight: '600' }}>Wait pattern, alerts & Lightning Lane ›</Text>
               </Pressable>
             </View>
           ) : selected.length === 0 ? (
@@ -619,6 +1233,60 @@ export default function App() {
           ) : (
             <View style={s.card}><Text style={s.h3}>You've done your whole list</Text><Text style={s.muted}>Add more from Edit list, or go find a snack.</Text></View>
           )}
+
+          {saved.multiPass ? (
+            <View style={s.card}>
+              <Text style={s.kicker}>Lightning Lane coach</Text>
+              {llNow && !llNow.used && !canBook ? (
+                <>
+                  <Text style={s.body}>
+                    Booked: {llNow.rideName}. You can book your next one at {clockFromMs(nextBookAt, data.utcOffsetMinutes)},
+                    or as soon as you've ridden it.
+                  </Text>
+                  <Pressable style={s.btnDark} onPress={usedMulti} accessibilityRole="button"><Text style={s.btnDarkText}>I've used it</Text></Pressable>
+                </>
+              ) : llPick ? (
+                <>
+                  <Text style={s.body}>
+                    {llNow && !llNow.used ? "It's been 2 hours, so you can book another now. " : ''}
+                    Book {llPick.name} next: standby is {llPick.standby} min{llPick.look.trend === 'up' ? ' and getting longer' : ''}.
+                    {llPick.multiReturn ? ` Return times are currently from ${fmtTime(llPick.multiReturn)}, so book soon.` : ''}
+                  </Text>
+                  <Pressable style={s.btnDark} onPress={() => bookedMulti(llPick)} accessibilityRole="button"><Text style={s.btnDarkText}>I booked it</Text></Pressable>
+                  <Text style={s.mutedSmall}>Book in the Disneyland app. We'll remind you when you can book the next one.</Text>
+                </>
+              ) : (
+                <Text style={s.body}>None of the rides left on your list need Lightning Lane right now. Their standby lines are short.</Text>
+              )}
+            </View>
+          ) : null}
+
+          <Pressable style={s.listBtn} onPress={() => setShowsOpen((o) => !o)} accessibilityRole="button">
+            <Text style={s.listBtnText}>Shows & fireworks today{showList.length ? ` · ${showList.length}` : ''}</Text>
+            <Text style={s.listBtnText}>{showsOpen ? '–' : '+'}</Text>
+          </Pressable>
+          {showsOpen ? (
+            <View style={s.card}>
+              {showList.length === 0 ? <Text style={s.muted}>No more showtimes listed for today.</Text> : showList.slice(0, 12).map((x) => {
+                const key = `${x.id}@${x.start}`;
+                const on = !!(saved.reminders || {})[key];
+                const big = BIG_SHOW.test(x.name);
+                return (
+                  <View key={key} style={s.foodRow}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[s.rowTitle, big && { color: C.accent }]}>{x.name}</Text>
+                      <Text style={s.mutedSmall}>{fmtTime(x.start.slice(11, 16))}{saved.hopper ? ` · ${shortPark((data.parks.find((p) => p.id === x.parkId) || {}).name)}` : ''}{big ? ' · get there early for a good spot' : ''}</Text>
+                    </View>
+                    <Pressable onPress={() => toggleReminder(key, x.start, x.name)} accessibilityRole="button"
+                      style={[s.linkBtn, on && { backgroundColor: C.blue }]}>
+                      <Text style={[s.linkBtnText, on && { color: '#fff' }]}>{on ? 'Reminder on' : 'Remind me'}</Text>
+                    </Pressable>
+                  </View>
+                );
+              })}
+              <Text style={s.mutedSmall}>Reminders go off 45 minutes before fireworks and parades, 20 minutes before other shows.</Text>
+            </View>
+          ) : null}
 
           <Pressable style={s.listBtn} onPress={() => setFoodOpen((o) => !o)} accessibilityRole="button">
             <Text style={s.listBtnText}>Hungry? What's open now</Text>
@@ -632,45 +1300,84 @@ export default function App() {
                   const on = mood === m;
                   return (
                     <Pressable key={m} onPress={() => setMood(on ? null : m)} accessibilityRole="button" accessibilityState={{ selected: on }}
-                      style={[s.chip, on && { backgroundColor: C.dark, borderColor: C.dark }]}>
-                      <Text style={[s.chipText, on && { color: '#fff' }]}>{MOOD_LABELS[m]}</Text>
+                      style={[s.chip, on && s.chipOn]}>
+                      <Text style={[s.chipText, on && { color: '#fff' }]}>{m === 'fav' ? '★ Fan favourites' : MOOD_LABELS[m]}</Text>
                     </Pressable>
                   );
                 })}
               </View>
               <Text style={s.kicker}>Quick bites{saved.useLoc ? ', closest first' : ''}</Text>
               {openFood.length === 0 ? <Text style={s.muted}>Nothing matching is open right now.</Text> : openFood.slice(0, 12).map((f) => (
-                <View key={f.id} style={s.foodRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.rowTitle}>{f.name}</Text>
-                    <Text style={s.mutedSmall}>{f.moods.map((m) => MOOD_LABELS[m]).join(' · ')}{f.service === 'snack' ? ' · snack stand' : ''}</Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={[s.mutedSmall, { color: f.open ? C.green : C.muted, fontWeight: '600' }]}>
-                      {f.open ? (f.until ? `Open until ${fmtTime(f.until)}` : 'Open') : 'Hours not listed'}
-                    </Text>
-                    {f.walk != null ? <Text style={s.mutedSmall}>{f.walk} min walk</Text> : null}
-                  </View>
-                </View>
+                <FoodRow key={f.id} f={f} ateCount={mealsToday[f.name] || 0} rating={(saved.ratings || {})[f.name]}
+                  onAte={() => ateHere(f)} onRate={(n) => rateMeal(f.name, n)}
+                  right={(
+                    <View style={{ alignItems: 'flex-end' }}>
+                      <Text style={[s.mutedSmall, { color: f.open ? C.green : C.muted, fontWeight: '600' }]}>
+                        {f.open ? (f.until ? `Open until ${fmtTime(f.until)}` : 'Open') : 'Hours not listed'}
+                      </Text>
+                      {f.walk != null ? <Text style={s.mutedSmall}>{f.walk} min walk</Text> : null}
+                    </View>
+                  )} />
               ))}
               {sitDown.length > 0 ? (
                 <>
                   <Text style={[s.kicker, { marginTop: 12 }]}>Fancy a sit-down meal?</Text>
                   {sitDown.slice(0, 6).map((f) => (
-                    <View key={f.id} style={s.foodRow}>
-                      <View style={{ flex: 1 }}>
-                        <Text style={s.rowTitle}>{f.name}</Text>
-                        <Text style={s.mutedSmall}>
-                          {hoursToday(f) ? `Today ${hoursToday(f).map(fmtRange).join(', ')}` : f.hours && Object.keys(f.hours).length ? 'Closed today' : 'Hours not listed'}
-                        </Text>
-                      </View>
-                      <Pressable style={s.linkBtn} onPress={() => Linking.openURL(DINING_URL)} accessibilityRole="link">
-                        <Text style={s.linkBtnText}>Check availability</Text>
-                      </Pressable>
-                    </View>
+                    <FoodRow key={f.id} f={f} ateCount={mealsToday[f.name] || 0} rating={(saved.ratings || {})[f.name]}
+                      onAte={() => ateHere(f)} onRate={(n) => rateMeal(f.name, n)}
+                      sub={hoursToday(f) ? `Today ${hoursToday(f).map(fmtRange).join(', ')}` : null}
+                      right={(
+                        <Pressable style={s.linkBtn} onPress={() => Linking.openURL(DINING_URL)} accessibilityRole="link">
+                          <Text style={s.linkBtnText}>Check availability</Text>
+                        </Pressable>
+                      )} />
                   ))}
                 </>
               ) : null}
+            </View>
+          ) : null}
+
+          <Pressable style={s.listBtn} onPress={() => setSnacksOpen((o) => !o)} accessibilityRole="button">
+            <Text style={s.listBtnText}>Snack tracker{snackTotal ? ` · ${snackTotal} today` : ''}</Text>
+            <Text style={s.listBtnText}>{snacksOpen ? '–' : '+'}</Text>
+          </Pressable>
+          {snacksOpen ? (
+            <View style={s.card}>
+              {snackMenu.map((x) => {
+                const n = snackCountsToday[x.id] || 0;
+                return (
+                  <View key={x.id} style={s.foodRow}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.rowTitle}>{x.name}</Text>
+                      <Text style={s.mutedSmall}>{x.where}</Text>
+                      {x.custom ? (
+                        <Pressable onPress={() => removeCustomSnack(x.id)} accessibilityRole="button" style={{ paddingVertical: 4 }}>
+                          <Text style={[s.mutedSmall, { color: C.red }]}>Remove</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    <View style={s.counter}>
+                      <Pressable onPress={() => bumpSnack(x.id, -1)} disabled={!n} accessibilityRole="button"
+                        accessibilityLabel={`One less ${x.name}`} style={[s.counterBtn, !n && { opacity: 0.35 }]}>
+                        <Text style={s.counterBtnText}>−</Text>
+                      </Pressable>
+                      <Text style={s.counterValue}>{n}</Text>
+                      <Pressable onPress={() => bumpSnack(x.id, 1)} accessibilityRole="button"
+                        accessibilityLabel={`One more ${x.name}`} style={s.counterBtn}>
+                        <Text style={s.counterBtnText}>+</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                );
+              })}
+              <View style={[s.row, { alignItems: 'center' }]}>
+                <TextInput value={newSnack} onChangeText={setNewSnack} placeholder="Add your own (e.g. seasonal churro)"
+                  placeholderTextColor="#64748B" style={s.input} returnKeyType="done"
+                  onSubmitEditing={() => addCustomSnack(newSnack)} accessibilityLabel="New snack name" />
+                <Pressable onPress={() => addCustomSnack(newSnack)} accessibilityRole="button" style={s.addBtn}>
+                  <Text style={s.addBtnText}>Add</Text>
+                </Pressable>
+              </View>
             </View>
           ) : null}
 
@@ -688,26 +1395,51 @@ export default function App() {
             </View>
           ) : null}
           {(sortBy === 'area'
-            ? [...rest].sort((a, b) => (a.landOrder ?? 99) - (b.landOrder ?? 99) || a.name.localeCompare(b.name))
+            ? [...rest].sort((a, b) => (a.parkId === b.parkId ? 0 : a.parkId === park.id ? -1 : 1)
+              || (a.landOrder ?? 99) - (b.landOrder ?? 99) || a.name.localeCompare(b.name))
             : rest).map((r, i, arr) => (
             <View key={r.id} style={{ gap: 6 }}>
               {sortBy === 'area' && (i === 0 || arr[i - 1].land !== r.land) ? <Text style={s.landHeader}>{r.land || 'Other'}</Text> : null}
-            <Pressable style={s.rideRow} onPress={() => { setDetailId(r.id); setScreen('detail'); }} accessibilityRole="button">
-              <View style={{ flex: 1 }}>
-                <Text style={s.rowTitle}>{r.name}</Text>
-                {sortBy === 'best' && r.land ? <Text style={s.mutedSmall}>{r.land}</Text> : null}
-                <TrendLabel trend={r.look.trend} />
-              </View>
-              <Text style={s.rowWait}>{r.posted ? `${r.wait} min` : '—'}</Text>
-            </Pressable>
+              <Pressable style={s.rideRow} onPress={() => openRide(r.id)} accessibilityRole="button">
+                <View style={{ flex: 1 }}>
+                  <Text style={s.rowTitle}>{r.name}</Text>
+                  {sortBy === 'best' || r.otherPark ? (
+                    <Text style={s.mutedSmall}>{[r.otherPark ? shortPark(r.parkName) : null, sortBy === 'best' ? r.land : null, r.indoor && saved.rain ? 'Indoors' : null].filter(Boolean).join(' · ')}</Text>
+                  ) : null}
+                  <TrendLabel trend={r.look.trend} />
+                  {alertFor(r.id) ? <Text style={[s.mutedSmall, { color: C.blue, fontWeight: '600' }]}>Alert at ≤ {alertFor(r.id)} min</Text> : null}
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={s.rowWait}>{r.posted ? `${r.wait} min` : '—'}</Text>
+                  {r.viaSingle ? <Text style={[s.mutedSmall, { color: C.blue }]}>Single Rider</Text>
+                    : r.singleRider != null ? <Text style={s.mutedSmall}>SR {r.singleRider} min</Text> : null}
+                </View>
+              </Pressable>
             </View>
           ))}
           {plan.down.map((r) => (
-            <View key={r.id} style={s.rideRow}>
-              <Text style={[s.rowTitle, { flex: 1, color: C.muted }]}>{r.name}</Text>
+            <Pressable key={r.id} style={s.rideRow} onPress={() => openRide(r.id)} accessibilityRole="button">
+              <View style={{ flex: 1 }}>
+                <Text style={[s.rowTitle, { color: C.muted }]}>{r.name}</Text>
+                {r.status === 'DOWN' ? <Text style={s.mutedSmall}>We'll buzz you when it's back up</Text> : null}
+              </View>
               <View style={[s.pill, { backgroundColor: C.redSoft }]}><Text style={[s.pillText, { color: C.red }]}>{r.status === 'REFURBISHMENT' ? 'Refurbishment' : 'Temporarily closed'}</Text></View>
-            </View>
+            </Pressable>
           ))}
+          {hiddenTall.length ? (
+            <View style={s.card}>
+              <Text style={s.h3}>Hidden for height</Text>
+              <Text style={s.muted}>
+                {hiddenTall.length} ride{hiddenTall.length === 1 ? '' : 's'} on your list {hiddenTall.length === 1 ? 'is' : 'are'} too tall for your shortest rider. With Rider Switch, the grown-ups can still ride. Tap one for details.
+              </Text>
+              {hiddenTall.map((r) => (
+                <Pressable key={r.id} style={s.listLine} onPress={() => openRide(r.id)} accessibilityRole="button">
+                  <Text style={[s.body, { flex: 1 }]}>{r.name}</Text>
+                  <Text style={s.mutedSmall}>{r.height} in · Rider Switch</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
           <Text style={[s.mutedSmall, { marginTop: 16 }]}>Wait times are posted estimates from an unofficial feed and can change quickly.</Text>
         </ScrollView>
       </SafeAreaView>
@@ -725,24 +1457,61 @@ export default function App() {
         <Text style={s.kicker}>{park.name}</Text>
         <Text style={s.h1}>Plan my day</Text>
         <Text style={[s.mutedSmall, { color: C.ink, fontWeight: '600' }]}>{hoursLine(park)}</Text>
-        <Text style={s.muted}>Tap the rides you want to do today.</Text>
         <Text style={s.mutedSmall}>{updatedAt ? `Live waits updated ${minutesAgo(updatedAt)}` : 'Loading live waits…'}</Text>
       </View>
       <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
+        <View style={s.card}>
+          <Text style={s.h3}>Your day</Text>
+          {[
+            ['hopper', 'I have a Park Hopper', 'Suggest rides in both parks'],
+            ['useSingle', 'Happy to ride Single Rider', 'Use it when it\'s quicker'],
+            ['multiPass', 'I have Lightning Lane Multi Pass', 'Get tips on what to book and when'],
+            ['rain', 'Rainy day mode', 'Put indoor rides first'],
+          ].map(([key, title, sub]) => (
+            <View key={key} style={s.optionRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.rowTitle}>{title}</Text>
+                <Text style={s.mutedSmall}>{sub}</Text>
+              </View>
+              <Switch value={!!saved[key]} onValueChange={(v) => setOpt(key, v)} accessibilityLabel={title} />
+            </View>
+          ))}
+          <Text style={[s.rowTitle, { marginTop: 8 }]}>Shortest rider in your group</Text>
+          <View style={s.chips}>
+            {HEIGHT_OPTIONS.map((h) => {
+              const on = saved.minHeight === h;
+              return (
+                <Pressable key={String(h)} onPress={() => setOpt('minHeight', h)} accessibilityRole="button"
+                  accessibilityState={{ selected: on }} style={[s.chip, on && s.chipOn]}>
+                  <Text style={[s.chipText, on && { color: '#fff' }]}>{h == null ? 'No limit' : `${h} in`}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        <Text style={s.muted}>Tap the rides you want to do today.</Text>
         {park.rides.map((r, i, arr) => {
           const on = selected.includes(r.id);
           const header = i === 0 || arr[i - 1].land !== r.land
-            ? <Text key={`h-${r.land}`} style={s.landHeader}>{r.land || 'Other'}</Text> : null;
+            ? <Text style={s.landHeader}>{r.land || 'Other'}</Text> : null;
           const l = live[r.id] || {};
           const label = l.status && l.status !== 'OPERATING' ? 'Closed' : l.wait != null ? `${l.wait} min` : '';
+          const tall = tooTall(r);
           return (
             <View key={r.id} style={{ gap: 6 }}>
-            {header}
-            <Pressable style={s.rideRow} onPress={() => toggleRide(r.id)} accessibilityRole="checkbox" accessibilityState={{ checked: on }}>
-              <View style={[s.check, on && s.checkOn]}>{on ? <Text style={{ color: '#fff', fontWeight: '800' }}>✓</Text> : null}</View>
-              <Text style={[s.rowTitle, { flex: 1 }]}>{r.name}</Text>
-              <Text style={s.rowWaitSmall}>{label}</Text>
-            </Pressable>
+              {header}
+              <Pressable style={[s.rideRow, tall && { opacity: 0.6 }]} onPress={() => toggleRide(r.id)} accessibilityRole="checkbox" accessibilityState={{ checked: on }}>
+                <View style={[s.check, on && s.checkOn]}>{on ? <Text style={{ color: '#fff', fontWeight: '800' }}>✓</Text> : null}</View>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.rowTitle}>{r.name}</Text>
+                  {r.height ? <Text style={[s.mutedSmall, tall && { color: C.red }]}>{tall ? `Needs ${r.height} in · Rider Switch` : `${r.height} in`}</Text> : null}
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={s.rowWaitSmall}>{label}</Text>
+                  {l.singleRider != null && l.status === 'OPERATING' ? <Text style={s.mutedSmall}>SR {l.singleRider} min</Text> : null}
+                </View>
+              </Pressable>
             </View>
           );
         })}
@@ -751,12 +1520,12 @@ export default function App() {
         <View style={s.rowBetween}>
           <View style={{ flex: 1 }}>
             <Text style={s.rowTitle}>Use my location</Text>
-            <Text style={s.mutedSmall}>Adds walking time to suggestions</Text>
+            <Text style={s.mutedSmall}>Adds walking time and areas visited</Text>
           </View>
           <Switch value={saved.useLoc} onValueChange={toggleLoc} />
         </View>
         <Pressable style={[s.btnDark, selected.length === 0 && { opacity: 0.5 }]} disabled={selected.length === 0}
-          onPress={() => setScreen('next')} accessibilityRole="button">
+          onPress={() => { startDay(); setScreen('next'); }} accessibilityRole="button">
           <Text style={s.btnDarkText}>Start my day · {selected.length} rides</Text>
         </Pressable>
       </View>
@@ -764,8 +1533,51 @@ export default function App() {
   );
 }
 
-function reasonFor(r) {
+function FoodRow({ f, ateCount, rating, onAte, onRate, right, sub }) {
+  return (
+    <View style={[s.foodRow, { flexDirection: 'column', alignItems: 'stretch' }]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={s.rowTitle}>{f.name}</Text>
+          {f.fav ? <Text style={[s.mutedSmall, { color: C.accent, fontWeight: '600' }]}>★ Fan favourite · {f.fav}</Text> : null}
+          <Text style={s.mutedSmall}>{sub || `${f.moods.map((m) => MOOD_LABELS[m]).join(' · ')}${f.service === 'snack' ? ' · snack stand' : ''}`}</Text>
+        </View>
+        {right}
+      </View>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <Pressable onPress={onAte} accessibilityRole="button" style={s.smallBtn}>
+          <Text style={s.smallBtnText}>{ateCount ? `Ate here ×${ateCount}` : 'I ate here'}</Text>
+        </Pressable>
+        {ateCount || rating ? <Stars value={rating || 0} onRate={onRate} /> : null}
+      </View>
+    </View>
+  );
+}
+
+function Stars({ value, onRate }) {
+  return (
+    <View style={{ flexDirection: 'row' }} accessibilityLabel={`Your rating: ${value || 'none'} out of 5`}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Pressable key={n} onPress={() => onRate(n)} accessibilityRole="button" accessibilityLabel={`Rate ${n} star${n === 1 ? '' : 's'}`}
+          style={{ minWidth: 32, minHeight: 36, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 22, color: n <= value ? '#D97706' : '#CBD5E1' }}>{n <= value ? '★' : '☆'}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
+function reasonFor(r, rain) {
   const near = r.walk != null && r.walk <= 6 ? ' and it\'s close by' : '';
+  const extra = [
+    r.viaSingle ? `Single Rider saves you about ${r.standby - r.wait} min.` : '',
+    rain && r.indoor ? 'It\'s indoors, so you\'ll stay dry.' : '',
+    r.otherPark ? `It's in ${shortPark(r.parkName)}, about a ${HOP_MIN}-minute walk.` : '',
+  ].filter(Boolean).join(' ');
+  return `${reasonText(r, near)}${extra ? ` ${extra}` : ''}`;
+}
+
+function reasonText(r, near) {
   switch (r.look.trend) {
     case 'up': return `The line usually grows to about ${r.look.later} min over the next few hours. Riding now saves you time${near}.`;
     case 'down': return r.look.best
@@ -867,6 +1679,28 @@ const s = StyleSheet.create({
   extreme: { flex: 1, borderRadius: 12, padding: 12, gap: 2 },
   extremeValue: { fontSize: 22, fontWeight: '800', color: C.ink },
   weekRow: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 40, paddingHorizontal: 6, borderRadius: 8 },
+  chipOn: { backgroundColor: C.dark, borderColor: C.dark },
+  banner: { backgroundColor: C.green, borderRadius: 14, padding: 14, gap: 4 },
+  bannerText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  bannerClose: { color: '#DCFCE7', fontSize: 12 },
+  recapLink: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: C.dark2, borderRadius: 18, padding: 18, minHeight: 64 },
+  recapLinkTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  recapLinkMeta: { color: '#CBD5E1', fontSize: 14, marginTop: 2 },
+  recapGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  listLine: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44, borderBottomWidth: 1, borderColor: C.line },
+  tag: { backgroundColor: '#F1F5F9', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6 },
+  tagText: { fontSize: 13, fontWeight: '600', color: C.ink },
+  ghostBtnWide: { minHeight: 48, borderRadius: 14, borderWidth: 1, borderColor: '#CBD5E1', backgroundColor: C.card, alignItems: 'center', justifyContent: 'center' },
+  optionRow: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, borderBottomWidth: 1, borderColor: C.line },
+  counter: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  counterBtn: { width: 44, height: 44, borderRadius: 12, borderWidth: 1, borderColor: '#CBD5E1', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
+  counterBtnText: { fontSize: 22, fontWeight: '700', color: C.ink },
+  counterValue: { minWidth: 24, textAlign: 'center', fontSize: 18, fontWeight: '800', color: C.ink },
+  input: { flex: 1, minHeight: 44, borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 12, paddingHorizontal: 12, fontSize: 15, color: C.ink, backgroundColor: '#fff' },
+  addBtn: { minHeight: 44, paddingHorizontal: 16, borderRadius: 12, backgroundColor: C.dark, justifyContent: 'center' },
+  addBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  smallBtn: { minHeight: 36, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: '#CBD5E1', justifyContent: 'center' },
+  smallBtnText: { fontSize: 13, fontWeight: '600', color: C.ink },
   pill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
   pillText: { fontSize: 13, fontWeight: '700' },
   chart: { flexDirection: 'row', alignItems: 'flex-end', height: 130, gap: 3, borderBottomWidth: 1, borderColor: '#CBD5E1', marginTop: 6 },

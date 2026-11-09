@@ -16,9 +16,16 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Ride Next uses your location to add walking time to ride suggestions."
+          "locationWhenInUsePermission": "Ride Next uses your location to add walking time to ride suggestions and track areas you visit."
         }
-      ]
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Ride Next counts your steps to show how far you walked in the park."
+        }
+      ],
+      "expo-notifications"
     ]
   }
 }

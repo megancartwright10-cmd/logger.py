@@ -112,6 +112,35 @@ INDOOR = {
 }
 
 
+# Fan favourites: restaurants that several Disney dining guides and review round-ups
+# consistently rate highly (researched Nov 2026; refresh every few months).
+# Notes are our own short summary of what each place is known for.
+FAVOURITES = {
+    # Disneyland Park
+    "Tiana’s Palace": "Gumbo, shrimp & grits and beignets",
+    "Hungry Bear Barbecue Jamboree": "BBQ sandwiches and banana pudding",
+    "Plaza Inn": "Classic fried chicken",
+    "Bengal Barbecue": "Grilled meat and veggie skewers",
+    "Docking Bay 7 Food and Cargo": "Galaxy's Edge themed dishes",
+    "Harbour Galley": "Clam chowder in a bread bowl",
+    "Little Red Wagon": "Hand-dipped corn dogs",
+    "Jolly Holiday Bakery Cafe": "Toasted cheese & tomato soup, pastries",
+    "Edelweiss Snacks": "Cheesy garlic bratwurst on pretzel bread",
+    "Mint Julep Bar": "Mickey beignets and mint juleps",
+    "Blue Bayou Restaurant": "Monte Cristo, dining inside Pirates",
+    "Carnation Café": "Comfort food classics like fried pickles",
+    # Disney California Adventure
+    "Lucky Fortune Cookery": "Bulgogi burrito and ramen",
+    "Cocina Cucamonga Mexican Grill": "Quesabirria and street tacos",
+    "Aunt Cass Café": "Bread bowls and curry",
+    "Paradise Garden Grill": "Seasonal festival menus",
+    "Corn Dog Castle": "Corn dogs and cheese sticks",
+    "Pym Test Kitchen": "Playful giant and tiny food",
+    "Carthay Circle Restaurant": "The park's finest dining",
+    "Lamplight Lounge": "Lobster nachos and brunch",
+}
+
+
 def land_lookup(park_name):
     """ride name -> (land, order of that land in the park)"""
     out = {}
@@ -226,6 +255,7 @@ def main():
                         and t["service"] in ("quick", "snack", "table"):
                     food.append({"id": rid, "name": t["name"], "service": t["service"],
                                  "moods": t["moods"], "loc": location_of(rid, cache),
+                                 "fav": FAVOURITES.get(" ".join(t["name"].split())),
                                  "hours": opening_hours(rid)})
             rides.sort(key=lambda r: (r["landOrder"], (r["name"] or "").strip('"').lower()))
             food.sort(key=lambda r: r["name"])

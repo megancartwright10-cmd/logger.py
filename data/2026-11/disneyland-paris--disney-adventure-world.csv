@@ -1147,3 +1147,14 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-09T19:17Z,Disneyland Paris,Disney Adventure World,d944b02c-12ce-4176-ac62-6a936f180b5c,Cars Quatre Roues Rallye,OPERATING,5,,,,,,,2026-11-09T16:25:28.934Z
 2026-11-09T19:17Z,Disneyland Paris,Disney Adventure World,f710814b-232d-4469-aad7-d98b328a15b7,Spider-Man W.E.B. Adventure,OPERATING,15,5,,,FINISHED,,1300 EUR,2026-11-09T19:16:01.707Z
 2026-11-09T19:17Z,Disneyland Paris,Disney Adventure World,ff2e7d6f-5aaf-47b8-8695-53a66e9fe073,Avengers Assemble: Flight Force,OPERATING,10,5,,,FINISHED,,900 EUR,2026-11-09T19:01:03.906Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,15bad9c3-8378-4ac5-ab90-2f8d0ee09d26,RC Racer,OPERATING,15,10,,,,,,2026-11-09T19:13:03.294Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,25556e4e-aa6c-41ff-b196-29967362345e,Raiponce Tangled Spin,OPERATING,5,,,,FINISHED,,500 EUR,2026-11-09T19:01:04.003Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,337bce77-57bd-49c7-83d7-662f16c162ea,Slinky® Dog Zigzag Spin,OPERATING,5,,,,,,,2026-11-09T16:27:57.964Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,630e2675-f9fc-4984-ba83-03daf5fc89ed,Frozen Ever After,OPERATING,35,30,,,FINISHED,,1600 EUR,2026-11-09T19:16:01.640Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,73e1c590-ef8f-496c-bf6c-d7e7fde0c7df,Ratatouille : L’Aventure Totalement Toquée de Rémy,OPERATING,20,5,,,FINISHED,,1300 EUR,2026-11-09T19:19:03.174Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,8e229723-51c1-4668-b956-5bc45305acd9,Les Tapis Volants - Flying Carpets Over Agrabah®,OPERATING,5,,,,,,,2026-11-09T17:40:02.338Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,a10b25e2-3176-449a-a8a5-4119902887bb,Toy Soldiers Parachute Drop,OPERATING,20,10,,,,,,2026-11-09T19:04:01.912Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,d2ec9363-a215-4904-b297-b66734ea9a00,The Twilight Zone Tower of Terror,OPERATING,15,,,,AVAILABLE,2026-11-09T20:20:00+01:00,1200 EUR,2026-11-09T19:16:01.672Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,d944b02c-12ce-4176-ac62-6a936f180b5c,Cars Quatre Roues Rallye,OPERATING,5,,,,,,,2026-11-09T16:25:28.934Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,f710814b-232d-4469-aad7-d98b328a15b7,Spider-Man W.E.B. Adventure,OPERATING,15,5,,,FINISHED,,1300 EUR,2026-11-09T19:16:01.707Z
+2026-11-09T19:22Z,Disneyland Paris,Disney Adventure World,ff2e7d6f-5aaf-47b8-8695-53a66e9fe073,Avengers Assemble: Flight Force,OPERATING,10,5,,,FINISHED,,900 EUR,2026-11-09T19:01:03.906Z

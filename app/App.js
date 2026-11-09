@@ -2513,8 +2513,7 @@ function WrapSummary({ k, c, d }) {
   const tiles = [[String(d.rides), 'rides'], [`${d.dist} ${d.distUnit}`, 'walked'], [d.queueLabel, 'queuing'], [String(d.snackTotal), 'snacks']];
   return (
     <View style={{ flex: 1, backgroundColor: c.bg, padding: 24 * k, gap: 14 * k }}>
-      <Brand k={k} fg={c.fg} bg={c.bg} inline />
-      <View style={{ gap: 2 * k }}>
+      <View style={{ gap: 2 * k, marginTop: 8 * k }}>
         <Text style={tx(k, 13, c.kicker, { fontWeight: '800', letterSpacing: 1 * k })}>{d.dateLabel}</Text>
         <Text numberOfLines={1} adjustsFontSizeToFit style={tx(k, 32, c.fg, { fontWeight: '900', letterSpacing: -0.5 * k })}>{`My ${d.resortShort} Day`}</Text>
       </View>
@@ -2536,15 +2535,15 @@ function WrapSummary({ k, c, d }) {
           </View>
         ))}
       </View>
-      <View style={{ marginTop: 'auto', backgroundColor: c.foot, borderRadius: 16 * k, paddingVertical: 14 * k, paddingHorizontal: 16 * k,
-        flexDirection: 'row', alignItems: 'center', gap: 12 * k }}>
-        <View style={{ width: 36 * k, height: 36 * k, borderRadius: 18 * k, backgroundColor: c.footIcon, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ color: c.foot, fontSize: 20 * k, fontWeight: '900', lineHeight: 22 * k }}>→</Text>
+      <View style={{ marginTop: 'auto', backgroundColor: c.foot, borderRadius: 16 * k, paddingVertical: 16 * k, paddingHorizontal: 16 * k,
+        alignItems: 'center', gap: 4 * k }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 * k }}>
+          <View style={{ width: 40 * k, height: 40 * k, borderRadius: 20 * k, backgroundColor: c.footIcon, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ color: c.foot, fontSize: 24 * k, fontWeight: '900', lineHeight: 26 * k }}>→</Text>
+          </View>
+          <Text style={tx(k, 30, c.footFg, { fontWeight: '900', letterSpacing: -0.8 * k })}>Ride Next</Text>
         </View>
-        <View style={{ flex: 1 }}>
-          <Text style={tx(k, 17, c.footFg, { fontWeight: '900' })}>Made with Ride Next</Text>
-          <Text style={tx(k, 13, c.footSub)}>Plan your day free on the App Store</Text>
-        </View>
+        <Text style={tx(k, 13, c.footSub, { fontWeight: '600' })}>Less queuing, more riding.</Text>
       </View>
     </View>
   );

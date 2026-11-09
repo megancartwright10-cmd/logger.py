@@ -1,0 +1,4153 @@
+[
+ {
+  "id": "6528b0e3-0e49-44f8-a2ca-b135a4d267a4",
+  "name": "Bistrot Chez Rémy",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "b346283b-5b8a-4d9f-b0ae-445ad2a13853",
+  "name": "Café Luminosity",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "54b320f7-6063-4738-a92f-166ac1c5c3a4",
+  "name": "Chez Berlioz",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "47afeb9c-2c88-4c71-bbeb-4aeb19361c04",
+  "name": "Chez Marie",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "2325d6b6-e32a-4fb9-b805-5963b1cbcd64",
+  "name": "Chez Toulouse",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "679f0091-d7f9-4b09-85bf-75827abb6219",
+  "name": "FAN-tastic Food Truck",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "2d2e9053-4eba-4d44-a343-f88570c0513f",
+  "name": "Ice Cream Creations",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "fc6dcafb-0ca7-42eb-9da8-ca6efd3c3806",
+  "name": "La Terrasse Panoramique",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "1c04ec07-13c2-4d83-af15-6d9bac387db1",
+  "name": "Laugh’N' Go!",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "9ee859db-2623-4ba3-8b40-ef32972cb8ee",
+  "name": "Nordic Crowns Tavern",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "5f492609-5f79-4ca2-a3ca-39cdd0438739",
+  "name": "PYM Kitchen",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "20e0430d-a0d4-4bbf-a5da-b6cff3ffd23a",
+  "name": "Searchlight",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "290f42d3-46bd-4cd1-b69d-891788b0afdb",
+  "name": "Speciality Ice Cream",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "7dae6b67-0da8-4cb6-8e6e-fb2c2f262a4d",
+  "name": "Stark Factory",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "80283731-cd16-42fe-860e-28c70de9e59c",
+  "name": "Super Diner",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "d75b7092-0bf9-4a94-bef9-2c9979b8a889",
+  "name": "The Hollywood Gardens Restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "37588b4a-f847-4fb1-a6c0-6fabd2aa5cba",
+  "name": "The Regal View Lounge",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "ff75413f-edee-4f9c-a9e8-0da580d127e2",
+  "name": "The Regal View Restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "460759ef-bceb-4e07-bdaa-7d1ab81e1413",
+  "name": "WEB Food Truck",
+  "resort": "Disneyland Paris",
+  "park": "Disney Adventure World",
+  "slug": null
+ },
+ {
+  "id": "3a91b818-cb5f-4900-b93e-c67e25f5956d",
+  "name": "Agrabah Café Restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "e9124220-9699-4014-8e65-06cad9814a5b",
+  "name": "Au Chalet de la Marionnette",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "616bc6d6-5a14-4d39-90c3-88f6d61e5fd6",
+  "name": "Auberge de Cendrillon",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "98e395e6-4a32-4995-98f2-ff766d86c368",
+  "name": "Cable Car Bake Shop",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "2683a803-03c4-48b6-9bbd-a7298400a675",
+  "name": "Café Hyperion",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "dd0f02c0-3714-47e2-b761-086cd752b207",
+  "name": "Café de la Brousse",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "8598d1c9-9693-4b10-a7a8-50077ba62a3f",
+  "name": "Captain Jack's - Restaurant des Pirates",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "e133de74-a086-4991-9ad9-6b72368447bd",
+  "name": "Casa de Coco – Restaurante de Familia",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "d5c26c67-691b-4250-985f-fdda5e5ac233",
+  "name": "Casey’s Corner",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "e7e211f7-c1c5-466b-934a-d9891ba6547e",
+  "name": "Character Dining at Plaza Gardens Restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "c8e304bd-876d-46e2-a412-7f8bc1e73a09",
+  "name": "Colonel Hathi’s Outpost Restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "b1d843de-80b6-4ee1-bfd4-54d40f6026e7",
+  "name": "Cookie Kitchen",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "3954d4fe-3420-4df8-926c-aa2b0cc89853",
+  "name": "Cool Post",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "ef54a7f3-8276-4879-a431-0b9f9219ac78",
+  "name": "Cool Station",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "4b2f71bd-332b-478c-8cd0-8627b3ec13fc",
+  "name": "Cowboy Cookout Barbecue",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "2060c5ac-2ca2-48d0-9772-8f1b5fd3a702",
+  "name": "Critter Corral",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "5bd7aa6a-69f5-443a-8c8a-e007678336d8",
+  "name": "L'Arbre Enchanté",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "ac95f062-776b-48d9-bc77-869a9307dac7",
+  "name": "Last Chance Cafe",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "c7773e1f-c75d-4ab8-b6e6-a797abfa82d9",
+  "name": "March Hare Refreshments",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "5b3c8ce8-e773-4f4c-a508-cadde75188ce",
+  "name": "Market House Deli",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "ee25803b-51b1-4c67-86c3-eb4121c2ca8c",
+  "name": "Overland Trail Cafe",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "4a0db383-6bb7-49e2-bc1e-06997e65325f",
+  "name": "Pizzeria Bella Notte",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "5b492a0f-7c9f-4c82-b6dc-4d1be20f7b1e",
+  "name": "Plaza Gardens Restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "98e16089-4a95-4565-830a-faf5f730272d",
+  "name": "Restaurant Hakuna Matata",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "69ab4a1d-725e-4bdc-8284-7c076001b523",
+  "name": "Rocket Café",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "222aa656-ac33-457c-8193-7c625949f40e",
+  "name": "Silver Spur Steakhouse",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "5ae7196f-3096-478b-b602-b8fe49d964ea",
+  "name": "The Gibson Girl Ice Cream Parlour",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "678d76cf-6b24-40ec-a536-26c3667745e8",
+  "name": "The Ice Cream Company",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "04123960-2968-4bea-ac47-c9aeba4ed581",
+  "name": "The Lucky Nugget Saloon",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "4459f001-9dfe-4ddc-844a-6ae0e7bc36d5",
+  "name": "The Old Mill",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "d0f981f2-9813-45a4-a623-a34380247b62",
+  "name": "Toad Hall Restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "f47b8d8b-a5a7-4f8c-a1ef-759621a5ee81",
+  "name": "Victoria’s Home-Style Restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "ca17a056-3f23-41d2-babb-af6b178a9456",
+  "name": "Walt’s – an American restaurant",
+  "resort": "Disneyland Paris",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "e8d7db35-0bc1-42e4-9e6b-a0bc7edbafb1",
+  "name": "Adorable Snowman Frosted Treats",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "adorablesnowmanfrostedtreats"
+ },
+ {
+  "id": "778f814e-7113-4599-adce-b598a39d6cd9",
+  "name": "Aunt Cass Café",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": null
+ },
+ {
+  "id": "13dbf6c5-2118-4e2a-8609-a3600bf17d1f",
+  "name": "Award Wieners",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "awardwieners"
+ },
+ {
+  "id": "2f9b48bb-ad41-44e6-be57-82e62d154b0e",
+  "name": "Bayside Brews",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "baysidebrews"
+ },
+ {
+  "id": "0ccdca1c-2e60-4f7c-8395-2adce67e34ba",
+  "name": "Boardwalk Pizza & Pasta",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "boardwalkpizzapasta"
+ },
+ {
+  "id": "abf8d3b2-fd72-4b10-8619-8c2e3df260e1",
+  "name": "Boardwalk Pizza & Pasta's Seasonal Novelty Release",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": null
+ },
+ {
+  "id": "0eefcad3-0b3f-4cb9-b91a-9d493af7222a",
+  "name": "Cappuccino Cart",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "cappuccinocart"
+ },
+ {
+  "id": "1bef32e2-73b4-4de3-bb07-f71c3f301f22",
+  "name": "Carthay Circle Lounge",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "carthaycircleloungealfrescodining"
+ },
+ {
+  "id": "753b558a-ff18-4ed9-a3c2-70e76b421618",
+  "name": "Carthay Circle Restaurant",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "carthaycirclerestaurant"
+ },
+ {
+  "id": "40217671-2e04-467b-b462-10d97fbca69d",
+  "name": "Clarabelle's Hand-Scooped Ice Cream",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "clarabelleshandscoopedicecream"
+ },
+ {
+  "id": "33be9d07-5da1-42b4-a8bb-2486209693bc",
+  "name": "Cocina Cucamonga Mexican Grill",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "cocinacucamongamexicangrill"
+ },
+ {
+  "id": "c4034870-5e87-4514-832f-9da5506f9cf9",
+  "name": "Corn Dog Castle",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "corndogcastle"
+ },
+ {
+  "id": "7025ea53-9d7f-4e7f-a0ad-0ea9523c3c01",
+  "name": "Cozy Cone Motel 1 - Churros",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "cozyconemotel1churros"
+ },
+ {
+  "id": "a33c95f7-45f7-4d1b-b058-0045192d8a92",
+  "name": "Cozy Cone Motel 2 - Ice Cream Cones",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "cozyconemotel2icecreamcones"
+ },
+ {
+  "id": "d5aabd66-6227-4956-a6da-df71d968abb7",
+  "name": "Cozy Cone Motel 3 - Chili Cone Queso",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "cozyconemotel3chiliconequeso"
+ },
+ {
+  "id": "baab0186-4b1e-4b38-af57-237ca65f8ece",
+  "name": "Cozy Cone Motel 4 - Frozen Cone-coctions",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": null
+ },
+ {
+  "id": "dc2e7388-5618-4fe3-8287-096270978829",
+  "name": "Cozy Cone Motel 5 - Popcone",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": null
+ },
+ {
+  "id": "85201274-b743-41ca-95a1-d575a07811d0",
+  "name": "Flo's V8 Cafe",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "flosv8cafe"
+ },
+ {
+  "id": "8c153230-8203-4351-bc5a-485a67527b55",
+  "name": "Hollywood Lounge",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "hollywoodlounge"
+ },
+ {
+  "id": "61f87846-5771-4f57-bb30-1103dd5b6ecc",
+  "name": "Hollywood Lounge's Seasonal Novelty Release",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": null
+ },
+ {
+  "id": "1214912c-de6d-4493-9344-c245357f7af6",
+  "name": "Lamplight Lounge",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "lamplightlounge"
+ },
+ {
+  "id": "2459a357-2b20-4445-8476-6a9a7e5eab54",
+  "name": "Lamplight Lounge - Boardwalk Dining",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": null
+ },
+ {
+  "id": "38df151c-f563-406f-8dbc-7e824c7afc75",
+  "name": "Lucky Fortune Cookery",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "luckyfortunecookery"
+ },
+ {
+  "id": "a098bd7c-f1a9-4ffb-97db-e85925509f19",
+  "name": "Magic Key Terrace - Magic Key Holder Dining",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "alfrescotastingterrace"
+ },
+ {
+  "id": "4ff553fa-008a-4d99-b6b0-30dd69d3453f",
+  "name": "Mendocino Terrace",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "mendocinoterrace"
+ },
+ {
+  "id": "f7ff4406-5bd6-4067-9ed1-92ea1efdcc63",
+  "name": "Paradise Garden Grill",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "paradisegardengrill"
+ },
+ {
+  "id": "0e795417-d8c0-4ce4-b0f7-3f10c76217ba",
+  "name": "Popcorn at Grizzly Peak Airfield",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "popcornatgrizzlypeakairfield"
+ },
+ {
+  "id": "884a2e75-ef8a-4676-b65c-67320e732bb1",
+  "name": "Port of San Fransokyo Cervecería",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": null
+ },
+ {
+  "id": "ca4b4068-02a7-4d98-92a6-f781ad5711d3",
+  "name": "Pym Tasting Lab",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": null
+ },
+ {
+  "id": "bbfe672e-075a-477a-b066-1117cf80030c",
+  "name": "Pym Test Kitchen",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "pymtestkitchencomingsoon"
+ },
+ {
+  "id": "431e008b-505c-42fd-9db1-a2e4d5feae78",
+  "name": "Rita's Turbine Blenders",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "ritasbajablenders"
+ },
+ {
+  "id": "167199e4-933e-4647-9154-75b13975eea3",
+  "name": "Schmoozies!",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "schmoozies"
+ },
+ {
+  "id": "5cd413b8-09da-4860-bdea-a88df9fe6c0d",
+  "name": "Smokejumpers Grill",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "smokejumpersgrill"
+ },
+ {
+  "id": "13bc1b70-3a42-41eb-9cb5-7fa8615af2ca",
+  "name": "Sonoma Terrace",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "sonomaterrace"
+ },
+ {
+  "id": "ceb71f40-b730-4209-80be-ef89c114dfdf",
+  "name": "Studio Catering Co.",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "studiocateringco"
+ },
+ {
+  "id": "048f854a-97d8-4295-8b7f-2575605259c6",
+  "name": "Wine Country Trattoria",
+  "resort": "Disneyland Resort",
+  "park": "Disney California Adventure Park",
+  "slug": "winecountrytrattoria"
+ },
+ {
+  "id": "ce05c344-81fc-4b32-8717-cb1c26c65292",
+  "name": "Alien Pizza Planet Express",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "7bf706cd-0cf5-4640-a079-23a7a46f4f5b",
+  "name": "Bengal Barbecue",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "bengalbarbecue"
+ },
+ {
+  "id": "4784fd0f-9ba3-4a5d-a4b9-ed33b93c4489",
+  "name": "Blue Bayou Restaurant",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "bluebayourestaurant"
+ },
+ {
+  "id": "3665b38e-3e56-4c84-ad20-3e39672079a1",
+  "name": "Cafe Orleans",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "cafeorleans"
+ },
+ {
+  "id": "f8d61baa-dc1a-4e82-ab6b-f24bdd83e6e1",
+  "name": "Café Daisy",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "c7ce633e-1f6b-4699-98c9-6772bb196b16",
+  "name": "Carnation Café",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "carnationcafe"
+ },
+ {
+  "id": "8abfd370-4c29-4154-bb96-41e031b78d29",
+  "name": "Docking Bay 7 Food and Cargo",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "dockingbay7foodandcargo"
+ },
+ {
+  "id": "fbee3a16-4be3-47f3-97a7-70ef09aff088",
+  "name": "Edelweiss Snacks",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "edelweisssnacks"
+ },
+ {
+  "id": "e88cbd63-e385-423b-9565-fbe5faeb9050",
+  "name": "Galactic Grill",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "galacticgrill"
+ },
+ {
+  "id": "a529bc93-e528-4e28-a7aa-47c168f90218",
+  "name": "Galactic Grill’s Seasonal Novelty Release",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "2215958d-c6b0-4513-912c-706dbf3e46e9",
+  "name": "Gibson Girl Ice Cream Parlor",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "gibsongirlicecreamparlor"
+ },
+ {
+  "id": "92f45ae9-5e6d-4923-88d4-7f676c2d10b2",
+  "name": "Harbour Galley",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "harbourgalley"
+ },
+ {
+  "id": "fb686e53-e10d-4cd5-836c-7a4a93207361",
+  "name": "Hungry Bear Barbecue Jamboree",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "hungrybearrestaurant"
+ },
+ {
+  "id": "d295c224-299f-4fda-9d14-1d7780401929",
+  "name": "Jolly Holiday Bakery Cafe",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "jollyholidaybakerycafe"
+ },
+ {
+  "id": "1cdd0f00-de40-4f7f-bf1b-014926d51aca",
+  "name": "Little Red Wagon",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "littleredwagon"
+ },
+ {
+  "id": "94453dec-3f16-43a6-94c9-be55144606b8",
+  "name": "Milk Stand",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "milkstand"
+ },
+ {
+  "id": "2e0d0726-07c7-42f6-b839-68a56a41e268",
+  "name": "Mint Julep Bar",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "mintjulepbar"
+ },
+ {
+  "id": "eb29424b-42ed-41a2-891c-d4c9494eab12",
+  "name": "Oga's Cantina at the Disneyland Resort",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "ogascantinaatthedisneylandresort"
+ },
+ {
+  "id": "8deb6338-b65f-467c-9dd3-56ed8c02c355",
+  "name": "Plaza Inn",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "plazainn"
+ },
+ {
+  "id": "1db8443f-624c-4d95-967c-1766a52b24ec",
+  "name": "Red Rose Taverne",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "redrosetaverne"
+ },
+ {
+  "id": "27ab9530-4fd5-4e9c-a5b1-d553fed56655",
+  "name": "Refreshment Corner",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "refreshmentcorner"
+ },
+ {
+  "id": "057872ed-3f27-496f-80e2-edd3639ba084",
+  "name": "River Belle Terrace",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "riverbelleterrace"
+ },
+ {
+  "id": "1822fb68-5f64-4329-b7e2-d4065f7159ac",
+  "name": "Ronto Roasters",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "rontoroasters"
+ },
+ {
+  "id": "d2feb649-41ea-4097-a45b-10cfb48d13aa",
+  "name": "Royal Street Veranda",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "royalstreetveranda"
+ },
+ {
+  "id": "fae2515c-777b-4f37-b647-06383c1904d3",
+  "name": "Stage Door Café",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "stagedoorcaf"
+ },
+ {
+  "id": "3c8d7efa-b0a5-4e2d-811e-9da29d65f2f0",
+  "name": "The Tropical Hideaway Express",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "f0f57b5c-5bc5-49d6-8b7f-34e4aa03c2e8",
+  "name": "Tiana’s Palace",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "c48369cc-e341-4066-96b8-3687ccad1e49",
+  "name": "Tiki Juice Bar",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "tikijuicebar"
+ },
+ {
+  "id": "3a63d923-413a-4512-b873-c690596fb479",
+  "name": "Troubadour Tavern",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": "troubadourtavern"
+ },
+ {
+  "id": "2426de0a-55b7-4994-b31b-fc08b296c79a",
+  "name": "Troubadour Tavern's Seasonal Novelty Release",
+  "resort": "Disneyland Resort",
+  "park": "Disneyland Park",
+  "slug": null
+ },
+ {
+  "id": "5250b1d2-00cc-44f8-ad94-e3c6d1759613",
+  "name": "BOPO GO!",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "b064ae4b-93a0-4d55-ae80-6c8dc869991b",
+  "name": "Ballast Point® Brewing Co.",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "fb90c864-1264-4226-9814-0de5963de8bb",
+  "name": "Broken Spell Lounge",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "theloungeatsteakhouse55"
+ },
+ {
+  "id": "ed05686e-f2c4-4c5d-aeed-a5a4a66c1be8",
+  "name": "Character Dining",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "characterdining"
+ },
+ {
+  "id": "fc7e5343-ce63-4b1a-88fa-f51909057cd4",
+  "name": "Céntrico",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "81de6626-0499-4c18-a3ef-366d782eb35d",
+  "name": "Din Tai Fung",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "1545da28-7369-45cb-b550-456204c9c96c",
+  "name": "GCH Craftsman Bar",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "gchcraftsmanbar"
+ },
+ {
+  "id": "05e283ad-9409-4f4b-b062-23714f6f1b31",
+  "name": "Goofy's Kitchen",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "goofyskitchen"
+ },
+ {
+  "id": "52eb4ed4-499f-4615-8300-786dc7113320",
+  "name": "Great Maple Modern American Eatery",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "9f07af7b-fa1b-4a47-a476-cfe9590d03f2",
+  "name": "Hearthstone Lounge",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "hearthstonelounge"
+ },
+ {
+  "id": "8181b4a5-5427-4323-8d77-90d5d6cb1f93",
+  "name": "Jazz Kitchen Coastal Grill & Patio",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "3b37fd7b-1906-4bbf-874e-9e95bb315150",
+  "name": "Napa Rose",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "naparose"
+ },
+ {
+  "id": "4871e66f-45d7-4cab-831d-4540e8b17a32",
+  "name": "Naples Ristorante e Bar",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "36c65924-14eb-4c1e-a03d-2b0b29f6ff5d",
+  "name": "Palm Breeze Bar",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "51409c4f-748e-4020-bc9a-8e210b159a86",
+  "name": "Paseo",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "2cff2dc7-a3c0-405b-ad61-3721a9a0941c",
+  "name": "Splitsville Luxury Lanes™ – Dining",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "2c1f7c9b-dc07-4fdb-ad01-274b4859dacc",
+  "name": "Storytellers Cafe",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "storytellerscafe"
+ },
+ {
+  "id": "d5c4a9b6-38fe-453a-8194-ac86a7d1f6be",
+  "name": "Tangaroa Terrace Tropical Bar & Grill",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "tangaroaterracetropicalbargrill"
+ },
+ {
+  "id": "2da71a81-b231-42ec-8720-86a91c0dd39b",
+  "name": "The Coffee House",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "thecoffeehouse"
+ },
+ {
+  "id": "8fcf5b7b-f37a-4e7c-8945-99bd8ccb69a4",
+  "name": "Trader Sam's Enchanted Tiki Bar",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": "tradersamsenchantedtikibar"
+ },
+ {
+  "id": "721c4524-ba4a-4c22-86d3-5c4c20e7762e",
+  "name": "Vista Parkside Market",
+  "resort": "Disneyland Resort",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "0b27c09f-0429-43c5-8970-d303ae00dfbe",
+  "name": "Atlantic",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "bd8df82c-ea86-4139-9a47-24fa19151c98",
+  "name": "Bar Moonshine™",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "d4d7e1ca-77e9-482b-ae82-4e3508463646",
+  "name": "Bar Zenith",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "f41a15df-ab5c-4202-85c1-853b5cac4fc9",
+  "name": "Bieraubeurre Cart",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "0060ddaa-0c15-4309-b017-0b1ed9885941",
+  "name": "Café L’air De La Sirène™",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "bb1119ef-9d92-48a7-a998-db74b1237a35",
+  "name": "CelesTiki",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "15d839af-1d89-4480-981b-4720e53c0c65",
+  "name": "Celestial Popcorn",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "a35be927-6d44-4213-9700-e41cc6872daa",
+  "name": "Comet Dogs",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "52c98564-e292-49f9-9819-d2e722c89814",
+  "name": "Das Stakehaus",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "73f49032-1234-409d-8ca6-63d20b96b906",
+  "name": "De Lacey's Cottage",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "33f95956-8476-49d7-a9fb-3d018f59e43a",
+  "name": "Frosty Moon",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "188ef8e0-3477-4f50-91bb-c7a0cfcfecac",
+  "name": "Goddess of Refreshment",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "66903865-1720-46e8-8f1e-15b322b1e091",
+  "name": "Hooligan's Grog & Gruel",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "42ecc12b-030e-42dd-996b-93eac856287b",
+  "name": "Le Gobelet Noir™",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "d78bf618-0ed2-4c22-b920-72f94be4cf6d",
+  "name": "Mead Hall",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "c168d4bf-2664-4b67-94a4-fc57838e8cfe",
+  "name": "Meteor Astropub",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "919eb07d-050b-4a2e-967c-68996577ef90",
+  "name": "Pizza Moon",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "71072fb2-1514-412f-987f-5ab2bc39fcde",
+  "name": "Pizza Moon Pickup",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "f5902f84-2bdc-4cd9-8e00-2d68b2e53d31",
+  "name": "Satellite Shakes",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "20a9f6a4-cb55-40ae-9101-29b6e692bdff",
+  "name": "Spit Fyre Grill",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "20f7747f-c154-477b-ac94-41e1cb3881df",
+  "name": "Star Sui Bao",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "9c46d9cf-12df-47d4-b4fb-136d2ffd6536",
+  "name": "Starbucks",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "d0a904c4-1818-468c-a253-ff8d3d945aa0",
+  "name": "Starbucks® Coffee",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "966818c7-67c2-4e8f-a924-f95a8e5dd3df",
+  "name": "The Blue Dragon Pan-Asian Restaurant",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "e369b848-31f4-4641-9038-da566dc0c9be",
+  "name": "The Bubbly Barrel",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "d9191e62-a22d-4e56-9f96-b84c48d8ec02",
+  "name": "The Burning Blade Tavern",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "eeb75db2-46ec-4498-a1e1-652e37454ba5",
+  "name": "The Burning Blade Tavern Pick Up",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "18613025-0efa-4d3a-b781-6425e9c1654a",
+  "name": "The Oak & Star Tavern",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "06659265-aa2a-44b8-b20f-f20f7cf826a6",
+  "name": "The Plastered Owl",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "9476066a-fb0e-4cc9-b99d-9411f7cdee86",
+  "name": "Toadstool Cafe™",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "4e4f74ec-301b-480d-8bc6-0e351cb70c2a",
+  "name": "Turbo-Boost Treats",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "0208b42f-a89d-43bb-8eef-b9c18c120c87",
+  "name": "Yoshi's Snack Island™",
+  "resort": "Universal Orlando",
+  "park": "Universal Epic Universe",
+  "slug": null
+ },
+ {
+  "id": "57ff5ef3-c836-4ab5-b616-e8b01a7668ec",
+  "name": "Ale to the Chief",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "8aa94b3d-56e1-469a-90a1-6e4be1c92791",
+  "name": "Auntie Anne's",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "50c3bfa1-600d-4d3c-83b6-868de08abb7d",
+  "name": "Backwater Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "351c2ef0-8ef9-49f8-9abe-ba8ea125ff58",
+  "name": "Blondie's: Home of the Dagwood",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "aedb72d4-fbea-4f60-81a8-e2437c53d1f0",
+  "name": "Bone Chillin' Beverages",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "7321a68a-e61a-4ba5-b301-a12e5a4901ef",
+  "name": "Cafe 4™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "b0a7cb1c-1156-45b8-925e-7ade28343127",
+  "name": "Captain America Diner®",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "a8b4b8ee-46b3-44f9-a416-bf3ec8217da2",
+  "name": "Cathy's Ice Cream",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "70da910d-3844-468b-bcb2-57d40d8ac13a",
+  "name": "Chillin' Charlie's Lemon Slush",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "0b291e49-68d4-49e2-b8d7-a8b68adc144c",
+  "name": "Cinnabon®",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "7d7d0062-2629-4b76-80df-422ffadca153",
+  "name": "Circus McGurkus Cafe Stoo-pendous™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "721e26e0-cc64-4333-95a4-8887c00c475f",
+  "name": "Circus McGurkus Cafe Stoo-pendous™ Pickup",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "467363b2-a1d0-448b-af21-ac7fc1038f9e",
+  "name": "Comic Strip Cafe",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "154b59b9-eb01-490d-b643-0b8b58da0611",
+  "name": "Confisco Grille™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "2f1e7a97-6cdb-470a-9433-ba8621c893f7",
+  "name": "Croissant Moon Bakery™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "5e2e3353-bcef-4ca9-8169-731c458a89d6",
+  "name": "Fire Eater's Grill™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "7ffc5e8a-647a-4de0-820e-4d2ade5a88d3",
+  "name": "Green Eggs and Ham™ Cafe",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "7863937e-bb65-408b-9652-c9700c923c9c",
+  "name": "Hog's Head™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "c7eb11cb-410f-4de9-83d5-83708302e33c",
+  "name": "Hop on Pop™ Ice Cream Shop",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "c5064dab-fff2-4e79-bf33-618f725e8d97",
+  "name": "Marvel Character Dinner",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "48438696-3bfa-4176-a770-74f7fd91528a",
+  "name": "Moose Juice, Goose Juice",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "36afb7ad-1b9c-46a6-98a8-5b4ed0c865b0",
+  "name": "Mythos Restaurant™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "eae7190b-d78e-4ec3-b012-6ee14d32d6ad",
+  "name": "Pizza Predattoria™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "b790a0b3-0b2e-4983-95c2-c84b6852e46c",
+  "name": "Starbucks® Coffee",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "42befc7c-2593-4ac7-bc8d-c30dff45ba62",
+  "name": "Super Hero Cotton Candy",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "8ce0157c-fbf6-4676-8a0c-ec49dd98fa64",
+  "name": "The Burger Digs™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "ec8dca53-2e8a-4cc5-bc10-17e456659e8a",
+  "name": "The Watering Hole™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "c19ff123-d06f-420b-ac38-6e96ccbc3d28",
+  "name": "Three Broomsticks™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "45a7c5ea-903c-4612-b00a-31df6ab799cd",
+  "name": "Thunder Falls Terrace™",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "453384c5-7d2b-49ce-a0f1-1e1984735340",
+  "name": "Wimpy's",
+  "resort": "Universal Orlando",
+  "park": "Universal Islands of Adventure",
+  "slug": null
+ },
+ {
+  "id": "f9e9ad37-3a5a-4619-b75c-2d01bf067795",
+  "name": "Auntie Anne's",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "8fa8c820-dba1-453e-8f8f-51e72b5dedbb",
+  "name": "Avenue Eats",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "a7bf6b52-299a-4d9f-af5a-4d36d80dbdea",
+  "name": "Beer Trailer",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "981be57c-d57c-476c-a1f4-2ce732623296",
+  "name": "Bumblebee Man's Taco Truck",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "44114116-77b4-4d66-960d-90a4d9c7d59e",
+  "name": "Cafe La Bamba™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "92be5d61-f6b9-4786-9d1e-ab7d97a5147c",
+  "name": "Central Park Crêpes",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "441e9951-559d-480c-9c82-ed417447f884",
+  "name": "Chez Alcatraz™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "3b66e42a-c16a-45e1-b257-8eade74b4abb",
+  "name": "Cletus' Chicken Shack",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "14083168-ba51-4803-a05a-b62db46ef540",
+  "name": "Club Horror Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "3e761cbc-c8bc-46a2-9b67-d76b6bc56842",
+  "name": "Coca-Cola Refresh Lounge",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "75379303-5352-4ef3-b9f0-86dc08352d26",
+  "name": "Crosshairs Coop Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "751f9e77-92e4-416f-877a-5a4f010af013",
+  "name": "Death Tank Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "da6eae29-af04-44a5-9a94-b8b57b5ea62a",
+  "name": "Devilish Delights Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "89d342f0-bf28-4bb4-a5f5-afc33573f828",
+  "name": "Dia de los Muertos Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "1ee2bf42-e17c-40cd-ad85-a28293fe9749",
+  "name": "Dia de los Muertos Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "caa64d85-21a3-4547-a1fb-77ae73dc3f67",
+  "name": "DreamWorks Imagination Café",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "c5a26666-f933-4166-acf8-311a6eb5be17",
+  "name": "Duff Brewery",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "3a6a460b-1204-4667-9484-8714158ce7d2",
+  "name": "Evil Dead Burn Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "cebfe23a-e842-4795-b9b3-a920fe4073bd",
+  "name": "Fast Food Boulevard",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "ad77757d-0660-48ee-972a-031d555b71ee",
+  "name": "Finnegan's Bar and Grill™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "858aa5cd-0b09-4c9f-ba41-970450415ec6",
+  "name": "Flaming Moe's",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "0666c2aa-ac92-46f2-adda-2cbdf1381a8f",
+  "name": "Florean Fortescue’s Ice-Cream Parlour",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "dda18515-d9da-4d4c-a7d2-ed38386bad6d",
+  "name": "Freeze Ray Pops",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "97ae9df1-8fcf-43b8-aa23-674fd721ac1f",
+  "name": "HHN Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "3d91a8b0-bd15-4f99-8038-b886f3e122a3",
+  "name": "Hellraiser Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "50d25d95-f9f8-4e80-914d-43f36f26e255",
+  "name": "Häagen-Dazs®",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "88d8b53f-14f4-4c89-bc6d-7139d37ffa40",
+  "name": "Illumination’s Minion Cafe",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "5538b31f-a6ca-4a9e-8d75-70cb0f9a6aed",
+  "name": "Illumination’s Minion Cafe Pickup",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "157d3dd8-7dd3-413b-bb29-4ecc4e0d9c8b",
+  "name": "Jack's Surplus Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "0721e8ed-5d14-4b2a-97d2-1ed2c4a7ab01",
+  "name": "Keyholder Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "843e8552-2a6f-4e33-b290-222ac9def9b9",
+  "name": "Krusty Burger",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "2e823b46-0d5a-48a6-a824-a9b66932bd7e",
+  "name": "Lagoon Lemonade",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "37764450-3c0f-41d9-9ec3-73043e1625ea",
+  "name": "Lard Lad Donuts",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "36372cec-7971-4c91-bd1e-86317273ff7f",
+  "name": "Leaky Cauldron™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "12180a82-e57e-42ec-9f0f-fdc3132a9132",
+  "name": "Lisa's Teahouse of Horror",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "cfa3227c-259d-40ff-93b3-edc9efc3ebca",
+  "name": "Lombard's Seafood Grille™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "175a559d-bd35-4840-babc-3c2a86b3d878",
+  "name": "Louie's Italian Restaurant™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "0e2876a8-0fae-41b9-8df4-0309e7b36cfb",
+  "name": "Luigi's Pizza",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "f5b4ccba-82fe-422f-9377-2772103fff91",
+  "name": "MIB Icee",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "d383313f-6e49-4b02-b7ce-7f5052aa8ae8",
+  "name": "Maloney's",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "e1149c8a-f1b2-4dec-94c6-4bfdc340246c",
+  "name": "Meetz Meats Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "fcc78e23-f8b5-4007-aedf-17264d8ffd48",
+  "name": "Mel's Drive-In™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "60d1bf89-a7a8-4e75-9188-ecd4291531b6",
+  "name": "Moe's Tavern",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "122084c4-e40b-4ab5-b33e-14be64b458db",
+  "name": "Music Plaza Fanta Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "0729abe1-7d0d-4ee8-b197-5eef33b3f3c2",
+  "name": "Nightmare Fuel Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "0a968e5f-e8c5-4cb0-9901-6f93b4f3cfb5",
+  "name": "Oddfellow's Menagerie",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "73e85e03-efb4-40d9-8e91-b61e2d3633ab",
+  "name": "Ozzy Osbourne: Prince of Darkness Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "e3f07454-43a0-41da-b774-286c09160580",
+  "name": "Parkside Fare",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "6c983339-82c2-48b8-99fa-feff2051bc49",
+  "name": "Pop-A-Nana Popcorn and Drink Cart",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "ce8cfe53-f5bf-4d2e-9ab2-37d2d0dd3602",
+  "name": "Production Central Food",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "37c2afe6-c598-4077-9c20-30f5af685937",
+  "name": "Richter's Burger Co.™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "ef08842c-30a7-464d-98f9-ce20010860e4",
+  "name": "San Francisco Fanta Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "fb1f6bbe-de29-4c2c-b23e-7f63e2bdb7de",
+  "name": "San Francisco Pastry Company™",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "15b8be23-a147-4e4b-8ca8-ccafa2a8c1f4",
+  "name": "Schwab's Pharmacy",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "327d4ef5-a382-444e-86cc-d03b5f84635c",
+  "name": "Sinners Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "66249592-1cfa-429d-a862-bbe4b83e1ba8",
+  "name": "Starbucks® Coffee",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "7975edba-d796-400c-bee5-cac13da32824",
+  "name": "Stranger Things Food Booth",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "b21b12a9-204d-442c-80b7-5384de186262",
+  "name": "Swamp Snacks",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "98f6578b-1e62-4b3d-a1b0-a68cdce86483",
+  "name": "TODAY Cafe",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "c6cc242d-cce0-45e1-86cf-d032625afe7e",
+  "name": "The Fountain of Fair Fortune",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "d0a89ac7-9e54-4b02-a6b9-ee8c6ba8763c",
+  "name": "The Frying Dutchman",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "9b7ed2f3-2e63-4783-a2c8-a6192d5bdf08",
+  "name": "The Hopping Pot",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "e25f291a-7551-47f3-829c-ad7e10ea1887",
+  "name": "Trolls Treats",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "f7a0bf00-44c1-448e-a1c6-ac2a5ab87d89",
+  "name": "World Expo Fanta Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Studios Florida",
+  "slug": null
+ },
+ {
+  "id": "89e100cf-b0a5-402a-9c9c-00fa6996a5df",
+  "name": "Bambu",
+  "resort": "Universal Orlando",
+  "park": "Universal Volcano Bay",
+  "slug": null
+ },
+ {
+  "id": "db53e3a2-fe1c-46ae-a6ad-89bd17e035e8",
+  "name": "Dancing Dragons Boat Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Volcano Bay",
+  "slug": null
+ },
+ {
+  "id": "e4a1b677-9067-4c98-aabb-ce70b560e06a",
+  "name": "Kohola Reef Restaurant & Social Club™",
+  "resort": "Universal Orlando",
+  "park": "Universal Volcano Bay",
+  "slug": null
+ },
+ {
+  "id": "8bab113e-bd98-4484-8287-d38ec4729534",
+  "name": "Kunuku Boat Bar",
+  "resort": "Universal Orlando",
+  "park": "Universal Volcano Bay",
+  "slug": null
+ },
+ {
+  "id": "ad3bab45-3a33-49ac-affc-bef4b79e6528",
+  "name": "The Feasting Frog™",
+  "resort": "Universal Orlando",
+  "park": "Universal Volcano Bay",
+  "slug": null
+ },
+ {
+  "id": "27891f28-4b9c-482b-8d43-7392dea8dd42",
+  "name": "Volcano Bay Premium Seating",
+  "resort": "Universal Orlando",
+  "park": "Universal Volcano Bay",
+  "slug": null
+ },
+ {
+  "id": "437a5966-6597-404f-93cb-0cd233696a80",
+  "name": "Whakawaiwai Eats",
+  "resort": "Universal Orlando",
+  "park": "Universal Volcano Bay",
+  "slug": null
+ },
+ {
+  "id": "f678aebd-228f-48ec-aced-f2abc76b335d",
+  "name": "Art the Clown's Tinsel Bar",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "b57bfc20-b0a9-4e28-8b05-89cdf2503b35",
+  "name": "Bumblebee Man's Taco Truck",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "fd8bc74e-e300-41c9-b453-327b3fcb9938",
+  "name": "City Snack Shop",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "b90936bd-2242-4ea8-a5fa-ca863439965a",
+  "name": "Cletus' Chicken Shack",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "9270a836-3ade-47fd-bb03-432591014fe7",
+  "name": "Clown Café",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "5a8b420c-83b2-4b89-8943-f5969bee3b86",
+  "name": "Cocina Mexicana",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "e67b90a3-c4cf-405e-82cb-12bb070e82a2",
+  "name": "Despicable Delights",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "db5e35be-6413-45f8-825b-1492f7aca173",
+  "name": "Drift & Dine at Hollywood & Dine",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "aae38e41-1e52-4aeb-904d-928b9cae7efd",
+  "name": "Duff Brewery Beer Garden",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "4e28afed-86ae-4995-9130-4f6713fd2fa0",
+  "name": "Día de los Muertos at Universal Plaza",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "eab68bb1-12a7-400e-af71-cd4ee5cd83e5",
+  "name": "French Street Bistro",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "a7e266ea-f54a-4b15-9548-f4735c67bf08",
+  "name": "Hog's Head™",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "fc423279-1727-4c6a-9c0f-ac8f39411910",
+  "name": "Isla Nu-Bar",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "49592039-ceca-47a5-980a-6d73ddcc4220",
+  "name": "Jurassic Cafe",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "dd6387d7-336a-4e28-88dc-46f7efae833b",
+  "name": "Killer Snacks",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "65639c42-cba4-41d8-9c1d-35a27b1fdf94",
+  "name": "Krusty Burger",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "b41febea-dfde-4996-b3b8-01c8fb62a842",
+  "name": "Lard Lad Donuts",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "6464804c-76d3-46be-b372-4137daea9ffd",
+  "name": "Luigi's Pizza",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "d4a12a5a-4a82-48ee-bc3f-6a19110ad6dc",
+  "name": "Mel’s Diner",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "90012709-3f06-49d3-a536-d39da2a8a408",
+  "name": "Minion Cafe",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "0c647db8-2ada-4076-b1c0-13b8b554fc5d",
+  "name": "Moe's Tavern",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "2634e664-4fc5-4e9e-8c49-58007722fbf5",
+  "name": "Mulligan's Irish Pub",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "59a4661e-f729-403a-9825-eff954973c3f",
+  "name": "Mummy Eats",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "cbd2fb11-e927-4e50-b2e7-559e00a7034d",
+  "name": "Ozzy's Bar",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "412cb492-3f65-4922-8b5d-7139e6bb617c",
+  "name": "Palace Deli & Market",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "e5de6511-9d6c-4d74-a54b-013354168300",
+  "name": "Panda Express",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "01f65c90-8946-4a18-89cc-abe3bdf8466b",
+  "name": "Phineas Q. Butterfat's Ice Cream",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "5de642f3-389c-460b-94f2-6d7ce92fc493",
+  "name": "Power Up Cafe",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "30449b4c-693f-48b9-935f-785c4fc6707e",
+  "name": "SUPER NINTENDO WORLD™ Popcorn and Drink Cart",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "04cff0f6-0792-47eb-9126-667c645f0039",
+  "name": "Starbucks",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "52ec8755-226d-45e3-885f-05f33b5e88a7",
+  "name": "Starbucks",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "30430565-92f2-43e3-ade8-d1fa7e48cb15",
+  "name": "Studio Cafe",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "c9c2c723-1ae4-492a-942b-b3d80d02062a",
+  "name": "Studio Scoop",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "68b0a516-0869-4dc3-8eb1-42e46c1570ed",
+  "name": "Suds McDuff's Hot Dogs",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "e34b1ac3-79c9-41d8-aeb7-6ee93df4532f",
+  "name": "Three Broomsticks™",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "78a6fe7a-921f-444e-9b3d-833efd084c6f",
+  "name": "Toadstool Cafe™",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "9fea9496-3d2d-46ab-8d5e-b4ffda54ea11",
+  "name": "Universal Tower Snack Bar",
+  "resort": "Universal Studios Hollywood",
+  "park": "Universal Studios Hollywood",
+  "slug": null
+ },
+ {
+  "id": "1286aad3-bdbe-401b-99ef-4097477c556d",
+  "name": "Dawa Bar",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "dawabar"
+ },
+ {
+  "id": "6730b8bb-f592-40cd-8e6f-e7788f3f175b",
+  "name": "Flame Tree Barbecue",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "flametreebarbecue"
+ },
+ {
+  "id": "665cc4c1-1bcd-4e5e-a44d-adb6a6889abc",
+  "name": "Harambe Market",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "harambemarket"
+ },
+ {
+  "id": "f210842b-8c9b-4088-9f48-6284e9ce389a",
+  "name": "Nomad Lounge",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "nomadlounge"
+ },
+ {
+  "id": "eeab1c1b-5c84-48e8-b4ac-145335dcb8c4",
+  "name": "Nomad Lounge To Go",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": null
+ },
+ {
+  "id": "625821c3-5bd2-4c08-b449-257f3c81cbde",
+  "name": "Pizzafari",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "pizzafari"
+ },
+ {
+  "id": "224d803c-cd7a-45d8-bfab-d843f2030983",
+  "name": "Rainforest Cafe® at Disney's Animal Kingdom",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "rainforestcafeatdisneysanimalkingdom"
+ },
+ {
+  "id": "7aa4f221-7b52-445e-bc27-f7baac4530ad",
+  "name": "Satu'li Canteen",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "satulicanteen"
+ },
+ {
+  "id": "9a64300c-4861-4bed-9713-b4f49e55e566",
+  "name": "The Smiling Crocodile",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "thesmilingcrocodile"
+ },
+ {
+  "id": "88d5c6ad-fd4a-4c8b-8ed3-656e3ee3a4eb",
+  "name": "Thirsty River Bar",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "thirstyriverbartreksnacks"
+ },
+ {
+  "id": "e12fb6d6-0985-44e5-bdd3-65ff74433063",
+  "name": "Tiffins Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "tiffinsrestaurant"
+ },
+ {
+  "id": "d58db4d0-3bad-4655-937b-1cbc9ed0e880",
+  "name": "Tusker House Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "tuskerhouserestaurant"
+ },
+ {
+  "id": "f609fcf6-0aef-44ef-b838-f10ff3b8543b",
+  "name": "Warung Outpost",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "warungoutpost"
+ },
+ {
+  "id": "84f51faa-72a3-4491-9449-20a999e5885c",
+  "name": "Yak & Yeti™ Quality Beverages",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "yakyetiqualitybeverages"
+ },
+ {
+  "id": "cea213d9-bf4f-408a-ac61-768e7709ab7d",
+  "name": "Yak & Yeti™ Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": "yakyetirestaurant"
+ },
+ {
+  "id": "859a02c9-5d54-49fa-a85c-0a6318d4986b",
+  "name": "Zuri's Sweet Shop",
+  "resort": "Walt Disney World",
+  "park": "Disney's Animal Kingdom Theme Park",
+  "slug": null
+ },
+ {
+  "id": "7220bf88-61e6-4d04-b134-635336dbbd6b",
+  "name": "Avalunch",
+  "resort": "Walt Disney World",
+  "park": "Disney's Blizzard Beach Water Park",
+  "slug": "avalunch"
+ },
+ {
+  "id": "17ecbbd6-4d5b-4ad8-9f77-3ee8f69795dc",
+  "name": "Frostbite Freddy's Frozen Refreshments",
+  "resort": "Walt Disney World",
+  "park": "Disney's Blizzard Beach Water Park",
+  "slug": "frostbitefreddysfrozenfreshments"
+ },
+ {
+  "id": "9f14a00b-54f5-4a71-b904-decd4bcc6957",
+  "name": "Lottawatta Lodge",
+  "resort": "Walt Disney World",
+  "park": "Disney's Blizzard Beach Water Park",
+  "slug": "lottawattalodge"
+ },
+ {
+  "id": "c0feb82e-f296-4f4d-9474-f31797e32e5a",
+  "name": "Polar Pub",
+  "resort": "Walt Disney World",
+  "park": "Disney's Blizzard Beach Water Park",
+  "slug": "polarpub"
+ },
+ {
+  "id": "8854deed-264b-4dcd-bf1a-6dd83e023f13",
+  "name": "Warming Hut",
+  "resort": "Walt Disney World",
+  "park": "Disney's Blizzard Beach Water Park",
+  "slug": "warminghut"
+ },
+ {
+  "id": "c600282c-227b-4ffc-b1ee-b5987609ee4f",
+  "name": "50's Prime Time Café",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "50sprimetimecaf"
+ },
+ {
+  "id": "1ae86482-6627-4229-814d-0f1ccebb20d4",
+  "name": "ABC Commissary",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "abccommissary"
+ },
+ {
+  "id": "83edcec8-7ff2-495e-9f61-fe596aa92447",
+  "name": "Backlot Express",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "backlotexpress"
+ },
+ {
+  "id": "07fc0229-4e50-419a-ba10-0ce07cc54a53",
+  "name": "BaseLine Tap House",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "baselinetaphouse"
+ },
+ {
+  "id": "a595b641-4472-4d2b-92b5-5a0e31785193",
+  "name": "Catalina Eddie's",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "catalinaeddies"
+ },
+ {
+  "id": "451855cc-d19e-40c3-838a-33c8fefe4af8",
+  "name": "Docking Bay 7 Food and Cargo",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "dockingbay7foodandcargo"
+ },
+ {
+  "id": "e2e6cccf-acf4-48f4-bbfb-47b712714583",
+  "name": "Dockside Diner",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "docksidediner"
+ },
+ {
+  "id": "904887b2-82b5-426c-b2b0-0b5d6977ff94",
+  "name": "Fairfax Fare",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "fairfaxfare"
+ },
+ {
+  "id": "7bf05bdc-8279-427b-8a6d-50fc62ef31cb",
+  "name": "Hollywood & Vine",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "hollywoodvine"
+ },
+ {
+  "id": "43891eb1-27bb-429e-b6b9-430b54f57858",
+  "name": "Kat Saka's Kettle",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "katsakaskettle"
+ },
+ {
+  "id": "6a696644-26ba-496e-8e2b-efbaad615785",
+  "name": "Milk Stand",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "milkstand"
+ },
+ {
+  "id": "f020b5e3-d26d-4339-83f9-0f1f858a0e40",
+  "name": "Oga's Cantina",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "ogascantinaatthewaltdisneyworldresort"
+ },
+ {
+  "id": "4ea1129c-749c-4be8-a0f9-9700740213fc",
+  "name": "Ronto Roasters",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "rontoroasters"
+ },
+ {
+  "id": "a8804f66-ed5c-4daa-99a1-bcddd2f1fca6",
+  "name": "Rosie's All-American Café",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "rosiesallamericancaf"
+ },
+ {
+  "id": "7a73a6df-4d33-4648-b3e3-57985f84f0ae",
+  "name": "Roundup Rodeo BBQ",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": null
+ },
+ {
+  "id": "d9dbd260-9e34-406d-abb7-19f9d733e577",
+  "name": "Sci-Fi Dine-In Theater Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "scifidineintheaterrestaurant"
+ },
+ {
+  "id": "917783a5-da9c-4c55-ac51-0ac1f8253131",
+  "name": "The Hollywood Brown Derby",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "thehollywoodbrownderby"
+ },
+ {
+  "id": "d2af9650-9f91-45ef-98be-de44b4b44c32",
+  "name": "The Hollywood Brown Derby Lounge",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "thehollywoodbrownderbylounge"
+ },
+ {
+  "id": "0beccd84-7a6d-454a-94d3-c8a3265e7e8d",
+  "name": "Tune-In Lounge",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "tuneinlounge"
+ },
+ {
+  "id": "07b8c193-a185-4559-a403-4d950c3b386d",
+  "name": "Woody's Lunch Box",
+  "resort": "Walt Disney World",
+  "park": "Disney's Hollywood Studios",
+  "slug": "woodyslunchbox"
+ },
+ {
+  "id": "5e3e0fa5-830f-48e7-aada-242e32bb5a7d",
+  "name": "Leaning Palms",
+  "resort": "Walt Disney World",
+  "park": "Disney's Typhoon Lagoon Water Park",
+  "slug": "leaningpalms"
+ },
+ {
+  "id": "5389f2e1-4e06-4b45-80ae-6049f805ec80",
+  "name": "Let's Go Slurpin'",
+  "resort": "Walt Disney World",
+  "park": "Disney's Typhoon Lagoon Water Park",
+  "slug": "letsgoslurpin"
+ },
+ {
+  "id": "2d10251f-240c-4e29-a6d6-191e2cff9975",
+  "name": "Lowtide Lou's",
+  "resort": "Walt Disney World",
+  "park": "Disney's Typhoon Lagoon Water Park",
+  "slug": "lowtidelous"
+ },
+ {
+  "id": "b8db6b26-dd1f-4048-9a07-97324ced97d9",
+  "name": "Typhoon Tilly's",
+  "resort": "Walt Disney World",
+  "park": "Disney's Typhoon Lagoon Water Park",
+  "slug": "typhoontillys"
+ },
+ {
+  "id": "eb6a60d7-b354-47a1-a091-0beb11b24188",
+  "name": "Akershus Royal Banquet Hall",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "akershusroyalbanquethall"
+ },
+ {
+  "id": "c9e1d1f6-021f-43f2-a14b-3e67f65adbc4",
+  "name": "Biergarten Restaurant",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "biergartenrestaurant"
+ },
+ {
+  "id": "25ec84ef-112f-424d-9fe0-5fc1fa9620a9",
+  "name": "Block & Hans",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "blockhans"
+ },
+ {
+  "id": "4807262a-ad16-4d43-a0d7-64b24603ef36",
+  "name": "Chefs de France",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "chefsdefrance"
+ },
+ {
+  "id": "419df435-6213-4d65-b0fc-8c0ad8379e11",
+  "name": "Choza de Margarita",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "chozademargarita"
+ },
+ {
+  "id": "c7444c22-4b35-4a9e-9cca-56ecc05376cc",
+  "name": "Connections Eatery",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "38892221-f69c-4913-97c9-7473c88854fa",
+  "name": "Coral Reef Restaurant",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "coralreefrestaurant"
+ },
+ {
+  "id": "0b543ab9-d6f2-4614-bc2c-c7c088d9a582",
+  "name": "Crêpes À Emporter by La Crêperie de Paris",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "0e673d4b-eee4-4735-ab65-be39bcd28d11",
+  "name": "Fife & Drum Tavern",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "fifedrumtavern"
+ },
+ {
+  "id": "344a6a81-2383-4d35-9ec3-93f5c3f033fe",
+  "name": "Funnel Cake",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "funnelcake"
+ },
+ {
+  "id": "95ab66f4-4e47-4f76-875f-45ae70831e2f",
+  "name": "GEO-82",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "302d424d-3c56-40e7-9785-fba2f62e5854",
+  "name": "GRAB-N-GOOF",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "outdoorkitchenthecitrusblossom"
+ },
+ {
+  "id": "d4179c4c-eb08-4559-aa7c-f9802fda641b",
+  "name": "Garden Grill Restaurant",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "gardengrillrestaurant"
+ },
+ {
+  "id": "85352291-58dd-4dd9-86d3-cba21cebb684",
+  "name": "Karamell-Küche",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "736b2e6c-daaf-45c4-ba9e-fb60d7cf92d6",
+  "name": "La Cava del Tequila",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "lacavadeltequila"
+ },
+ {
+  "id": "fc64aa10-290f-472e-9fab-4d649f53ab2d",
+  "name": "La Crêperie de Paris",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "5b7cf10a-763b-45ba-9049-87140270826f",
+  "name": "La Hacienda de San Angel",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "lahaciendadesanangel"
+ },
+ {
+  "id": "195fac06-ab2f-4655-8af7-b27adcdad54e",
+  "name": "La Poutinerie",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "3206e3a6-cbc3-4960-9700-163764bc47d6",
+  "name": "Le Cellier Steakhouse",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "lecelliersteakhouse"
+ },
+ {
+  "id": "1cf38b60-d075-495b-a92f-5a6a59d9e3db",
+  "name": "Les Vins des Chefs de France",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "lesvinsdeschefsdefrance"
+ },
+ {
+  "id": "93843fb0-ee5a-49c6-91a8-40a042e93865",
+  "name": "Monsieur Paul",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "monsieurpaul"
+ },
+ {
+  "id": "e8dccc86-cfb4-44c3-9a90-e95b88edbd21",
+  "name": "Nine Dragons Restaurant",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "ninedragonsrestaurant"
+ },
+ {
+  "id": "d3461b18-2d07-4c21-97a3-6c28fca94678",
+  "name": "Pizza al Taglio",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "58404f45-7e74-4c0c-b037-b903fa1066d2",
+  "name": "Refreshment Outpost",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "refreshmentoutpost"
+ },
+ {
+  "id": "ce284609-9d86-444e-af5a-6c0adb68b0aa",
+  "name": "Regal Eagle Smokehouse: Craft Drafts & Barbecue",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "regaleaglesmokehousecraftdraftsbarbecue"
+ },
+ {
+  "id": "6ecdbfc8-85c2-436d-893b-6db0f437b74a",
+  "name": "Rose & Crown Dining Room",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "rosecrowndiningroom"
+ },
+ {
+  "id": "91e9cda9-b39f-4a24-b63e-57bc1ba612f5",
+  "name": "Rose & Crown Pub",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "rosecrownpub"
+ },
+ {
+  "id": "07263f57-0431-4da2-a8b6-77d2965a6f83",
+  "name": "San Angel Inn Restaurante",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "sanangelinnrestaurante"
+ },
+ {
+  "id": "cf307ccb-8750-4cb9-ae54-d48bc9b34e2c",
+  "name": "Shiki-Sai Fireworks Dining Package",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "48e7f9f2-ddc3-4ced-8d11-a5cd968085c2",
+  "name": "Shiki-Sai: Sushi Izakaya",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "tokyodining"
+ },
+ {
+  "id": "3f3ef6db-69de-418a-8861-f541309cdb01",
+  "name": "Sommerfest",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "sommerfest"
+ },
+ {
+  "id": "15107c34-65a3-473c-aaeb-655b508f529d",
+  "name": "Space 220 Lounge",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "b772df79-1fca-4c0a-a2f3-88b22e63e7c3",
+  "name": "Space 220 Restaurant",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "space220comingsoon"
+ },
+ {
+  "id": "dbf4a977-a7b5-41db-a9b7-ecad65f9aa0f",
+  "name": "Spice Road Table",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "spiceroadtable"
+ },
+ {
+  "id": "db1bb4b3-36ff-40d7-bc65-45667eeb8aed",
+  "name": "Spice Road Table Bar",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "9cc8afdb-8e45-436f-96e5-72323d933423",
+  "name": "Swirled Showcase",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": null
+ },
+ {
+  "id": "8410885a-115d-4a5f-9cd5-08d0e659a603",
+  "name": "Takumi-Tei",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "takumitei"
+ },
+ {
+  "id": "74f13ee5-8e10-41a7-a19d-38e9c9582652",
+  "name": "Tangierine Café: Flavors of the Medina",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "tangierinecaf"
+ },
+ {
+  "id": "17d51899-7d6d-4cd7-93bb-4064a47d501b",
+  "name": "Teppan Edo",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "teppanedo"
+ },
+ {
+  "id": "802b79b0-6491-434d-b4b5-145387d62172",
+  "name": "Tutto Gusto Wine Cellar",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "tuttogustowinecellar"
+ },
+ {
+  "id": "e14e439d-d1aa-4f3a-90e9-60c524bd0b5a",
+  "name": "Tutto Italia Ristorante",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "tuttoitaliaristorante"
+ },
+ {
+  "id": "c63e29ac-f57f-4cd0-b998-799a2849dfa1",
+  "name": "UK Beer Cart",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "ukbeercart"
+ },
+ {
+  "id": "b83b6dc9-9573-4e15-ab00-9ed8a2334770",
+  "name": "Via Napoli Ristorante e Pizzeria",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "vianapoliristoranteepizzeria"
+ },
+ {
+  "id": "67186665-6756-4c29-9010-6efc222b2d9b",
+  "name": "Yorkshire County Fish Shop",
+  "resort": "Walt Disney World",
+  "park": "EPCOT",
+  "slug": "yorkshirecountyfishshop"
+ },
+ {
+  "id": "82483712-0603-4c67-8560-8a7364777940",
+  "name": "Astrofizz",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "coolship"
+ },
+ {
+  "id": "e847a8bd-7d21-432b-a7a1-f483517a22b5",
+  "name": "Be Our Guest Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "beourguestrestaurant"
+ },
+ {
+  "id": "48d0c81e-3f47-4ff9-aa3c-331cb83a0af9",
+  "name": "Casey's Corner",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "caseyscorner"
+ },
+ {
+  "id": "55bdcccc-217b-416c-b8b0-4b6a87d16179",
+  "name": "Cinderella's Royal Table",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "cinderellasroyaltable"
+ },
+ {
+  "id": "5af2c3a9-7697-414f-9642-6cb17a329613",
+  "name": "Columbia Harbour House",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "columbiaharbourhouse"
+ },
+ {
+  "id": "5135ff2e-2f42-4138-bc30-706eb25963e4",
+  "name": "Cosmic Ray's Starlight Café",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "cosmicraysstarlightcaf"
+ },
+ {
+  "id": "62eac07c-fa2d-45ab-a6e6-d8aa0054540d",
+  "name": "Energy Bytes",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": null
+ },
+ {
+  "id": "be2c6511-750b-4fa6-8332-606d4342f814",
+  "name": "Golden Oak Outpost",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "goldenoakoutpost"
+ },
+ {
+  "id": "6ea670b8-3097-4d60-b69c-94e16071da17",
+  "name": "Jungle Navigation Co. LTD Skipper Canteen",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "junglenavigationcoltdskippercanteen"
+ },
+ {
+  "id": "ae9a4a79-ccf1-4561-9a95-cf83d3007b98",
+  "name": "Liberty Tree Tavern",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "libertytreetavern"
+ },
+ {
+  "id": "819fd147-3f17-420a-9188-2ba4c544d761",
+  "name": "Main Street Confectionery",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": null
+ },
+ {
+  "id": "ab1b9ce7-aada-4b47-9fa0-1b178203d02b",
+  "name": "Pecos Bill Tall Tale Inn and Cafe",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "pecosbilltalltaleinnandcafe"
+ },
+ {
+  "id": "4bbaa21d-4203-494a-a120-b780dc7570ec",
+  "name": "Pinocchio Village Haus",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "pinocchiovillagehaus"
+ },
+ {
+  "id": "5f42b43a-e745-487b-9545-dd601f6984ce",
+  "name": "Sleepy Hollow",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "sleepyhollow"
+ },
+ {
+  "id": "a5098eb1-a673-47c2-b782-5c48bb83da17",
+  "name": "Sunshine Tree Terrace",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "sunshinetreeterrace"
+ },
+ {
+  "id": "646a3063-dc41-4671-bc0a-0958b95fb553",
+  "name": "The Beak and Barrel",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": null
+ },
+ {
+  "id": "c4b64a31-e855-46a9-9d1a-aa13c99e88af",
+  "name": "The Crystal Palace",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "thecrystalpalace"
+ },
+ {
+  "id": "697473c5-ae17-4c3f-80c7-09a813248013",
+  "name": "The Diamond Horseshoe",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "thediamondhorseshoe"
+ },
+ {
+  "id": "4c1ccb9e-ff1d-40b6-9454-72c261dd8b00",
+  "name": "The Friar's Nook",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "thefriarsnook"
+ },
+ {
+  "id": "1b9a6231-b658-470f-92cc-808925280214",
+  "name": "The Lunching Pad",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "thelunchingpad"
+ },
+ {
+  "id": "75d43698-162c-47af-a607-e879637dc8e7",
+  "name": "The Plaza Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "theplazarestaurant"
+ },
+ {
+  "id": "83201c33-ce99-45ae-a595-f47e61d73739",
+  "name": "Tony's Town Square Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "tonystownsquarerestaurant"
+ },
+ {
+  "id": "8073763e-19ee-4506-a823-a902e8e7f3b9",
+  "name": "Tortuga Tavern",
+  "resort": "Walt Disney World",
+  "park": "Magic Kingdom Park",
+  "slug": "tortugatavern"
+ },
+ {
+  "id": "1d659f1e-9aa9-45ff-8aa9-a75bd55a7c49",
+  "name": "'Ohana",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "ohana"
+ },
+ {
+  "id": "dd39f200-6465-42e6-bff1-6a8b25512e6e",
+  "name": "1900 Park Fare",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "1900parkfare"
+ },
+ {
+  "id": "f9874b73-3dd0-444a-a172-678399aa1bbb",
+  "name": "AbracadaBar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "e943c0e3-4c73-40a5-8501-899ec0b3d047",
+  "name": "Ale & Compass Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "alecompasslounge"
+ },
+ {
+  "id": "422e7379-741e-4935-a2f7-6bee7662d81d",
+  "name": "Ale & Compass Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "alecompassrestaurant"
+ },
+ {
+  "id": "6ae4c9eb-6be9-4e17-bce4-00700149cb74",
+  "name": "Ale & Compass Restaurant To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "alecompassrestauranttogo"
+ },
+ {
+  "id": "d7618a38-f383-4ea6-b77c-9f27912f841b",
+  "name": "Amare",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "22a28609-167e-4303-ae86-36055bcce908",
+  "name": "Amorette's Patisserie",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "a2c20fd0-d7a4-4673-9f90-38ad076f408c",
+  "name": "B.B. Wolf's Sausage Co.",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "986befe9-0a11-44a8-8751-5a85d5695dea",
+  "name": "Backstretch Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "backstretchpoolbar"
+ },
+ {
+  "id": "cdac4278-10ed-4f92-88c5-be097653ec34",
+  "name": "Barcelona Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "barcelonalounge"
+ },
+ {
+  "id": "217d0aab-38b2-4581-8b75-0275e54a53e8",
+  "name": "Barefoot Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "barefootpoolbar"
+ },
+ {
+  "id": "22a519f8-1f81-4819-9068-80531c34e59a",
+  "name": "Beach Club Marketplace",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "beachclubmarketplace"
+ },
+ {
+  "id": "d51d654d-6fd0-4814-8427-2709c527e0fc",
+  "name": "Beaches & Cream Soda Shop",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "beachescreamsodashop"
+ },
+ {
+  "id": "6ec34380-bad9-41af-a3e9-a4da466b6552",
+  "name": "Beaches Pool Bar & Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "beachespoolbargrill"
+ },
+ {
+  "id": "a12ad3ee-7bc6-4d65-a30a-f5c81543e754",
+  "name": "Belle Vue Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "bellevuelounge"
+ },
+ {
+  "id": "99fc0f7d-6962-4fb0-b194-748cc2a1bf4b",
+  "name": "Blue Ribbon Corn Dogs",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "622b1134-59ef-4055-956e-883cff0c99cc",
+  "name": "BoardWalk Deli",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "0f6fe5ca-1c0f-4334-aed1-3ebf1c7afaaa",
+  "name": "BoardWalk Joe's Marvelous Margaritas",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "2d7534b1-2d17-4462-99ee-7ef02f802ded",
+  "name": "Boatwright's Dining Hall",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "boatwrightsdininghall"
+ },
+ {
+  "id": "eb63c263-1589-40f2-82fc-c7865eb1feb0",
+  "name": "Boma - Flavors of Africa",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "bomaflavorsofafrica"
+ },
+ {
+  "id": "036f88f3-6058-4c96-85f5-ac6938b85e73",
+  "name": "Bourbon Steak - A Michael Mina Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "fa026fee-fb06-4112-b00f-5f0eae7e78c3",
+  "name": "Bourbon Steak Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "49dfad5e-0f82-42dd-9ded-5a5d3cac11a6",
+  "name": "California Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "californiagrill"
+ },
+ {
+  "id": "c204efe2-45b0-48e0-af0f-5553542ea308",
+  "name": "Capa",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "ff9aa159-0b93-400b-a3ad-1b2a0640c132",
+  "name": "Cape May Cafe",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "capemaycafe"
+ },
+ {
+  "id": "3a5eb21b-7463-48c0-8167-4e784c2e011b",
+  "name": "Cape Town Lounge and Wine Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "capetownloungeandwinebar"
+ },
+ {
+  "id": "8e4b1d61-8a89-4407-8d27-c2c247746a23",
+  "name": "Capt. Cook's",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "captcooks"
+ },
+ {
+  "id": "a657b1d5-5148-4cc2-a412-ad8ebf6e9b03",
+  "name": "Centertown Market",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "centertownmarket"
+ },
+ {
+  "id": "2814cb10-6acf-4cd9-bfae-1e5538fd1d20",
+  "name": "Chef Art Smith's Homecomin'",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "853687d0-5de6-43ec-b0c3-ac43f1217e77",
+  "name": "Chef Mickey's",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "chefmickeys"
+ },
+ {
+  "id": "6caee4a3-b7fc-4d6d-b9f2-bee984503230",
+  "name": "Chill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "chill"
+ },
+ {
+  "id": "e92b3a87-ce48-4cd8-b5ed-f3933632f3ff",
+  "name": "Chip 'n' Dale's Café at Disney's Lake Buena Vista Golf Course",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "chipndalescaf"
+ },
+ {
+  "id": "87b7d1c3-30d7-48ac-b5f9-b282575e138c",
+  "name": "Chip 'n' Dale’s Deli at Disney's Palm, Magnolia, and Oak Trail Golf Courses",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "chipndalesdeli"
+ },
+ {
+  "id": "927d02df-e29e-406a-b6e0-db8ae62e6f8b",
+  "name": "City Works Eatery & Pour House",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "46345e53-ea02-46e8-a39a-d7376959cf4c",
+  "name": "Contempo Café",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "contempocaf"
+ },
+ {
+  "id": "712e539e-8d5e-416e-98f7-c0602bdd6433",
+  "name": "Courtyard Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "courtyardpoolbar"
+ },
+ {
+  "id": "04dec3b6-a1f6-458c-bf65-587b53fbacf8",
+  "name": "Cove Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "covebar"
+ },
+ {
+  "id": "a5171a3d-829b-4ec8-ae0b-edf2c2f32309",
+  "name": "Crew's Cup Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "crewscuplounge"
+ },
+ {
+  "id": "12bcd0e4-be02-4e6f-ba9b-a3686fd826fc",
+  "name": "Crockett's Tavern",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "crockettstavern"
+ },
+ {
+  "id": "e348336b-a035-44dc-bf7f-c9ebf0389a9d",
+  "name": "Cítricos",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "ctricos"
+ },
+ {
+  "id": "d2581db2-025f-4192-b18a-b3dfaee963cd",
+  "name": "Cítricos Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "ctricoslounge"
+ },
+ {
+  "id": "21a5ca02-34cf-4b06-96b4-36b55da0f58b",
+  "name": "D-Luxe Burger",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "d9e4e3df-1e1b-4ac2-85f2-70c71f34a342",
+  "name": "Dahlia Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "dahlialounge"
+ },
+ {
+  "id": "761ab303-115c-4a74-90f5-e1ba1bb820e7",
+  "name": "Dockside Margaritas",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "6bad073d-3dd9-4500-bb85-29fa06c94ff8",
+  "name": "Enchanted Rose",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "enchantedrose"
+ },
+ {
+  "id": "bf710850-a3e1-4974-92ab-30553256e2e4",
+  "name": "End Zone Food Court",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "endzonefoodcourt"
+ },
+ {
+  "id": "20fd5ca8-4803-4a63-8c7b-f5bf7f0ac438",
+  "name": "Enzo's Hideaway",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "600f46aa-d8eb-43df-844e-74ee9d3503d3",
+  "name": "Everything POP Shopping & Dining",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "everythingpopshoppingdining"
+ },
+ {
+  "id": "98861b0f-c8fd-430d-b6a5-58968cc14dd3",
+  "name": "Flying Fish",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "147d2b17-6401-47ed-803d-56f0245b31ac",
+  "name": "Frontera Cocina",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "697cbc3f-bf13-4e68-b980-c9059a762c0d",
+  "name": "Garden Grove",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "gardengrove"
+ },
+ {
+  "id": "e65586d1-5fe7-4ca9-82b6-c9c532b962fc",
+  "name": "Gasparilla Island Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "gasparillaislandgrill"
+ },
+ {
+  "id": "3370e827-41da-4ae4-893e-84989d142281",
+  "name": "Geyser Point Bar & Grill To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "geyserpointbargrilltogo"
+ },
+ {
+  "id": "fbaa3eeb-6b68-4962-96c3-57b6eeb69559",
+  "name": "Good's Food to Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "goodsfoodtogo"
+ },
+ {
+  "id": "12848c7f-1560-481c-8766-c744f127cad2",
+  "name": "Goofy's Candy Company",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "99ab827f-6beb-46ef-8538-8e97bb8f667b",
+  "name": "Grand Floridian Cafe",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "grandfloridiancafe"
+ },
+ {
+  "id": "c6746ddb-0e79-43c4-8ac9-683e1be90842",
+  "name": "Grandstand Spirits",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "grandstandspirits"
+ },
+ {
+  "id": "b8472783-3e75-477e-bc72-ce28bf3bd7b3",
+  "name": "Gurgling Suitcase",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "gurglingsuitcase"
+ },
+ {
+  "id": "7f6e15e9-f2cf-4965-90a5-5aa1f79a24ab",
+  "name": "Hoop-Dee-Doo Musical Revue",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "4fd47b79-1d70-46b7-b245-93aa6ff05141",
+  "name": "House of Blues® Restaurant & Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "e89efc5c-f85c-488b-8b27-c96dd0017857",
+  "name": "Hurly-Burly",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "00d453d3-2d5f-498b-996c-582e9364f224",
+  "name": "Hurricane Hanna's Waterside Bar and Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "hurricanehannaswatersidebarandgrill"
+ },
+ {
+  "id": "fd30e928-a22b-4d93-930e-64bfb84aabda",
+  "name": "Il Mulino",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "ilmulino"
+ },
+ {
+  "id": "dcbfe131-0e85-4cec-aaa1-c16fc557bf9e",
+  "name": "Il Mulino Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "ilmulinolounge"
+ },
+ {
+  "id": "d8ba0af6-ebaf-4142-848e-a3ddebdc3271",
+  "name": "Intermission Food Court",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "intermissionfoodcourt"
+ },
+ {
+  "id": "651211a5-4521-47e8-9f4c-38c470750ab1",
+  "name": "Jaleo® by José Andrés",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "fe6cee07-ba72-42c1-abfa-0ce4ef360eb4",
+  "name": "Jiko - The Cooking Place",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "jikothecookingplace"
+ },
+ {
+  "id": "9bc68422-dca0-4dcd-b6a5-5df122a4a521",
+  "name": "Jock Lindsey's Hangar Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "76ecfafe-cd72-4080-8a86-95d0b075f834",
+  "name": "Kidani Village Breakfast at Sanaa",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "94de4db5-70ab-4bd8-b50b-fa9914f1b8e4",
+  "name": "Kimonos Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "kimonoslounge"
+ },
+ {
+  "id": "656eac75-9849-43fe-a24d-165e63ffb342",
+  "name": "Kona Cafe",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "konacaf"
+ },
+ {
+  "id": "5469e84c-b144-4a9e-82d3-8e3d8c61e6d0",
+  "name": "Kona Café To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "konacaftogo"
+ },
+ {
+  "id": "915d855f-1af8-45f0-878c-e0cc4ed832c7",
+  "name": "Laguna Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "lagunabar"
+ },
+ {
+  "id": "7df156cf-5bb2-4740-9890-396eda083870",
+  "name": "Landscape of Flavors",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "landscapeofflavors"
+ },
+ {
+  "id": "5117dd93-1fb1-4215-aa2f-af520bb316f2",
+  "name": "Lava Lounge at Rainforest Café®",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "0ed535cd-35da-4ec0-834b-ea9d1a025b15",
+  "name": "Leaping Horse Libations",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "leapinghorselibations"
+ },
+ {
+  "id": "d5ae53c1-d58c-4d8b-80ad-34115b1e9010",
+  "name": "MacGUFFINS",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "f3993d8a-77af-461e-83dd-b2f16c788837",
+  "name": "Maji Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "majipoolbar"
+ },
+ {
+  "id": "356c4a8d-bf37-4a62-92fd-50eb9a9abf33",
+  "name": "Mardi Grogs",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "mardigrogs"
+ },
+ {
+  "id": "a3a16def-102d-4264-b181-f4e6a19396bf",
+  "name": "Maria & Enzo's Ristorante",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "a0c546b1-e915-4d6d-9c93-d013c77aa620",
+  "name": "Martha's Vineyard",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "marthasvineyard"
+ },
+ {
+  "id": "f432be3e-6900-4146-8ed5-c02210e4666e",
+  "name": "Maya Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "mayagrill"
+ },
+ {
+  "id": "01aa2148-93bd-410d-bf3d-5af2897b36c7",
+  "name": "Meadow Snack Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "meadowsnackbar"
+ },
+ {
+  "id": "5b1f886f-4f27-4dbe-aa05-3e3701046d57",
+  "name": "Morimoto Asia™",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "682db3a8-1bd3-4ff1-8efb-d3522c52b1cc",
+  "name": "Morimoto Asia™ Street Food",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "f75539ef-a195-449d-bfb6-4c1b3667f7df",
+  "name": "Muddy Rivers",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "muddyrivers"
+ },
+ {
+  "id": "b61e138d-d0bd-4b3a-bb2c-7f899d116b9b",
+  "name": "Narcoossee's",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "narcoossees"
+ },
+ {
+  "id": "5e5e824f-9b67-4e8f-bedf-9b618121ef23",
+  "name": "Oasis Bar & Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "oasisbargrill"
+ },
+ {
+  "id": "ae1fe649-d98a-4d22-be7b-8555495c808c",
+  "name": "Olivia's Cafe",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "oliviascafe"
+ },
+ {
+  "id": "8c1df0de-9f41-4a13-8bb2-4c2e309f757c",
+  "name": "Olivia's Cafe To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "oliviascafetogo"
+ },
+ {
+  "id": "c379ee2d-c4fd-4f7c-a017-2a7155af75e0",
+  "name": "On the Rocks Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "ontherockspoolbar"
+ },
+ {
+  "id": "4c58f313-25f8-49ca-9820-483de2005c39",
+  "name": "Outer Rim",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "outerrim"
+ },
+ {
+  "id": "2c6deb77-9c18-4c8d-8b41-685be62302ad",
+  "name": "Paddlefish",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "e34b847d-fe0e-4a53-8d3b-3b03b1454ff2",
+  "name": "Paradiso 37, Taste of the Americas",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "efd07524-9f93-480b-9857-8fc199dbf1bd",
+  "name": "Petals Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "petalspoolbar"
+ },
+ {
+  "id": "8ec0e5c1-d4bf-4ec9-8128-8ae26db69122",
+  "name": "Phins",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "phins"
+ },
+ {
+  "id": "70095548-6b95-472d-9d1a-b59db1181b59",
+  "name": "Pizza Window",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "7ad20d41-f0dd-4f37-aad1-9896a69f03f8",
+  "name": "Planet Hollywood®",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "02950273-1937-49b0-bc99-161b81e8a8c9",
+  "name": "Primo Piatto",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "primopiatto"
+ },
+ {
+  "id": "e711b7c8-5fd2-4a92-89ae-2b1ad9f9f312",
+  "name": "Raglan Road™ Irish Pub and Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "05f7fd04-0f74-4311-ab99-87fc46f8d3e2",
+  "name": "Rainforest Cafe® at Disney Springs Marketplace",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "0dad12c1-9ffb-4355-92af-6edd6dd96474",
+  "name": "Ravello",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "6a8d3517-dc06-4d1c-bc38-5a84f397c8a9",
+  "name": "River Roost",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "riverroost"
+ },
+ {
+  "id": "022e78f5-e107-412a-9c30-4554d8fdea4a",
+  "name": "Riverside Mill Food Court",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "riversidemillfoodcourt"
+ },
+ {
+  "id": "aa846b60-a845-4e66-979c-ad7ff75b2dbb",
+  "name": "Rix Sports Bar & Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "rixsportsbargrill"
+ },
+ {
+  "id": "18326b42-c7ce-4c91-8f0f-48a3ef32883e",
+  "name": "Roaring Fork",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "roaringfork"
+ },
+ {
+  "id": "eec1ffbe-6654-443c-b017-a6adf4cca63f",
+  "name": "Rosa Mexicano",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "1559a263-eaac-48e3-9248-b669c0d41b9e",
+  "name": "Rosa Mexicano Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "8c794f55-b178-4fd5-83fa-d968e6e99621",
+  "name": "STK® Steakhouse",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "29d9849e-db54-4d23-a561-bf2a35ef3a98",
+  "name": "Sanaa",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "sanaa"
+ },
+ {
+  "id": "8b5b9a00-b2cc-4bd9-bf39-9c312c17e8cb",
+  "name": "Sanaa Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "sanaalounge"
+ },
+ {
+  "id": "e69efbab-0a62-48c7-b6e9-3f3a2a91546c",
+  "name": "Sanaa To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "sanaatogo"
+ },
+ {
+  "id": "e72f94ac-d373-49b5-b878-6d5afe1d94e6",
+  "name": "Sassagoula Floatworks and Food Factory",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "sassagoulafloatworksandfoodfactory"
+ },
+ {
+  "id": "fae25d37-21e4-4b5f-ae0c-44cf34d6e6d6",
+  "name": "Scat Cat's Club - Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "scatcatsclub"
+ },
+ {
+  "id": "ac6c2ad6-c1c1-4f41-824c-8820dd3d0d26",
+  "name": "Sebastian's Bistro",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "sebastiansbistro"
+ },
+ {
+  "id": "7a5d58a4-c26a-401a-895e-0c8def120aef",
+  "name": "Siestas Cantina",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "siestascantina"
+ },
+ {
+  "id": "fdecfd5f-5b62-4f3b-a876-67483da54fbd",
+  "name": "Silver Screen Spirits Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "silverscreenspiritspoolbar"
+ },
+ {
+  "id": "af866eb1-3b17-4232-8758-1d5b1edaf977",
+  "name": "Singing Spirits Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "singingspiritspoolbar"
+ },
+ {
+  "id": "07858618-c4a5-491c-a46e-f23e1e8f702e",
+  "name": "Splitsville Dining Room",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "87dd7f98-bbcd-4e31-82a2-88f78fcc3e20",
+  "name": "Spyglass Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "spyglassgrill"
+ },
+ {
+  "id": "54342abd-9ca5-4c22-8248-b375f19a05bf",
+  "name": "Stargazers Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "2eb9f5eb-2bff-42d7-8d90-a84bb6a4f16b",
+  "name": "Steakhouse 71",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "f1c9dfd6-97b1-48b4-b6c3-2dd12401b071",
+  "name": "Steakhouse 71 Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "b4938929-0b01-45fe-aff4-47e26663e4aa",
+  "name": "Steakhouse 71 To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "d90f0556-52f4-41d2-b21f-67d36fafbf75",
+  "name": "Stir",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "219f8463-0cb6-4434-80f8-87f289ea0eb9",
+  "name": "Story Book Dining at Artist Point with Snow White",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "storybookdiningatartistpointwithsnowwhite"
+ },
+ {
+  "id": "5ef3a16f-5567-4b28-ac3f-0fe14efec9ad",
+  "name": "Summer House on the Lake",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "4f4a2520-0f1c-4ca0-b50d-5330f86dac0d",
+  "name": "T-REX ™",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "0f7d52ca-25fe-4eea-ad92-129268351342",
+  "name": "Tambu Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "tambulounge"
+ },
+ {
+  "id": "517915ac-153d-4d46-a5ce-49caa99a24ea",
+  "name": "Terralina Crafted Italian",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "101a254c-a268-4984-a149-eb1bde8346f0",
+  "name": "Territory Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "territorylounge"
+ },
+ {
+  "id": "7478a4e9-14b3-4d4f-9bff-2e468b55fe16",
+  "name": "The Artist's Palette",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "theartistspalette"
+ },
+ {
+  "id": "15bbd788-0124-4da9-b8ab-b8bfb113a07d",
+  "name": "The BOATHOUSE®: Great Food, Waterfront Dining, Dream Boats™",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "4a2e8a2d-b1f4-43b6-bac6-9cac176f144a",
+  "name": "The Basket at Wine Bar George",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "32dac17d-c445-4820-b4ab-bee0fadbd360",
+  "name": "The Cake Bake Shop® Restaurant by Gwendolyn Rogers",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "7ea07ed3-df47-4354-84e6-d300e7e11ea8",
+  "name": "The Daily Poutine",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "a2ab141b-687d-48aa-8638-c6e7951990f9",
+  "name": "The Dining Room at Victoria & Albert’s",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "victoriaalberts"
+ },
+ {
+  "id": "d24faecc-6cfe-4e76-ac1a-0206ece69ac0",
+  "name": "The Drop Off Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "thedropoffpoolbar"
+ },
+ {
+  "id": "2c304546-14c9-43ce-afc9-882e584ea739",
+  "name": "The Edison",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "82449365-24c5-4acd-abe9-cd020dc498e5",
+  "name": "The Front Porch at House of Blues",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "07e7c55b-e54e-4f84-b107-78aae3061d7b",
+  "name": "The Mara",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "themara"
+ },
+ {
+  "id": "66579019-66f1-4a15-9b84-f5338184e8e7",
+  "name": "The Market at Ale & Compass",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "themarketatalecompass"
+ },
+ {
+  "id": "3cbacc29-d05a-46a3-89fc-9df43ceb019b",
+  "name": "The Paddock Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "thepaddockgrill"
+ },
+ {
+  "id": "015bc3b1-33e1-4eb6-9892-8fcea6b7bc39",
+  "name": "The Perch at Disney's Grand Floridian Resort & Spa",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "632f8143-8e89-44f1-9c38-9b922d638385",
+  "name": "The Sand Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "thesandbar"
+ },
+ {
+  "id": "77f5f20d-b201-4278-8467-229707d6ee3e",
+  "name": "The Smokehouse at House of Blues®",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "d56a99da-8d1c-47c9-bb42-220806da3d48",
+  "name": "The Turf Club Bar and Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "theturfclubbarandgrill"
+ },
+ {
+  "id": "ac71f994-5833-4a4d-8a67-15714e08b2e6",
+  "name": "The Turf Club Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "theturfclublounge"
+ },
+ {
+  "id": "aea9b86e-5907-40ab-8352-c6fc2945c12c",
+  "name": "Three Bridges Bar & Grill To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "threebridgesbarandgrillatvilladellagotogo"
+ },
+ {
+  "id": "1a69ad26-a166-4c00-a1c1-6c1e03008d62",
+  "name": "Three Bridges Bar and Grill at Villa del Lago",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "threebridgesbarandgrillatvilladellago"
+ },
+ {
+  "id": "f0437f34-d2fa-4a48-a6cc-d0402f3cd69e",
+  "name": "Todd English's bluezoo",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "toddenglishsbluezoo"
+ },
+ {
+  "id": "8998c35b-722b-4b0c-9379-95b09c92d774",
+  "name": "Todd English's bluezoo Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "toddenglishsbluezoolounge"
+ },
+ {
+  "id": "09199619-0400-4010-af4c-c7d6d6617e70",
+  "name": "Toledo - Tapas, Steak & Seafood",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "toledotapassteakseafood"
+ },
+ {
+  "id": "3b20cc04-567d-4272-b582-c009ef050424",
+  "name": "Topolino's Terrace – Flavors of the Riviera",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "topolinosterraceflavorsoftheriviera"
+ },
+ {
+  "id": "4c41aa4f-556f-40bb-93ff-f0eef4ff2038",
+  "name": "Trader Sam's Grog Grotto",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "tradersamsgroggrotto"
+ },
+ {
+  "id": "0db79a3d-bbdd-4c8e-94b0-a49071fabe8a",
+  "name": "Trader Sam's Tiki Terrace",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "tradersamstikiterrace"
+ },
+ {
+  "id": "c378fc14-0b9d-4357-966e-052f7c37a850",
+  "name": "Trail's End Restaurant",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "pjssoutherntakeout"
+ },
+ {
+  "id": "8a3e8d45-f7f8-4b26-a237-2e3d2d6033bf",
+  "name": "Trattoria al Forno",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "84804c99-aa07-424a-a537-1d0fe0449000",
+  "name": "Trattoria al Forno To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "aae7a379-1f07-4056-a818-8eefe275e722",
+  "name": "Turtle Shack Poolside Snacks",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "turtleshackpoolsidesnacks"
+ },
+ {
+  "id": "6602190a-6e64-4f14-8855-d9708136a967",
+  "name": "Uzima Springs Pool Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "uzimaspringspoolbar"
+ },
+ {
+  "id": "514be058-91fc-4bf5-8c03-050f148ec765",
+  "name": "Victoria Falls Lounge",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "victoriafallslounge"
+ },
+ {
+  "id": "e64c1b8e-8a9e-4479-b0c9-9c80043edf19",
+  "name": "Wailulu Bar & Grill",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "552f123b-b403-4201-9fc5-091cf93a84eb",
+  "name": "Wailulu Bar & Grill Breakfast",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "655be8b3-973e-4e65-892c-1ca278251de7",
+  "name": "Wailulu Bar & Grill To Go",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "babeeb66-7289-4665-ba04-395f40358c8f",
+  "name": "Whispering Canyon Cafe",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "whisperingcanyoncafe"
+ },
+ {
+  "id": "017be6c6-f85a-4e1c-b2dd-e5634de9d2f6",
+  "name": "Wine Bar George – A Restaurant & Bar",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "b2f43002-bbac-46f4-8260-74398b049dc7",
+  "name": "World Premiere Food Court",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "worldpremierefoodcourt"
+ },
+ {
+  "id": "12a0dc40-e3cd-409d-b82f-ede9e7136a81",
+  "name": "Yachtsman Steakhouse",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": "yachtsmansteakhouse"
+ },
+ {
+  "id": "7ecb9219-1f28-4b76-af97-afd1f7ddb769",
+  "name": "YeSake Kiosk",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ },
+ {
+  "id": "2c3dc890-9640-4577-a0bf-edfc0d35a420",
+  "name": "eet by Maneet Chauhan",
+  "resort": "Walt Disney World",
+  "park": "Outside parks",
+  "slug": null
+ }
+]

@@ -35,9 +35,45 @@ function parkNow(offsetMin) {
   const day = d.getUTCDay();
   return {
     hour: d.getUTCHours(),
+    dow: day,
     dayType: day === 0 || day === 6 ? 'weekend' : 'weekday',
     dateKey: d.toISOString().slice(0, 10),
   };
+}
+
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+function minutesAgo(ts) {
+  if (!ts) return null;
+  const t = typeof ts === 'number' ? ts : Date.parse(ts);
+  if (Number.isNaN(t)) return null;
+  const m = Math.max(0, Math.floor((Date.now() - t) / 60000));
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m} min ago`;
+  const h = Math.round(m / 60);
+  return `${h} hr${h === 1 ? '' : 's'} ago`;
+}
+
+// The best "typical day" curve we have: this exact weekday if we've seen enough
+// of it, otherwise weekday/weekend.
+function typicalFor(ride, dow, dayType) {
+  const t = ride.typical;
+  if (!t) return null;
+  const day = t.dow && t.dow[dow];
+  if (day && day.filter((v) => v != null).length >= 4) return day;
+  const fallback = t[dayType];
+  return fallback && fallback.some((v) => v != null) ? fallback : null;
+}
+
+function extremes(curve) {
+  if (!curve) return null;
+  let busiest = null, quietest = null;
+  curve.forEach((v, h) => {
+    if (v == null) return;
+    if (!busiest || v > busiest.wait) busiest = { hour: h, wait: v };
+    if (!quietest || v < quietest.wait) quietest = { hour: h, wait: v };
+  });
+  return busiest ? { busiest, quietest } : null;
 }
 
 function fmtHour(h) {
@@ -66,6 +102,7 @@ function parseLive(json) {
     const q = e.queue || {};
     map[e.id] = {
       status: e.status,
+      updated: e.lastUpdated || null,
       wait: q.STANDBY && q.STANDBY.waitTime != null ? q.STANDBY.waitTime : null,
       multi: q.RETURN_TIME ? q.RETURN_TIME.state : null,
       single: q.PAID_RETURN_TIME
@@ -78,7 +115,7 @@ function parseLive(json) {
 
 // What history says about a ride right now
 function outlook(ride, now, liveWait) {
-  const typ = ride.typical && ride.typical[now.dayType];
+  const typ = typicalFor(ride, now.dow, now.dayType);
   if (!typ) return { trend: 'unknown' };
   const cur = typ[now.hour] != null ? typ[now.hour] : liveWait;
   const next = [1, 2, 3].map((i) => typ[now.hour + i]).filter((v) => v != null);
@@ -137,6 +174,7 @@ export default function App() {
   const [coords, setCoords] = useState(null);
   const [foodOpen, setFoodOpen] = useState(false);
   const [mood, setMood] = useState(null);
+  const [sortBy, setSortBy] = useState('best'); // 'best' | 'area'
   const [, setTick] = useState(0);
   const loaded = useRef(false);
 
@@ -330,7 +368,7 @@ export default function App() {
     );
   }
 
-  const updatedText = updatedAt ? `Updated ${Math.max(0, Math.round((Date.now() - updatedAt) / 60000))} min ago` : 'Loading live waits…';
+  const updatedText = updatedAt ? `Updated ${minutesAgo(updatedAt)}` : 'Loading live waits…';
   const refresh = <RefreshControl refreshing={refreshing} onRefresh={onPull} />;
 
   // ----- Ride detail -----
@@ -338,8 +376,15 @@ export default function App() {
     const ride = park.rides.find((r) => r.id === detailId);
     const l = live[ride.id] || {};
     const look = outlook(ride, now, l.wait);
-    const typ = ride.typical && ride.typical[now.dayType];
+    const typ = typicalFor(ride, now.dow, now.dayType);
     const hours = typ ? typ.map((v, h) => ({ v, h })).filter((x) => x.v != null) : [];
+    const today = extremes(typ);
+    const week = [1, 2, 3, 4, 5, 6, 0].map((d) => {
+      const curve = ride.typical && ride.typical.dow && ride.typical.dow[d];
+      const ex = curve && curve.filter((v) => v != null).length >= 4 ? extremes(curve) : null;
+      return { d, ex };
+    }).filter((x) => x.ex);
+    const lastUpd = minutesAgo(l.updated);
     const max = Math.max(1, ...hours.map((x) => x.v));
     const ll = lightningLane(l, look);
     const tone = TONES[ll.tone];
@@ -352,11 +397,32 @@ export default function App() {
           </Pressable>
         </View>
         <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
+          <Text style={s.kicker}>{ride.land}</Text>
           <Text style={s.h1}>{ride.name}</Text>
           <Text style={s.big}>{l.status && l.status !== 'OPERATING' ? 'Temporarily closed' : l.wait != null ? `${l.wait} min wait now` : 'No wait posted'}</Text>
 
+          <Text style={s.mutedSmall}>{lastUpd ? `Wait time last updated ${lastUpd}` : updatedText}</Text>
+
+          {today ? (
+            <View style={s.card}>
+              <Text style={s.h3}>A typical {DAY_NAMES[now.dow]}</Text>
+              <View style={s.row}>
+                <View style={[s.extreme, { backgroundColor: '#FEF2F2' }]}>
+                  <Text style={s.mutedSmall}>Busiest</Text>
+                  <Text style={s.extremeValue}>{fmtHour(today.busiest.hour)}</Text>
+                  <Text style={s.mutedSmall}>about {today.busiest.wait} min</Text>
+                </View>
+                <View style={[s.extreme, { backgroundColor: '#F0FDF4' }]}>
+                  <Text style={s.mutedSmall}>Shortest</Text>
+                  <Text style={s.extremeValue}>{fmtHour(today.quietest.hour)}</Text>
+                  <Text style={s.mutedSmall}>about {today.quietest.wait} min</Text>
+                </View>
+              </View>
+            </View>
+          ) : null}
+
           <View style={s.card}>
-            <Text style={s.h3}>Typical {now.dayType} waits</Text>
+            <Text style={s.h3}>Typical waits by hour</Text>
             {hours.length === 0 ? (
               <Text style={s.muted}>Not enough history yet. This fills in as your logger collects data over the next few days.</Text>
             ) : (
@@ -377,6 +443,24 @@ export default function App() {
               </>
             )}
           </View>
+
+          {week.length > 0 ? (
+            <View style={s.card}>
+              <Text style={s.h3}>Each day of the week</Text>
+              {week.map(({ d, ex }) => (
+                <View key={d} style={[s.weekRow, d === now.dow && { backgroundColor: '#F1F5F9' }]}>
+                  <Text style={[s.rowTitle, { width: 96 }]}>{DAY_NAMES[d].slice(0, 3)}{d === now.dow ? ' (today)' : ''}</Text>
+                  <Text style={[s.mutedSmall, { flex: 1 }]}>Shortest {fmtHour(ex.quietest.hour)} · {ex.quietest.wait} min</Text>
+                  <Text style={[s.mutedSmall, { flex: 1, textAlign: 'right' }]}>Busiest {fmtHour(ex.busiest.hour)} · {ex.busiest.wait} min</Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View style={s.card}>
+              <Text style={s.h3}>Each day of the week</Text>
+              <Text style={s.muted}>Busiest and shortest times for each day will appear once a few weeks of waits have been logged.</Text>
+            </View>
+          )}
 
           {look.best ? (
             <View style={[s.card, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}>
@@ -433,6 +517,7 @@ export default function App() {
             <View style={s.hero}>
               <Text style={s.heroKicker}>RIDE NEXT</Text>
               <Text style={s.heroTitle}>{top.name}</Text>
+              <Text style={{ color: '#CBD5E1', fontSize: 14, marginTop: -6 }}>{top.land}</Text>
               <View style={s.statRow}>
                 <Stat label="Wait now" value={top.posted ? `${top.wait} min` : 'No wait'} />
                 {top.look.later != null ? <Stat label="Next few hours" value={`~${top.look.later} min`} /> : null}
@@ -504,15 +589,33 @@ export default function App() {
             </View>
           ) : null}
 
-          {rest.length > 0 ? <Text style={s.kicker}>Rest of your list</Text> : null}
-          {rest.map((r) => (
-            <Pressable key={r.id} style={s.rideRow} onPress={() => { setDetailId(r.id); setScreen('detail'); }} accessibilityRole="button">
+          {rest.length > 0 ? (
+            <View style={s.rowBetween}>
+              <Text style={s.kicker}>Rest of your list</Text>
+              <View style={s.toggle}>
+                {[['best', 'Best next'], ['area', 'By area']].map(([k, label]) => (
+                  <Pressable key={k} onPress={() => setSortBy(k)} accessibilityRole="button" accessibilityState={{ selected: sortBy === k }}
+                    style={[s.toggleBtn, sortBy === k && s.toggleBtnOn]}>
+                    <Text style={[s.toggleText, sortBy === k && { color: '#fff' }]}>{label}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          ) : null}
+          {(sortBy === 'area'
+            ? [...rest].sort((a, b) => (a.landOrder ?? 99) - (b.landOrder ?? 99) || a.name.localeCompare(b.name))
+            : rest).map((r, i, arr) => (
+            <View key={r.id} style={{ gap: 6 }}>
+              {sortBy === 'area' && (i === 0 || arr[i - 1].land !== r.land) ? <Text style={s.landHeader}>{r.land || 'Other'}</Text> : null}
+            <Pressable style={s.rideRow} onPress={() => { setDetailId(r.id); setScreen('detail'); }} accessibilityRole="button">
               <View style={{ flex: 1 }}>
                 <Text style={s.rowTitle}>{r.name}</Text>
+                {sortBy === 'best' && r.land ? <Text style={s.mutedSmall}>{r.land}</Text> : null}
                 <TrendLabel trend={r.look.trend} />
               </View>
               <Text style={s.rowWait}>{r.posted ? `${r.wait} min` : '—'}</Text>
             </Pressable>
+            </View>
           ))}
           {plan.down.map((r) => (
             <View key={r.id} style={s.rideRow}>
@@ -537,18 +640,24 @@ export default function App() {
         <Text style={s.kicker}>{park.name}</Text>
         <Text style={s.h1}>Plan my day</Text>
         <Text style={s.muted}>Tap the rides you want to do today.</Text>
+        <Text style={s.mutedSmall}>{updatedAt ? `Live waits updated ${minutesAgo(updatedAt)}` : 'Loading live waits…'}</Text>
       </View>
       <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
-        {park.rides.map((r) => {
+        {park.rides.map((r, i, arr) => {
           const on = selected.includes(r.id);
+          const header = i === 0 || arr[i - 1].land !== r.land
+            ? <Text key={`h-${r.land}`} style={s.landHeader}>{r.land || 'Other'}</Text> : null;
           const l = live[r.id] || {};
           const label = l.status && l.status !== 'OPERATING' ? 'Closed' : l.wait != null ? `${l.wait} min` : '';
           return (
-            <Pressable key={r.id} style={s.rideRow} onPress={() => toggleRide(r.id)} accessibilityRole="checkbox" accessibilityState={{ checked: on }}>
+            <View key={r.id} style={{ gap: 6 }}>
+            {header}
+            <Pressable style={s.rideRow} onPress={() => toggleRide(r.id)} accessibilityRole="checkbox" accessibilityState={{ checked: on }}>
               <View style={[s.check, on && s.checkOn]}>{on ? <Text style={{ color: '#fff', fontWeight: '800' }}>✓</Text> : null}</View>
               <Text style={[s.rowTitle, { flex: 1 }]}>{r.name}</Text>
               <Text style={s.rowWaitSmall}>{label}</Text>
             </Pressable>
+            </View>
           );
         })}
       </ScrollView>
@@ -664,6 +773,14 @@ const s = StyleSheet.create({
   foodRow: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 56, borderBottomWidth: 1, borderColor: C.line, paddingVertical: 8 },
   linkBtn: { minHeight: 40, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: C.blue, justifyContent: 'center' },
   linkBtnText: { color: C.blue, fontSize: 13, fontWeight: '700' },
+  landHeader: { fontSize: 14, fontWeight: '800', color: C.ink, marginTop: 10, marginBottom: 2, letterSpacing: 0.3 },
+  toggle: { flexDirection: 'row', backgroundColor: '#E2E8F0', borderRadius: 10, padding: 2, gap: 2 },
+  toggleBtn: { minHeight: 36, paddingHorizontal: 10, borderRadius: 8, justifyContent: 'center' },
+  toggleBtnOn: { backgroundColor: C.dark },
+  toggleText: { fontSize: 13, fontWeight: '700', color: C.ink },
+  extreme: { flex: 1, borderRadius: 12, padding: 12, gap: 2 },
+  extremeValue: { fontSize: 22, fontWeight: '800', color: C.ink },
+  weekRow: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 40, paddingHorizontal: 6, borderRadius: 8 },
   pill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
   pillText: { fontSize: 13, fontWeight: '700' },
   chart: { flexDirection: 'row', alignItems: 'flex-end', height: 130, gap: 3, borderBottomWidth: 1, borderColor: '#CBD5E1', marginTop: 6 },

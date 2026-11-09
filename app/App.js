@@ -554,6 +554,8 @@ export default function App() {
   const [, setTick] = useState(0);
   const [recapAdd, setRecapAdd] = useState(null); // 'ride' | 'meal' | 'snack' while adding on the Day Recap
   const [recapQuery, setRecapQuery] = useState('');
+  const [introDone, setIntroDone] = useState(false); // show the branded loading screen for at least a moment
+  useEffect(() => { const t = setTimeout(() => setIntroDone(true), 1400); return () => clearTimeout(t); }, []);
   const loaded = useRef(false);
 
   const R = RESORTS[saved.resort] || RESORTS.dlr;
@@ -1124,8 +1126,8 @@ export default function App() {
   }, [park, data, now && now.hour, live, saved, skippedBy, coords]);
 
   // ---------- render ----------
-  if (!storeReady) {
-    return <SafeAreaView style={[s.welcome, { alignItems: 'center', justifyContent: 'center' }]}><ActivityIndicator color="#fff" /></SafeAreaView>;
+  if (!storeReady || !introDone) {
+    return <LoadingScreen />;
   }
 
   if (saved.resort && screen === 'location') {
@@ -1309,11 +1311,7 @@ export default function App() {
   }
 
   if (!data) {
-    return (
-      <SafeAreaView style={s.center}>
-        {error ? <Text style={s.errorText}>{error}</Text> : <ActivityIndicator size="large" color={C.ink} />}
-      </SafeAreaView>
-    );
+    return <LoadingScreen message={error || 'Checking live waits'} />;
   }
 
   const updatedText = updatedAt ? `Updated ${minutesAgo(updatedAt)}` : 'Loading live waits…';
@@ -2550,6 +2548,51 @@ function WrapSummary({ k, c, d }) {
 }
 
 const WRAP_COMPONENTS = { open: WrapOpen, rides: WrapRides, queue: WrapQueue, walk: WrapWalk, snacks: WrapSnacks, persona: WrapPersona, summary: WrapSummary };
+
+// Branded loading screen: the Admit One ticket in the Night ride colours (design E on the canvas)
+const BRAND = { night: '#241A33', mint: '#A7E8C3', lilac: '#8B7BA8', gold: '#E6B85C', ink: '#4B3F5E', soft: '#D9D2E6', tear: '#6E5E8C' };
+function LoadingScreen({ message = 'Checking live waits' }) {
+  const { width, height } = useWindowDimensions();
+  const stars = [{ x: 0.15, y: 0.2, r: 3, col: BRAND.gold }, { x: 0.85, y: 0.15, r: 2, col: '#FFFFFF' }, { x: 0.9, y: 0.7, r: 3, col: BRAND.gold },
+    { x: 0.09, y: 0.73, r: 2, col: '#FFFFFF' }, { x: 0.77, y: 0.3, r: 2, col: BRAND.mint }, { x: 0.23, y: 0.62, r: 2, col: BRAND.mint }];
+  return (
+    <View style={{ flex: 1, backgroundColor: BRAND.night, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 }}
+      accessibilityLabel={`Ride Next. ${message}`}>
+      <StatusBar style="light" />
+      <Svg width={width} height={height} style={{ position: 'absolute', left: 0, top: 0 }} pointerEvents="none">
+        {stars.map((st, i) => <Circle key={i} cx={st.x * width} cy={st.y * height} r={st.r} fill={st.col} />)}
+      </Svg>
+      <View style={{ alignItems: 'center', gap: 30, marginTop: -40 }}>
+        <View style={{ width: 310, height: 176, borderRadius: 16, backgroundColor: BRAND.mint, flexDirection: 'row', overflow: 'hidden' }}>
+          <View style={{ flex: 1, paddingLeft: 30, justifyContent: 'center', gap: 6 }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', letterSpacing: 2.4, color: BRAND.ink }}>ADMIT ONE</Text>
+            <Text style={{ fontSize: 58, fontWeight: '900', letterSpacing: -1.5, lineHeight: 54, color: BRAND.night }}>{'RIDE\nNEXT'}</Text>
+          </View>
+          <View style={{ width: 3, paddingVertical: 10, justifyContent: 'space-between' }}>
+            {Array.from({ length: 12 }, (_, i) => <View key={i} style={{ width: 3, height: 7, borderRadius: 1.5, backgroundColor: BRAND.tear }} />)}
+          </View>
+          <View style={{ width: 75, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: BRAND.night, alignItems: 'center', justifyContent: 'center' }}>
+              <Svg width={26} height={26} viewBox="0 0 24 24">
+                <Path d="M5 12h13" stroke={BRAND.gold} strokeWidth={2.8} strokeLinecap="round" fill="none" />
+                <Path d="M13 6l6 6-6 6" stroke={BRAND.gold} strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              </Svg>
+            </View>
+          </View>
+          <View style={{ position: 'absolute', left: -16, top: 72, width: 32, height: 32, borderRadius: 16, backgroundColor: BRAND.night }} />
+          <View style={{ position: 'absolute', right: -16, top: 72, width: 32, height: 32, borderRadius: 16, backgroundColor: BRAND.night }} />
+        </View>
+        <Text style={{ fontSize: 17, color: BRAND.soft }}>Less queuing, more riding.</Text>
+      </View>
+      <View style={{ position: 'absolute', left: 24, right: 24, bottom: 72, alignItems: 'center', gap: 12 }}>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {[BRAND.mint, BRAND.lilac, BRAND.gold].map((col) => <View key={col} style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: col }} />)}
+        </View>
+        <Text style={{ fontSize: 13, color: BRAND.soft, textAlign: 'center' }}>{message}</Text>
+      </View>
+    </View>
+  );
+}
 
 // Crowd level out of 10, as a 10-step meter
 const CROWD_COLOURS = ['#15803D', '#15803D', '#15803D', '#CA8A04', '#CA8A04', '#CA8A04', '#C2410C', '#C2410C', '#B91C1C', '#B91C1C'];

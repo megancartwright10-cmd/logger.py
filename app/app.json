@@ -10,7 +10,10 @@
       "bundleIdentifier": "com.ridenext.app"
     },
     "android": {
-      "package": "com.ridenext.app"
+      "package": "com.ridenext.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#241A33"
+      }
     },
     "plugins": [
       [
@@ -34,6 +37,10 @@
           "isAccessMediaLocationEnabled": false
         }
       ]
-    ]
+    ],
+    "splash": {
+      "backgroundColor": "#241A33",
+      "resizeMode": "contain"
+    }
   }
 }

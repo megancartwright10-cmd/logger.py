@@ -2,7 +2,7 @@
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Linking, Pressable, RefreshControl, SafeAreaView,
+  ActivityIndicator, Alert, Linking, Pressable, RefreshControl, SafeAreaView,
   ScrollView, StyleSheet, Switch, Text, View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -133,7 +133,7 @@ export default function App() {
   const [screen, setScreen] = useState('welcome');
   const [detailId, setDetailId] = useState(null);
   const [saved, setSaved] = useState({ selected: {}, done: {}, useLoc: false });
-  const [skipped, setSkipped] = useState([]);
+  const [skippedBy, setSkippedBy] = useState({});
   const [coords, setCoords] = useState(null);
   const [foodOpen, setFoodOpen] = useState(false);
   const [mood, setMood] = useState(null);
@@ -200,6 +200,25 @@ export default function App() {
   const selected = (park && saved.selected[park.id]) || [];
   const doneKey = park && now ? `${now.dateKey}:${park.id}` : '';
   const done = saved.done[doneKey] || [];
+  const skipped = (park && skippedBy[park.id]) || [];
+  const skipRide = (id) => setSkippedBy((k) => {
+    const cur = (k[park.id] || []).filter((x) => x !== id);
+    return { ...k, [park.id]: [...cur, id] };
+  });
+
+  const resetPark = (p) => {
+    setSaved((s) => ({
+      ...s,
+      selected: { ...s.selected, [p.id]: [] },
+      done: Object.fromEntries(Object.entries(s.done).filter(([k]) => !k.endsWith(`:${p.id}`))),
+    }));
+    setSkippedBy((k) => ({ ...k, [p.id]: [] }));
+  };
+  const confirmReset = (p) => Alert.alert(
+    `Reset ${p.name}?`,
+    'This clears the rides you picked and what you\'ve ridden today in this park.',
+    [{ text: 'Cancel', style: 'cancel' }, { text: 'Reset', style: 'destructive', onPress: () => resetPark(p) }],
+  );
 
   const toggleRide = (id) => setSaved((s) => {
     const cur = s.selected[park.id] || [];
@@ -240,7 +259,6 @@ export default function App() {
 
   // ---------- render ----------
   if (screen === 'welcome') {
-    const hasPlan = Object.values(saved.selected).some((list) => list && list.length > 0);
     const ready = !!data;
     return (
       <SafeAreaView style={s.welcome}>
@@ -268,24 +286,35 @@ export default function App() {
             ))}
           </View>
 
-          <View style={{ gap: 10 }}>
+          <View style={{ gap: 12 }}>
+            <Text style={s.welcomeKicker}>CHOOSE YOUR PARK</Text>
             {error && !ready ? <Text style={[s.errorText, { color: '#FCA5A5' }]}>{error}</Text> : null}
-            {hasPlan ? (
-              <Pressable style={[s.welcomeBtn, !ready && { opacity: 0.5 }]} disabled={!ready}
-                onPress={() => {
-                  const i = data.parks.findIndex((p) => (saved.selected[p.id] || []).length > 0);
-                  if (i >= 0) setParkIdx(i);
-                  setSkipped([]); setScreen('next');
-                }} accessibilityRole="button">
-                <Text style={s.welcomeBtnText}>{ready ? 'Carry on with my day' : 'Loading park data…'}</Text>
-              </Pressable>
-            ) : null}
-            <Pressable style={[hasPlan ? s.welcomeBtnOutline : s.welcomeBtn, !ready && { opacity: 0.5 }]} disabled={!ready}
-              onPress={() => setScreen('setup')} accessibilityRole="button">
-              <Text style={hasPlan ? s.welcomeBtnOutlineText : s.welcomeBtnText}>
-                {!ready && !hasPlan ? 'Loading park data…' : hasPlan ? 'Change my rides' : 'Plan my day'}
-              </Text>
-            </Pressable>
+            {!ready ? (
+              <View style={s.parkCard}><ActivityIndicator color={C.ink} /><Text style={s.parkCardMeta}>Loading park data…</Text></View>
+            ) : data.parks.map((p, i) => {
+              const picked = (saved.selected[p.id] || []).length;
+              const doneToday = (saved.done[`${parkNow(data.utcOffsetMinutes).dateKey}:${p.id}`] || []).length;
+              return (
+                <View key={p.id} style={s.parkCard}>
+                  <Pressable onPress={() => { setParkIdx(i); setScreen(picked > 0 ? 'next' : 'setup'); }}
+                    accessibilityRole="button" accessibilityLabel={`Open ${p.name}`} style={{ gap: 4 }}>
+                    <View style={s.rowBetween}>
+                      <Text style={s.parkCardTitle}>{p.name}</Text>
+                      <Text style={s.parkCardArrow}>›</Text>
+                    </View>
+                    <Text style={s.parkCardMeta}>
+                      {picked > 0 ? `${picked} ride${picked === 1 ? '' : 's'} picked · ${doneToday} done today` : 'Not started yet'}
+                    </Text>
+                  </Pressable>
+                  {picked > 0 || doneToday > 0 ? (
+                    <Pressable onPress={() => confirmReset(p)} accessibilityRole="button"
+                      accessibilityLabel={`Reset ${p.name}`} style={s.resetBtn}>
+                      <Text style={s.resetBtnText}>Reset this park</Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              );
+            })}
             <Text style={s.welcomeSmall}>Unofficial app. Not affiliated with or endorsed by Disney. Wait times are estimates.</Text>
           </View>
         </ScrollView>
@@ -386,9 +415,14 @@ export default function App() {
       <SafeAreaView style={s.screen}>
         <StatusBar style="dark" />
         <View style={s.topBar}>
-          <Pressable style={s.ghostBtn} onPress={() => setScreen('setup')} accessibilityRole="button">
-            <Text style={s.ghostBtnText}>Edit list</Text>
-          </Pressable>
+          <View style={s.row}>
+            <Pressable style={s.ghostBtn} onPress={() => setScreen('welcome')} accessibilityRole="button">
+              <Text style={s.ghostBtnText}>‹ Home</Text>
+            </Pressable>
+            <Pressable style={s.ghostBtn} onPress={() => setScreen('setup')} accessibilityRole="button">
+              <Text style={s.ghostBtnText}>Edit list</Text>
+            </Pressable>
+          </View>
           <Text style={s.mutedSmall}>{updatedText}</Text>
         </View>
         <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
@@ -409,7 +443,7 @@ export default function App() {
                 <Pressable style={[s.btnLight, { flex: 1 }]} onPress={() => markDone(top.id)} accessibilityRole="button">
                   <Text style={s.btnLightText}>Done, ridden it</Text>
                 </Pressable>
-                <Pressable style={s.btnOutlineDark} onPress={() => setSkipped((k) => [...k.filter((x) => x !== top.id), top.id])} accessibilityRole="button">
+                <Pressable style={s.btnOutlineDark} onPress={() => skipRide(top.id)} accessibilityRole="button">
                   <Text style={s.btnOutlineDarkText}>Skip</Text>
                 </Pressable>
               </View>
@@ -497,16 +531,11 @@ export default function App() {
     <SafeAreaView style={s.screen}>
       <StatusBar style="dark" />
       <View style={s.header}>
-        <Text style={s.kicker}>DISNEYLAND RESORT</Text>
+        <Pressable style={[s.ghostBtn, { alignSelf: 'flex-start' }]} onPress={() => setScreen('welcome')} accessibilityRole="button">
+          <Text style={s.ghostBtnText}>‹ Home</Text>
+        </Pressable>
+        <Text style={s.kicker}>{park.name}</Text>
         <Text style={s.h1}>Plan my day</Text>
-        <View style={s.segment}>
-          {data.parks.map((p, i) => (
-            <Pressable key={p.id} onPress={() => { setParkIdx(i); setSkipped([]); }} accessibilityRole="button" accessibilityState={{ selected: i === parkIdx }}
-              style={[s.segBtn, i === parkIdx && s.segBtnOn]}>
-              <Text style={[s.segText, i === parkIdx && { color: '#fff' }]} numberOfLines={1}>{p.name.replace(' Park', '')}</Text>
-            </Pressable>
-          ))}
-        </View>
         <Text style={s.muted}>Tap the rides you want to do today.</Text>
       </View>
       <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
@@ -532,7 +561,7 @@ export default function App() {
           <Switch value={saved.useLoc} onValueChange={toggleLoc} />
         </View>
         <Pressable style={[s.btnDark, selected.length === 0 && { opacity: 0.5 }]} disabled={selected.length === 0}
-          onPress={() => { setSkipped([]); setScreen('next'); }} accessibilityRole="button">
+          onPress={() => setScreen('next')} accessibilityRole="button">
           <Text style={s.btnDarkText}>Start my day · {selected.length} rides</Text>
         </Pressable>
       </View>
@@ -583,10 +612,12 @@ const s = StyleSheet.create({
   stepNumText: { color: C.dark, fontWeight: '800', fontSize: 15 },
   stepTitle: { color: '#fff', fontSize: 17, fontWeight: '700' },
   stepBody: { color: '#CBD5E1', fontSize: 14, lineHeight: 20, marginTop: 2 },
-  welcomeBtn: { minHeight: 56, borderRadius: 16, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
-  welcomeBtnText: { color: C.dark, fontSize: 17, fontWeight: '800' },
-  welcomeBtnOutline: { minHeight: 52, borderRadius: 16, borderWidth: 1, borderColor: '#64748B', alignItems: 'center', justifyContent: 'center' },
-  welcomeBtnOutlineText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  parkCard: { backgroundColor: '#fff', borderRadius: 18, padding: 18, gap: 10 },
+  parkCardTitle: { color: C.ink, fontSize: 20, fontWeight: '800', flex: 1 },
+  parkCardArrow: { color: C.ink, fontSize: 28, fontWeight: '600' },
+  parkCardMeta: { color: C.muted, fontSize: 14 },
+  resetBtn: { alignSelf: 'flex-start', minHeight: 40, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: '#CBD5E1' },
+  resetBtnText: { color: C.red, fontSize: 14, fontWeight: '600' },
   welcomeSmall: { color: '#94A3B8', fontSize: 12, textAlign: 'center', marginTop: 4 },
   header: { backgroundColor: C.card, padding: 20, paddingTop: 12, borderBottomWidth: 1, borderColor: C.line, gap: 8 },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10 },
@@ -603,10 +634,6 @@ const s = StyleSheet.create({
   card: { backgroundColor: C.card, borderWidth: 1, borderColor: C.line, borderRadius: 16, padding: 16, gap: 6 },
   row: { flexDirection: 'row', gap: 10, marginTop: 6 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  segment: { flexDirection: 'row', backgroundColor: '#E2E8F0', borderRadius: 12, padding: 3, gap: 3 },
-  segBtn: { flex: 1, minHeight: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
-  segBtnOn: { backgroundColor: C.dark },
-  segText: { fontSize: 14, fontWeight: '600', color: C.ink },
   rideRow: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 60, backgroundColor: C.card, borderWidth: 1, borderColor: C.line, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10 },
   rowTitle: { fontSize: 16, fontWeight: '600', color: C.ink },
   rowWait: { fontSize: 18, fontWeight: '700', color: C.ink },

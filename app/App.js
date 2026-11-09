@@ -1,15 +1,18 @@
-// Ride Next — version 3 (Disneyland Resort + Disneyland Paris)
+// Ride Next — version 4 (Disneyland Resort + Disneyland Paris, with Day Wrapped)
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator, Alert, Linking, Pressable, RefreshControl, SafeAreaView,
-  ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View,
+  ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View, useWindowDimensions,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import { Pedometer } from 'expo-sensors';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
 
 const DATA_BASE = 'https://raw.githubusercontent.com/megancartwright10-cmd/logger.py/main/data/app/';
 const RESORTS = {
@@ -128,6 +131,106 @@ async function notifyAt(date, title, body) {
 async function cancelNotify(id) {
   try { if (id) await Notifications.cancelScheduledNotificationAsync(id); } catch (e) { /* ignore */ }
 }
+
+// ---------- Day Wrapped ----------
+// Palettes chosen by Megan. Each one sets the colours for every slide.
+const WRAP_PALETTES = [
+  { id: 'haunted', name: 'Haunted', sw: ['#241A33', '#A7E8C3', '#8B7BA8', '#E6B85C'],
+    open: { bg: '#241A33', fg: '#FFFFFF', a: '#8B7BA8', b: '#A7E8C3', ring: '#E6B85C', kicker: '#E6B85C', sub: '#D9D2E6' },
+    rides: { bg: '#8B7BA8', fg: '#FFFFFF', ring: '#241A33', b: '#A7E8C3', card: '#241A33', cardFg: '#FFFFFF', cardKicker: '#A7E8C3', cardSub: '#D9D2E6' },
+    queue: { bg: '#A7E8C3', fg: '#241A33', stripe: '#241A33', circle: '#8B7BA8', chipBg: '#241A33', chipIcon: '#E6B85C', chipText: '#FFFFFF' },
+    walk: { bg: '#241A33', fg: '#FFFFFF', path: '#A7E8C3', circle: '#8B7BA8', sub: '#D9D2E6' },
+    snacks: { bg: '#E6B85C', fg: '#241A33', circleA: '#8B7BA8', circleB: '#A7E8C3', rowBg: '#FFFFFF', rowFg: '#241A33', count: '#6B5A8E' },
+    persona: { bg: '#241A33', fg: '#FFFFFF', star: '#A7E8C3', disc: '#E6B85C', discIcon: '#241A33', kicker: '#A7E8C3', sub: '#D9D2E6' },
+    summary: { bg: '#A7E8C3', fg: '#241A33', kicker: '#241A33', panel: '#FFFFFF', mute: '#4B3F5E', foot: '#241A33', footFg: '#FFFFFF', footSub: '#A7E8C3', footIcon: '#E6B85C',
+      tiles: [['#241A33', '#FFFFFF'], ['#E6B85C', '#241A33'], ['#8B7BA8', '#241A33'], ['#FFFFFF', '#241A33']] } },
+  { id: 'lakeside', name: 'Lakeside', sw: ['#BFD0D8', '#85A4BD', '#202923', '#555C52'],
+    open: { bg: '#202923', fg: '#FFFFFF', a: '#85A4BD', b: '#555C52', ring: '#BFD0D8', kicker: '#BFD0D8', sub: '#BFD0D8' },
+    rides: { bg: '#85A4BD', fg: '#202923', ring: '#BFD0D8', b: '#202923', card: '#202923', cardFg: '#FFFFFF', cardKicker: '#85A4BD', cardSub: '#BFD0D8' },
+    queue: { bg: '#BFD0D8', fg: '#202923', stripe: '#202923', circle: '#85A4BD', chipBg: '#202923', chipIcon: '#85A4BD', chipText: '#FFFFFF' },
+    walk: { bg: '#555C52', fg: '#FFFFFF', path: '#BFD0D8', circle: '#85A4BD', sub: '#DCE6EB' },
+    snacks: { bg: '#BFD0D8', fg: '#202923', circleA: '#85A4BD', circleB: '#555C52', rowBg: '#FFFFFF', rowFg: '#202923', count: '#555C52' },
+    persona: { bg: '#202923', fg: '#FFFFFF', star: '#85A4BD', disc: '#BFD0D8', discIcon: '#202923', kicker: '#BFD0D8', sub: '#BFD0D8' },
+    summary: { bg: '#BFD0D8', fg: '#202923', kicker: '#202923', panel: '#FFFFFF', mute: '#555C52', foot: '#202923', footFg: '#FFFFFF', footSub: '#BFD0D8', footIcon: '#85A4BD',
+      tiles: [['#202923', '#FFFFFF'], ['#555C52', '#FFFFFF'], ['#85A4BD', '#202923'], ['#FFFFFF', '#202923']] } },
+  { id: 'lily', name: 'Lily', sw: ['#C6BBB1', '#8E8E5D', '#212414', '#C3A0A2'],
+    open: { bg: '#212414', fg: '#FFFFFF', a: '#C3A0A2', b: '#8E8E5D', ring: '#C6BBB1', kicker: '#C3A0A2', sub: '#C6BBB1' },
+    rides: { bg: '#C3A0A2', fg: '#212414', ring: '#C6BBB1', b: '#8E8E5D', card: '#212414', cardFg: '#FFFFFF', cardKicker: '#C3A0A2', cardSub: '#C6BBB1' },
+    queue: { bg: '#C6BBB1', fg: '#212414', stripe: '#212414', circle: '#C3A0A2', chipBg: '#212414', chipIcon: '#C3A0A2', chipText: '#FFFFFF' },
+    walk: { bg: '#8E8E5D', fg: '#212414', path: '#C6BBB1', circle: '#C3A0A2', sub: '#212414' },
+    snacks: { bg: '#C6BBB1', fg: '#212414', circleA: '#C3A0A2', circleB: '#8E8E5D', rowBg: '#FFFFFF', rowFg: '#212414', count: '#212414' },
+    persona: { bg: '#212414', fg: '#FFFFFF', star: '#C3A0A2', disc: '#C6BBB1', discIcon: '#212414', kicker: '#C3A0A2', sub: '#C6BBB1' },
+    summary: { bg: '#C6BBB1', fg: '#212414', kicker: '#212414', panel: '#FFFFFF', mute: '#5C5C3D', foot: '#212414', footFg: '#FFFFFF', footSub: '#C6BBB1', footIcon: '#C3A0A2',
+      tiles: [['#212414', '#FFFFFF'], ['#8E8E5D', '#212414'], ['#C3A0A2', '#212414'], ['#FFFFFF', '#212414']] } },
+  { id: 'candlelit', name: 'Candlelit', sw: ['#651F30', '#A8697A', '#EDDFC4', '#B7BB88'],
+    open: { bg: '#3E2C22', fg: '#EDDFC4', a: '#651F30', b: '#6E6B41', ring: '#B7BB88', kicker: '#B7BB88', sub: '#EDDFC4' },
+    rides: { bg: '#651F30', fg: '#EDDFC4', ring: '#A8697A', b: '#B7BB88', card: '#EDDFC4', cardFg: '#3E2C22', cardKicker: '#651F30', cardSub: '#5A463A' },
+    queue: { bg: '#EDDFC4', fg: '#3E2C22', stripe: '#651F30', circle: '#A8697A', chipBg: '#3E2C22', chipIcon: '#B7BB88', chipText: '#FFFFFF' },
+    walk: { bg: '#6E6B41', fg: '#FFFFFF', path: '#B7BB88', circle: '#651F30', sub: '#F3EBDB' },
+    snacks: { bg: '#B7BB88', fg: '#3E2C22', circleA: '#651F30', circleB: '#6E6B41', rowBg: '#FFFFFF', rowFg: '#3E2C22', count: '#651F30' },
+    persona: { bg: '#651F30', fg: '#EDDFC4', star: '#B7BB88', disc: '#EDDFC4', discIcon: '#651F30', kicker: '#B7BB88', sub: '#EDDFC4' },
+    summary: { bg: '#EDDFC4', fg: '#3E2C22', kicker: '#651F30', panel: '#FFFFFF', mute: '#5A463A', foot: '#3E2C22', footFg: '#EDDFC4', footSub: '#B7BB88', footIcon: '#A8697A',
+      tiles: [['#651F30', '#FFFFFF'], ['#6E6B41', '#FFFFFF'], ['#B7BB88', '#3E2C22'], ['#3E2C22', '#EDDFC4']] } },
+  { id: 'harvest', name: 'Harvest', sw: ['#371E13', '#A85530', '#E1D3A9', '#534B31'],
+    open: { bg: '#371E13', fg: '#E1D3A9', a: '#A85530', b: '#534B31', ring: '#C0AA8A', kicker: '#C0AA8A', sub: '#E1D3A9' },
+    rides: { bg: '#A85530', fg: '#FFFFFF', ring: '#5E2A25', b: '#E1D3A9', card: '#E1D3A9', cardFg: '#371E13', cardKicker: '#5E2A25', cardSub: '#5A3F2A' },
+    queue: { bg: '#E1D3A9', fg: '#371E13', stripe: '#5E2A25', circle: '#A85530', chipBg: '#371E13', chipIcon: '#C0AA8A', chipText: '#FFFFFF' },
+    walk: { bg: '#534B31', fg: '#E1D3A9', path: '#C0AA8A', circle: '#A85530', sub: '#E1D3A9' },
+    snacks: { bg: '#C0AA8A', fg: '#371E13', circleA: '#A85530', circleB: '#8F7C3A', rowBg: '#FFFFFF', rowFg: '#371E13', count: '#A85530' },
+    persona: { bg: '#5E2A25', fg: '#E1D3A9', star: '#C0AA8A', disc: '#8F7C3A', discIcon: '#371E13', kicker: '#C0AA8A', sub: '#E1D3A9' },
+    summary: { bg: '#E1D3A9', fg: '#371E13', kicker: '#5E2A25', panel: '#FFFFFF', mute: '#5A3F2A', foot: '#371E13', footFg: '#E1D3A9', footSub: '#C0AA8A', footIcon: '#A85530',
+      tiles: [['#5E2A25', '#FFFFFF'], ['#A85530', '#FFFFFF'], ['#8F7C3A', '#1A0E08'], ['#534B31', '#E1D3A9']] } },
+  { id: 'parisian', name: 'Parisian', sw: ['#B1C7D4', '#849AAD', '#605246', '#5E1C23'],
+    open: { bg: '#605246', fg: '#FFFFFF', a: '#5E1C23', b: '#849AAD', ring: '#B1C7D4', kicker: '#D6E2E9', sub: '#D6E2E9' },
+    rides: { bg: '#849AAD', fg: '#2A2019', ring: '#B1C7D4', b: '#5E1C23', card: '#5E1C23', cardFg: '#FFFFFF', cardKicker: '#B1C7D4', cardSub: '#E6D9DB' },
+    queue: { bg: '#B1C7D4', fg: '#3A2F27', stripe: '#5E1C23', circle: '#A1947F', chipBg: '#605246', chipIcon: '#B1C7D4', chipText: '#FFFFFF' },
+    walk: { bg: '#5E1C23', fg: '#FFFFFF', path: '#B1C7D4', circle: '#849AAD', sub: '#E6D9DB' },
+    snacks: { bg: '#A1947F', fg: '#2A2019', circleA: '#5E1C23', circleB: '#B1C7D4', rowBg: '#FFFFFF', rowFg: '#2A2019', count: '#5E1C23' },
+    persona: { bg: '#605246', fg: '#FFFFFF', star: '#B1C7D4', disc: '#849AAD', discIcon: '#605246', kicker: '#D6E2E9', sub: '#D6E2E9' },
+    summary: { bg: '#B1C7D4', fg: '#2A2019', kicker: '#5E1C23', panel: '#FFFFFF', mute: '#605246', foot: '#605246', footFg: '#FFFFFF', footSub: '#D6E2E9', footIcon: '#849AAD',
+      tiles: [['#5E1C23', '#FFFFFF'], ['#605246', '#FFFFFF'], ['#849AAD', '#2A2019'], ['#A1947F', '#2A2019']] } },
+  { id: 'champagne', name: 'Champagne', sw: ['#150C0C', '#85431E', '#D39858', '#EACEAA'],
+    open: { bg: '#150C0C', fg: '#EACEAA', a: '#85431E', b: '#D39858', ring: '#D39858', kicker: '#D39858', sub: '#EACEAA' },
+    rides: { bg: '#85431E', fg: '#EACEAA', ring: '#34150F', b: '#D39858', card: '#EACEAA', cardFg: '#150C0C', cardKicker: '#85431E', cardSub: '#5A3A28' },
+    queue: { bg: '#EACEAA', fg: '#34150F', stripe: '#34150F', circle: '#D39858', chipBg: '#34150F', chipIcon: '#D39858', chipText: '#FFFFFF' },
+    walk: { bg: '#34150F', fg: '#EACEAA', path: '#D39858', circle: '#85431E', sub: '#EACEAA' },
+    snacks: { bg: '#D39858', fg: '#150C0C', circleA: '#85431E', circleB: '#EACEAA', rowBg: '#FFFFFF', rowFg: '#150C0C', count: '#85431E' },
+    persona: { bg: '#150C0C', fg: '#EACEAA', star: '#D39858', disc: '#85431E', discIcon: '#EACEAA', kicker: '#D39858', sub: '#EACEAA' },
+    summary: { bg: '#EACEAA', fg: '#150C0C', kicker: '#85431E', panel: '#FFFFFF', mute: '#5A3A28', foot: '#34150F', footFg: '#EACEAA', footSub: '#D39858', footIcon: '#D39858',
+      tiles: [['#34150F', '#EACEAA'], ['#85431E', '#FFFFFF'], ['#D39858', '#150C0C'], ['#150C0C', '#EACEAA']] } },
+  { id: 'riviera', name: 'Riviera', sw: ['#933B5B', '#B5728A', '#AABAAE', '#E3D6BF'],
+    open: { bg: '#933B5B', fg: '#E3D6BF', a: '#B5728A', b: '#AABAAE', ring: '#E3D6BF', kicker: '#E3D6BF', sub: '#E3D6BF' },
+    rides: { bg: '#AABAAE', fg: '#3A1E2A', ring: '#E3D6BF', b: '#933B5B', card: '#933B5B', cardFg: '#FFFFFF', cardKicker: '#E3D6BF', cardSub: '#F3E9EE' },
+    queue: { bg: '#E3D6BF', fg: '#933B5B', stripe: '#933B5B', circle: '#B5728A', chipBg: '#933B5B', chipIcon: '#E3D6BF', chipText: '#FFFFFF' },
+    walk: { bg: '#9F9679', fg: '#3A1E2A', path: '#E3D6BF', circle: '#933B5B', sub: '#3A1E2A' },
+    snacks: { bg: '#B5728A', fg: '#2A1420', circleA: '#933B5B', circleB: '#AABAAE', rowBg: '#FFFFFF', rowFg: '#3A1E2A', count: '#933B5B' },
+    persona: { bg: '#933B5B', fg: '#FFFFFF', star: '#E3D6BF', disc: '#AABAAE', discIcon: '#933B5B', kicker: '#E3D6BF', sub: '#E3D6BF' },
+    summary: { bg: '#E3D6BF', fg: '#3A1E2A', kicker: '#933B5B', panel: '#FFFFFF', mute: '#6B4A58', foot: '#933B5B', footFg: '#FFFFFF', footSub: '#E3D6BF', footIcon: '#AABAAE',
+      tiles: [['#933B5B', '#FFFFFF'], ['#AABAAE', '#3A1E2A'], ['#B5728A', '#2A1420'], ['#9F9679', '#3A1E2A']] } },
+  { id: 'christmas', name: 'Christmas', sw: ['#7E2625', '#292F17', '#F1ECDB', '#868859'],
+    open: { bg: '#292F17', fg: '#F1ECDB', a: '#7E2625', b: '#868859', ring: '#F1ECDB', kicker: '#F1ECDB', sub: '#F1ECDB' },
+    rides: { bg: '#7E2625', fg: '#F1ECDB', ring: '#3C1B0F', b: '#868859', card: '#F1ECDB', cardFg: '#3C1B0F', cardKicker: '#7E2625', cardSub: '#5A4030' },
+    queue: { bg: '#F1ECDB', fg: '#3C1B0F', stripe: '#7E2625', circle: '#868859', chipBg: '#292F17', chipIcon: '#F1ECDB', chipText: '#FFFFFF' },
+    walk: { bg: '#868859', fg: '#14170B', path: '#F1ECDB', circle: '#7E2625', sub: '#14170B' },
+    snacks: { bg: '#F1ECDB', fg: '#3C1B0F', circleA: '#7E2625', circleB: '#292F17', rowBg: '#FFFFFF', rowFg: '#3C1B0F', count: '#7E2625' },
+    persona: { bg: '#3C1B0F', fg: '#F1ECDB', star: '#F1ECDB', disc: '#7E2625', discIcon: '#F1ECDB', kicker: '#C9CB9A', sub: '#F1ECDB' },
+    summary: { bg: '#F1ECDB', fg: '#3C1B0F', kicker: '#7E2625', panel: '#FFFFFF', mute: '#5A4030', foot: '#292F17', footFg: '#F1ECDB', footSub: '#C9CB9A', footIcon: '#7E2625',
+      tiles: [['#7E2625', '#F1ECDB'], ['#292F17', '#F1ECDB'], ['#868859', '#14170B'], ['#3C1B0F', '#F1ECDB']] } },
+];
+
+// Which palette each area opens in ("Picked for you")
+const LAND_PALETTE = {
+  'Main Street, U.S.A.': 'candlelit', 'Adventureland': 'lily', 'New Orleans Square': 'haunted', 'Bayou Country': 'haunted',
+  'Frontierland': 'harvest', 'Fantasyland': 'riviera', "Mickey's Toontown": 'riviera', 'Tomorrowland': 'lakeside',
+  "Star Wars: Galaxy's Edge": 'champagne', 'Hollywood Land': 'champagne', 'Avengers Campus': 'parisian', 'Cars Land': 'harvest',
+  'San Fransokyo Square': 'parisian', 'Pixar Pier': 'riviera', 'Paradise Gardens Park': 'riviera', 'Grizzly Peak': 'lily',
+  'Discoveryland': 'champagne', 'World Premiere Plaza': 'champagne', 'Marvel Avengers Campus': 'parisian',
+  'Worlds of Pixar': 'riviera', 'World of Frozen': 'lakeside', 'Adventure Way': 'lily',
+};
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const WRAP_SLIDES = ['open', 'rides', 'queue', 'walk', 'snacks', 'persona', 'summary'];
+const PERSONA_STARS = [[30, 90, 4], [300, 60, 6], [320, 250, 3], [40, 300, 5], [80, 560, 4], [310, 520, 6], [180, 40, 3],
+  [250, 600, 3], [20, 470, 3], [340, 400, 4], [130, 610, 5], [60, 200, 3], [290, 330, 3], [200, 320, 2]];
 
 const C = {
   ground: '#F6F7F9', card: '#FFFFFF', ink: '#0F172A', muted: '#475569', line: '#E2E8F0',
@@ -362,6 +465,11 @@ export default function App() {
   const [snacksOpen, setSnacksOpen] = useState(false);
   const [storeReady, setStoreReady] = useState(false);
   const [backTo, setBackTo] = useState('welcome');
+  const [wrapSlide, setWrapSlide] = useState(0);
+  const [wrapPal, setWrapPal] = useState(null);
+  const slideRef = useRef(null);
+  const touchRef = useRef(null);
+  const { width: winW, height: winH } = useWindowDimensions();
   const [steps, setSteps] = useState(null);
   const [banner, setBanner] = useState(null);
   const [showsOpen, setShowsOpen] = useState(false);
@@ -644,6 +752,108 @@ export default function App() {
     Share.share({ message: lines.join('\n') }).catch(() => {});
   };
 
+  // everything the Wrapped slides show
+  const wrapData = (() => {
+    if (!recap || !now || !data) return null;
+    const counts = {};
+    todayLog.forEach((x) => { counts[x.name] = (counts[x.name] || 0) + 1; });
+    const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    const timed = todayLog.filter((x) => x.wait > 0);
+    const shortest = [...timed].sort((a, b) => a.wait - b.wait)[0];
+    const longest = [...timed].sort((a, b) => b.wait - a.wait)[0];
+    const srSaved = todayLog.reduce((a, x) => a + (x.srSaved || 0), 0);
+    const snacks = [...recap.snacks].sort((a, b) => b.n - a.n);
+    const snackTotal = snacks.reduce((a, x) => a + x.n, 0);
+    const clock = (ms) => clockFromMs(ms, data.utcOffsetMinutes);
+    const minuteOf = (ms) => Math.floor(((ms + data.utcOffsetMinutes * 60000) % 86400000 + 86400000) % 86400000 / 60000);
+
+    // date label, e.g. SATURDAY 8 NOVEMBER
+    const [, mm, dd] = now.dateKey.split('-').map(Number);
+    const dateLabel = `${DAY_NAMES[now.dow]} ${dd} ${MONTH_NAMES[mm - 1]}`.toUpperCase();
+
+    // queuing
+    const q = recap.queue;
+    const films = Math.round(q / 110);
+    const queueLine = q === 0 ? 'No queues logged yet. Tap "Done" after each ride to fill this in.'
+      : films >= 2 ? `That's ${films} whole films' worth of waiting.`
+        : q >= 60 ? "That's a whole film's worth of waiting." : 'Hardly any queuing. Nicely played.';
+    const queueChip = srSaved > 0 ? `But Single Rider saved you ${srSaved} min`
+      : longest ? `Longest wait: ${longest.wait} min for ${longest.name}` : 'Ride Next keeps track as you go';
+
+    // areas
+    const missed = recap.missed || [];
+    const areasLine = recap.areaTotal ? `${recap.areas.length} of ${recap.areaTotal} areas explored.` : 'Areas fill in as you ride.';
+    const missedLine = !recap.areaTotal ? 'Turn on location to track where you wander.'
+      : missed.length === 0 ? 'Every single area. Legend.' : `${missed[0]}, you're next time.`;
+
+    // ride personality
+    const first = todayLog[0], last = todayLog[todayLog.length - 1];
+    const hrs = hoursFor(park).main[0];
+    const opens = hrs ? toMin(hrs[0]) : null, closes = hrs ? toMin(hrs[1]) : null;
+    let persona;
+    if (todayLog.length >= 15) {
+      persona = { title: 'The Ride Machine', short: 'Ride Machine', line: `${todayLog.length} rides in one day. Your stamina is unmatched.` };
+    } else if (first && opens != null && minuteOf(first.at) >= opens - 60 && minuteOf(first.at) <= opens + 30) {
+      const early = todayLog.filter((x) => minuteOf(x.at) >= opens - 60 && minuteOf(x.at) < opens + 120).length;
+      persona = { title: 'The Rope Drop Warrior', short: 'Rope Drop Warrior', line: `First ride at ${clock(first.at)}. ${early} ride${early === 1 ? '' : 's'} before ${fmtHour(Math.floor(opens / 60) + 2)}.` };
+    } else if (snackTotal >= 6) {
+      persona = { title: 'The Snack Connoisseur', short: 'Snack Connoisseur', line: `${snackTotal} treats tried. A true professional.` };
+    } else if (srSaved >= 30) {
+      persona = { title: 'The Single Rider Pro', short: 'Single Rider Pro', line: `Single Rider saved you ${srSaved} minutes. Very smart.` };
+    } else if (last && closes != null && closes > (opens || 0) && minuteOf(last.at) >= closes - 60) {
+      persona = { title: 'The Night Owl', short: 'Night Owl', line: `Still riding at ${clock(last.at)}. You closed the park down.` };
+    } else if (recap.areaTotal && missed.length === 0) {
+      persona = { title: 'The Explorer', short: 'Explorer', line: 'You made it to every corner of the park.' };
+    } else {
+      persona = { title: 'The Happy Wanderer', short: 'Happy Wanderer', line: 'You took the day at your own pace. That\'s the magic.' };
+    }
+
+    // palette picked for you: Christmas in December, otherwise the land you spent most time in
+    const landCount = {};
+    todayLog.forEach((x) => { if (x.land) landCount[x.land] = (landCount[x.land] || 0) + 1; });
+    const topLand = Object.entries(landCount).sort((a, b) => b[1] - a[1])[0];
+    let autoId = R.key === 'dlp' ? 'parisian' : 'lakeside';
+    let pickedLine = `Picked for you: your ${R.short} palette`;
+    if (mm === 12) { autoId = 'christmas'; pickedLine = "Picked for you: it's Christmas time!"; }
+    else if (topLand && LAND_PALETTE[topLand[0]]) { autoId = LAND_PALETTE[topLand[0]]; pickedLine = `Picked for you: most of your day was in ${topLand[0]}`; }
+    const autoIdx = Math.max(0, WRAP_PALETTES.findIndex((p) => p.id === autoId));
+
+    return {
+      dateLabel, resortShort: R.short, autoIdx, pickedLine,
+      openLine: todayLog.length ? "You went big today. Let's see just how big." : "Here's how your day is shaping up so far.",
+      rides: todayLog.length, topRide: top ? { name: top[0], n: top[1] } : null,
+      shortestLine: shortest ? `Shortest wait of the day: ${shortest.wait} min, at ${clock(shortest.at)}` : 'Log rides to see your best waits',
+      queueLabel: fmtDuration(q), queueLine, queueChip,
+      dist: recap.dist || 0, distUnit: recap.unit, stepsLabel: recap.stepCount ? `${recap.stepCount.toLocaleString()} steps` : 'Steps count once your day starts',
+      areasLine, missedLine,
+      snacks, snackTotal, snackLine: snackTotal ? `${snackTotal} treat${snackTotal === 1 ? '' : 's'}. Zero regrets.` : 'Next time, treat yourself.',
+      persona,
+    };
+  })();
+
+  const captureSlide = () => captureRef(slideRef, { format: 'png', quality: 1, width: 1080, height: 1920, result: 'tmpfile' });
+  const shareSlide = async () => {
+    try {
+      const uri = await captureSlide();
+      if (!(await Sharing.isAvailableAsync())) { Alert.alert('Sharing isn\'t available on this device'); return; }
+      await Sharing.shareAsync(uri, { mimeType: 'image/png', UTI: 'public.png', dialogTitle: 'Share your day' });
+    } catch (e) {
+      Alert.alert('Couldn\'t make the image', 'Please try again.');
+    }
+  };
+  const saveSlide = async () => {
+    try {
+      const uri = await captureSlide();
+      const perm = await MediaLibrary.requestPermissionsAsync(true);
+      if (!perm.granted) { Alert.alert('Photos access is off', 'Allow Ride Next to add photos in your phone settings, or use Share instead.'); return; }
+      await MediaLibrary.saveToLibraryAsync(uri);
+      Alert.alert('Saved', 'Your slide is in your photos.');
+    } catch (e) {
+      Alert.alert('Couldn\'t save here', 'Try Share to Stories instead. You can save from the share menu too.');
+    }
+  };
+  const openWrapped = () => { setWrapSlide(0); setWrapPal(null); setScreen('wrapped'); };
+
   const resetPark = (p) => {
     setSaved((s) => ({
       ...s,
@@ -669,7 +879,8 @@ export default function App() {
     const key = `${now.dateKey}:${ride.parkId || park.id}`;
     const keep = Object.fromEntries(Object.entries(s.done).filter(([k]) => k.startsWith(now.dateKey)));
     const log = { [now.dateKey]: [...((s.log || {})[now.dateKey] || []),
-      { id: ride.id, name: ride.name, parkId: ride.parkId, land: ride.land, wait: ride.posted ? ride.wait : 0, at: Date.now() }] };
+      { id: ride.id, name: ride.name, parkId: ride.parkId, land: ride.land, wait: ride.posted ? ride.wait : 0, at: Date.now(),
+        srSaved: ride.viaSingle ? Math.max(0, ride.standby - ride.wait) : 0 }] };
     return { ...s, done: { ...keep, [key]: [...(keep[key] || []), ride.id] }, log };
   });
 
@@ -961,6 +1172,94 @@ export default function App() {
     );
   };
 
+  // ----- Day Wrapped -----
+  if (screen === 'wrapped' && wrapData) {
+    const d = wrapData;
+    const N = WRAP_PALETTES.length;
+    const pi = wrapPal == null ? d.autoIdx : wrapPal;
+    const P = WRAP_PALETTES[pi];
+    const key = WRAP_SLIDES[wrapSlide];
+    const Slide = WRAP_COMPONENTS[key];
+    const slideW = Math.max(220, Math.min(winW - 40, (winH - 330) * 9 / 16));
+    const k = slideW / 360;
+    const onStart = (e) => { touchRef.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, lx: e.nativeEvent.locationX }; };
+    const onEnd = (e) => {
+      const t = touchRef.current;
+      touchRef.current = null;
+      if (!t) return;
+      const dx = e.nativeEvent.pageX - t.x, dy = e.nativeEvent.pageY - t.y;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) setWrapPal((pi + (dx < 0 ? 1 : -1) + N) % N);
+      else if (Math.abs(dx) < 12 && Math.abs(dy) < 12) setWrapSlide((sIdx) => (t.lx < slideW / 2 ? Math.max(0, sIdx - 1) : Math.min(WRAP_SLIDES.length - 1, sIdx + 1)));
+    };
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+        <StatusBar style="light" />
+        <View style={{ flex: 1, alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12, gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 4, width: slideW }}>
+            {WRAP_SLIDES.map((x, i) => (
+              <View key={x} style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: i <= wrapSlide ? '#fff' : '#475569' }} />
+            ))}
+          </View>
+          <View style={{ width: slideW, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={{ color: '#CBD5E1', fontSize: 13 }}>{wrapSlide + 1} of {WRAP_SLIDES.length} · tap the sides to move</Text>
+            <Pressable onPress={() => setScreen('recap')} accessibilityRole="button" accessibilityLabel="Close"
+              style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700' }}>✕</Text>
+            </Pressable>
+          </View>
+
+          <View onTouchStart={onStart} onTouchEnd={onEnd} style={{ width: slideW, height: slideW * 16 / 9, borderRadius: 16, overflow: 'hidden' }}
+            accessibilityLabel={`Slide ${wrapSlide + 1} of ${WRAP_SLIDES.length}, ${P.name} colours`}>
+            <View ref={slideRef} collapsable={false} style={{ width: slideW, height: slideW * 16 / 9 }}>
+              <Slide k={k} c={P[key]} d={d} />
+            </View>
+          </View>
+
+          <View style={{ width: slideW, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Pressable onPress={() => setWrapPal((pi - 1 + N) % N)} accessibilityRole="button" accessibilityLabel="Previous colours" style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: '#fff', fontSize: 26 }}>‹</Text>
+            </Pressable>
+            <View style={{ alignItems: 'center', flex: 1 }}>
+              <Text style={{ color: '#CBD5E1', fontSize: 14 }}>Swipe to change colours · <Text style={{ color: '#fff', fontWeight: '800' }}>{P.name}</Text></Text>
+              {pi === d.autoIdx ? <Text style={{ color: '#FDE68A', fontSize: 12, fontWeight: '700', textAlign: 'center' }}>{d.pickedLine}</Text> : null}
+            </View>
+            <Pressable onPress={() => setWrapPal((pi + 1) % N)} accessibilityRole="button" accessibilityLabel="Next colours" style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: '#fff', fontSize: 26 }}>›</Text>
+            </Pressable>
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, width: slideW }} contentContainerStyle={{ gap: 8 }}>
+            {WRAP_PALETTES.map((p, i) => (
+              <Pressable key={p.id} onPress={() => setWrapPal(i)} accessibilityRole="button" accessibilityLabel={`${p.name} colours`}
+                accessibilityState={{ selected: i === pi }}
+                style={{ width: 64, paddingVertical: 6, alignItems: 'center', gap: 4, borderRadius: 12, borderWidth: 2, borderColor: i === pi ? '#fff' : '#334155' }}>
+                <View style={{ width: 26, height: 26, borderRadius: 13, overflow: 'hidden', flexDirection: 'row', flexWrap: 'wrap' }}>
+                  {p.sw.map((col, j) => <View key={j} style={{ width: 13, height: 13, backgroundColor: col }} />)}
+                </View>
+                <Text numberOfLines={1} style={{ color: '#E2E8F0', fontSize: 11, fontWeight: '600' }}>{p.name}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+
+          <View style={{ width: slideW, gap: 8, marginTop: 'auto' }}>
+            <Pressable onPress={shareSlide} accessibilityRole="button" style={{ minHeight: 52, borderRadius: 16, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: '#000', fontSize: 17, fontWeight: '800' }}>Share to Stories</Text>
+            </Pressable>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Pressable onPress={saveSlide} accessibilityRole="button" style={{ flex: 1, minHeight: 46, borderRadius: 14, borderWidth: 1, borderColor: '#475569', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Save image</Text>
+              </Pressable>
+              <Pressable onPress={shareRecap} accessibilityRole="button" style={{ flex: 1, minHeight: 46, borderRadius: 14, borderWidth: 1, borderColor: '#475569', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Share as text</Text>
+              </Pressable>
+            </View>
+            <Text style={{ color: '#94A3B8', fontSize: 12, textAlign: 'center' }}>Shares this slide. In the share menu, pick Instagram, then Story.</Text>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   // ----- Day Recap -----
   if (screen === 'recap') {
     const r = recap;
@@ -985,10 +1284,12 @@ export default function App() {
             {r.areaTotal ? (
               <Text style={s.heroBody}>{r.areas.length} of {r.areaTotal} areas visited{r.missed.length && r.missed.length <= 3 ? `. You missed ${r.missed.join(', ')}!` : ''}</Text>
             ) : null}
-            <Pressable style={s.btnLight} onPress={shareRecap} accessibilityRole="button">
-              <Text style={s.btnLightText}>Share my day</Text>
+            <Pressable style={s.btnLight} onPress={openWrapped} accessibilityRole="button">
+              <Text style={s.btnLightText}>See my Day Wrapped</Text>
             </Pressable>
-            <Text style={{ color: '#94A3B8', fontSize: 12 }}>Tip: screenshot this card to share it as a picture.</Text>
+            <Pressable onPress={shareRecap} accessibilityRole="button" style={{ alignSelf: 'center', minHeight: 40, justifyContent: 'center' }}>
+              <Text style={{ color: '#CBD5E1', fontSize: 14, fontWeight: '600' }}>Or share as text</Text>
+            </Pressable>
           </View>
 
           {!day ? (
@@ -1729,6 +2030,202 @@ function TrendLabel({ trend }) {
   const [text, color] = map[trend] || map.unknown;
   return <Text style={{ color, fontSize: 13, fontWeight: '600', marginTop: 2 }}>{text}</Text>;
 }
+
+// ---------- Day Wrapped slides (drawn at 360×640, scaled by k) ----------
+function Dot({ k, size, color, l = undefined, r = undefined, t = undefined, b = undefined, ring = 0 }) {
+  const st = { position: 'absolute', width: size * k, height: size * k, borderRadius: (size * k) / 2 };
+  if (l != null) st.left = l * k;
+  if (r != null) st.right = r * k;
+  if (t != null) st.top = t * k;
+  if (b != null) st.bottom = b * k;
+  if (ring) { st.borderWidth = ring * k; st.borderColor = color; } else { st.backgroundColor = color; }
+  return <View style={st} />;
+}
+
+function Brand({ k, fg, bg, inline = false }) {
+  return (
+    <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 8 * k },
+      inline ? null : { position: 'absolute', top: 24 * k, left: 24 * k }]}>
+      <View style={{ width: 22 * k, height: 22 * k, borderRadius: 11 * k, backgroundColor: fg, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ color: bg, fontSize: 14 * k, fontWeight: '900', lineHeight: 16 * k }}>→</Text>
+      </View>
+      <Text style={{ color: fg, fontSize: 15 * k, fontWeight: '800' }}>Ride Next</Text>
+    </View>
+  );
+}
+
+const tx = (k, size, color, extra) => ({ color, fontSize: size * k, ...(extra || {}) });
+
+function WrapOpen({ k, c, d }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      <Dot k={k} size={340} color={c.a} r={-130} t={460} />
+      <Dot k={k} size={150} color={c.b} l={-55} b={-45} />
+      <Dot k={k} size={64} color={c.ring} ring={6} r={34} t={60} />
+      <Brand k={k} fg={c.fg} bg={c.bg} />
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 140 * k, gap: 14 * k }}>
+        <Text style={tx(k, 15, c.kicker, { fontWeight: '800', letterSpacing: 1.2 * k })}>{d.dateLabel}</Text>
+        <Text numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.55}
+          style={tx(k, 60, c.fg, { fontWeight: '900', lineHeight: 62 * k, letterSpacing: -1 * k })}>{`Your\n${d.resortShort}\nDay`}</Text>
+        <Text style={tx(k, 18, c.sub, { fontWeight: '500', maxWidth: 250 * k })}>{d.openLine}</Text>
+        <Text style={tx(k, 13, c.sub, { fontWeight: '800' })}>Tap to start</Text>
+      </View>
+    </View>
+  );
+}
+
+function WrapRides({ k, c, d }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      <Dot k={k} size={420} color={c.ring} ring={28} l={-180} t={-150} />
+      <Dot k={k} size={120} color={c.b} r={-30} b={150} />
+      <Brand k={k} fg={c.fg} bg={c.bg} />
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 165 * k, gap: 4 * k }}>
+        <Text style={tx(k, 20, c.fg, { fontWeight: '800' })}>You rode</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit style={tx(k, 160, c.fg, { fontWeight: '900', lineHeight: 165 * k, letterSpacing: -4 * k })}>{d.rides}</Text>
+        <Text style={tx(k, 28, c.fg, { fontWeight: '800' })}>{d.rides === 1 ? 'ride today' : 'rides today'}</Text>
+      </View>
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, bottom: 40 * k, backgroundColor: c.card, borderRadius: 18 * k, padding: 16 * k, gap: 3 * k }}>
+        <Text style={tx(k, 12, c.cardKicker, { fontWeight: '800', letterSpacing: 1 * k })}>YOUR TOP RIDE</Text>
+        <Text numberOfLines={2} style={tx(k, 22, c.cardFg, { fontWeight: '900' })}>{d.topRide ? `${d.topRide.name} ×${d.topRide.n}` : 'Your adventure awaits'}</Text>
+        <Text style={tx(k, 14, c.cardSub)}>{d.shortestLine}</Text>
+      </View>
+    </View>
+  );
+}
+
+function WrapQueue({ k, c, d }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      <View style={{ position: 'absolute', left: 0, right: 0, top: 318 * k, height: 14 * k, backgroundColor: c.stripe }} />
+      <View style={{ position: 'absolute', left: 0, right: 0, top: 344 * k, height: 14 * k, backgroundColor: c.stripe }} />
+      <Dot k={k} size={150} color={c.circle} r={-40} t={-45} />
+      <Brand k={k} fg={c.fg} bg={c.bg} />
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 120 * k, gap: 4 * k }}>
+        <Text style={tx(k, 20, c.fg, { fontWeight: '800' })}>You spent</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit style={tx(k, 76, c.fg, { fontWeight: '900', letterSpacing: -2 * k })}>{d.queueLabel}</Text>
+        <Text style={tx(k, 24, c.fg, { fontWeight: '800' })}>in queues</Text>
+      </View>
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 392 * k, gap: 12 * k }}>
+        <Text numberOfLines={3} style={tx(k, 23, c.fg, { fontWeight: '900', lineHeight: 28 * k })}>{d.queueLine}</Text>
+        <View style={{ backgroundColor: c.chipBg, borderRadius: 16 * k, paddingVertical: 14 * k, paddingHorizontal: 16 * k, flexDirection: 'row', alignItems: 'center', gap: 10 * k }}>
+          <View style={{ width: 10 * k, height: 10 * k, borderRadius: 5 * k, backgroundColor: c.chipIcon }} />
+          <Text numberOfLines={2} style={tx(k, 15, c.chipText, { fontWeight: '800', flex: 1 })}>{d.queueChip}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function WrapWalk({ k, c, d }) {
+  const dots = [];
+  for (let x = -10; x <= 370; x += 24) dots.push({ x, y: 545 - 45 * Math.sin((x + 20) / 60) - x * 0.25 });
+  return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      {dots.map((p, i) => <Dot key={i} k={k} size={8} color={c.path} l={p.x} t={p.y} />)}
+      <Dot k={k} size={200} color={c.circle} r={-70} t={-60} />
+      <Brand k={k} fg={c.fg} bg={c.bg} />
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 150 * k, gap: 4 * k }}>
+        <Text style={tx(k, 20, c.fg, { fontWeight: '800' })}>Your feet carried you</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 * k }}>
+          <Text numberOfLines={1} style={tx(k, 116, c.fg, { fontWeight: '900', letterSpacing: -4 * k })}>{d.dist}</Text>
+          <Text style={tx(k, 34, c.fg, { fontWeight: '900' })}>{d.distUnit}</Text>
+        </View>
+        <Text style={tx(k, 20, c.sub, { fontWeight: '800' })}>{d.stepsLabel}</Text>
+      </View>
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 372 * k, gap: 8 * k }}>
+        <Text style={tx(k, 24, c.fg, { fontWeight: '900' })}>{d.areasLine}</Text>
+        <Text style={tx(k, 17, c.sub)}>{d.missedLine}</Text>
+      </View>
+    </View>
+  );
+}
+
+function WrapSnacks({ k, c, d }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      <Dot k={k} size={260} color={c.circleA} l={-110} b={-110} />
+      <Dot k={k} size={90} color={c.circleB} r={28} t={14} />
+      <Brand k={k} fg={c.fg} bg={c.bg} />
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 120 * k, gap: 16 * k }}>
+        <Text style={tx(k, 42, c.fg, { fontWeight: '900', letterSpacing: -1 * k })}>Snack report</Text>
+        <View style={{ gap: 10 * k }}>
+          {(d.snacks.length ? d.snacks.slice(0, 4) : [{ name: 'No snacks logged', n: 0 }]).map((x) => (
+            <View key={x.name} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 * k,
+              backgroundColor: c.rowBg, borderRadius: 14 * k, paddingVertical: 11 * k, paddingHorizontal: 16 * k }}>
+              <Text numberOfLines={1} style={tx(k, 17, c.rowFg, { fontWeight: '800', flex: 1 })}>{x.name}</Text>
+              <Text style={tx(k, 24, c.count, { fontWeight: '900' })}>×{x.n}</Text>
+            </View>
+          ))}
+        </View>
+        <Text style={tx(k, 24, c.fg, { fontWeight: '900' })}>{d.snackLine}</Text>
+      </View>
+    </View>
+  );
+}
+
+function WrapPersona({ k, c, d }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      {PERSONA_STARS.map(([x, y, r], i) => <Dot key={i} k={k} size={r} color={c.star} l={x} t={y} />)}
+      <View style={{ position: 'absolute', left: 65 * k, top: 100 * k, width: 230 * k, height: 230 * k, borderRadius: 115 * k,
+        backgroundColor: c.disc, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 120 * k, height: 120 * k, borderRadius: 60 * k, borderWidth: 9 * k, borderColor: c.discIcon, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 44 * k, height: 44 * k, borderRadius: 22 * k, backgroundColor: c.discIcon }} />
+        </View>
+      </View>
+      <Brand k={k} fg={c.fg} bg={c.bg} />
+      <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 355 * k, gap: 10 * k, alignItems: 'center' }}>
+        <Text style={tx(k, 14, c.kicker, { fontWeight: '800', letterSpacing: 1.4 * k })}>YOUR RIDE PERSONALITY</Text>
+        <Text numberOfLines={2} adjustsFontSizeToFit style={tx(k, 40, c.fg, { fontWeight: '900', textAlign: 'center', lineHeight: 44 * k })}>{d.persona.title}</Text>
+        <Text numberOfLines={3} style={tx(k, 17, c.sub, { textAlign: 'center', lineHeight: 24 * k, maxWidth: 290 * k })}>{d.persona.line}</Text>
+      </View>
+    </View>
+  );
+}
+
+function WrapSummary({ k, c, d }) {
+  const tiles = [[String(d.rides), 'rides'], [`${d.dist} ${d.distUnit}`, 'walked'], [d.queueLabel, 'queuing'], [String(d.snackTotal), 'snacks']];
+  return (
+    <View style={{ flex: 1, backgroundColor: c.bg, padding: 24 * k, gap: 14 * k }}>
+      <Brand k={k} fg={c.fg} bg={c.bg} inline />
+      <View style={{ gap: 2 * k }}>
+        <Text style={tx(k, 13, c.kicker, { fontWeight: '800', letterSpacing: 1 * k })}>{d.dateLabel}</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit style={tx(k, 32, c.fg, { fontWeight: '900', letterSpacing: -0.5 * k })}>{`My ${d.resortShort} Day`}</Text>
+      </View>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 * k }}>
+        {tiles.map(([v, label], i) => (
+          <View key={label} style={{ width: 151 * k, borderRadius: 16 * k, padding: 14 * k, backgroundColor: c.tiles[i][0] }}>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={tx(k, 32, c.tiles[i][1], { fontWeight: '900' })}>{v}</Text>
+            <Text style={tx(k, 13, c.tiles[i][1], { fontWeight: '800' })}>{label}</Text>
+          </View>
+        ))}
+      </View>
+      <View style={{ backgroundColor: c.panel, borderRadius: 16 * k, padding: 14 * k, gap: 6 * k }}>
+        {[['Top ride', d.topRide ? `${d.topRide.name} ×${d.topRide.n}` : '—'],
+          ['Top snack', d.snacks[0] ? `${d.snacks[0].name} ×${d.snacks[0].n}` : '—'],
+          ['Personality', d.persona.short]].map(([label, v]) => (
+          <View key={label} style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 * k }}>
+            <Text style={tx(k, 14, c.mute)}>{label}</Text>
+            <Text numberOfLines={1} style={tx(k, 14, c.fg, { fontWeight: '800', flexShrink: 1, textAlign: 'right' })}>{v}</Text>
+          </View>
+        ))}
+      </View>
+      <View style={{ marginTop: 'auto', backgroundColor: c.foot, borderRadius: 16 * k, paddingVertical: 14 * k, paddingHorizontal: 16 * k,
+        flexDirection: 'row', alignItems: 'center', gap: 12 * k }}>
+        <View style={{ width: 36 * k, height: 36 * k, borderRadius: 18 * k, backgroundColor: c.footIcon, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: c.foot, fontSize: 20 * k, fontWeight: '900', lineHeight: 22 * k }}>→</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={tx(k, 17, c.footFg, { fontWeight: '900' })}>Made with Ride Next</Text>
+          <Text style={tx(k, 13, c.footSub)}>Plan your day free on the App Store</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const WRAP_COMPONENTS = { open: WrapOpen, rides: WrapRides, queue: WrapQueue, walk: WrapWalk, snacks: WrapSnacks, persona: WrapPersona, summary: WrapSummary };
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.ground },

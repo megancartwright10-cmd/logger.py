@@ -25,7 +25,15 @@
           "motionPermission": "Ride Next counts your steps to show how far you walked in the park."
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Ride Next saves your Day Wrapped images to your photos.",
+          "savePhotosPermission": "Ride Next saves your Day Wrapped images to your photos.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ]
     ]
   }
 }

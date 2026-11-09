@@ -11,6 +11,7 @@ import * as Location from 'expo-location';
 
 const DATA_URL = 'https://raw.githubusercontent.com/megancartwright10-cmd/logger.py/main/data/app/disneyland-resort.json';
 const LIVE_URL = (id) => `https://api.themeparks.wiki/v1/entity/${id}/live`;
+const SCHEDULE_URL = (id) => `https://api.themeparks.wiki/v1/entity/${id}/schedule`;
 const DINING_URL = 'https://disneyland.disney.go.com/dining/';
 const STORE_KEY = 'ridenext:v1';
 const REFRESH_MS = 3 * 60 * 1000;
@@ -35,6 +36,7 @@ function parkNow(offsetMin) {
   const day = d.getUTCDay();
   return {
     hour: d.getUTCHours(),
+    minute: d.getUTCHours() * 60 + d.getUTCMinutes(),
     dow: day,
     dayType: day === 0 || day === 6 ? 'weekend' : 'weekday',
     dateKey: d.toISOString().slice(0, 10),
@@ -75,6 +77,41 @@ function extremes(curve) {
   });
   return busiest ? { busiest, quietest } : null;
 }
+
+// "08:00" -> "8am", "21:30" -> "9:30pm"
+function fmtTime(hhmm) {
+  if (!hhmm) return '';
+  const [h, m] = hhmm.split(':').map(Number);
+  const suffix = h >= 12 && h < 24 ? 'pm' : 'am';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  if (h === 0 && m === 0) return 'midnight';
+  return m ? `${h12}:${String(m).padStart(2, '0')}${suffix}` : `${h12}${suffix}`;
+}
+const toMin = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
+
+// open/close ranges ([["08:00","22:00"]]) -> is it open at `minute`?
+function openAt(ranges, minute) {
+  return (ranges || []).some(([o, c]) => {
+    const start = toMin(o); let end = toMin(c);
+    if (end <= start) end += 24 * 60; // closes after midnight
+    return (minute >= start && minute < end) || (minute + 1440 >= start && minute + 1440 < end);
+  });
+}
+
+// ThemeParks.wiki schedule -> today's hours for a park
+function parkHoursToday(schedule, dateKey) {
+  const today = (schedule || []).filter((x) => x.date === dateKey && x.openingTime && x.closingTime);
+  const main = today.filter((x) => x.type === 'OPERATING')
+    .map((x) => [x.openingTime.slice(11, 16), x.closingTime.slice(11, 16)]);
+  const extras = today.filter((x) => x.type === 'EXTRA_HOURS' || x.type === 'TICKETED_EVENT')
+    .map((x) => ({
+      label: x.description || (x.type === 'EXTRA_HOURS' ? 'Extra hours' : 'Special ticketed event'),
+      range: [x.openingTime.slice(11, 16), x.closingTime.slice(11, 16)],
+    }));
+  return { known: (schedule || []).length > 0, main, extras };
+}
+
+const fmtRange = ([o, c]) => `${fmtTime(o)} – ${fmtTime(c)}`;
 
 function fmtHour(h) {
   if (h === 0) return 'midnight';
@@ -175,6 +212,7 @@ export default function App() {
   const [foodOpen, setFoodOpen] = useState(false);
   const [mood, setMood] = useState(null);
   const [sortBy, setSortBy] = useState('best'); // 'best' | 'area'
+  const [schedules, setSchedules] = useState({}); // parkId -> schedule list
   const [, setTick] = useState(0);
   const loaded = useRef(false);
 
@@ -192,6 +230,29 @@ export default function App() {
       .then(setData)
       .catch((e) => setError(`Couldn't load park data (${e.message}).`));
   }, []);
+
+  useEffect(() => {
+    if (!data) return;
+    data.parks.forEach((p) => {
+      fetch(SCHEDULE_URL(p.id))
+        .then((r) => r.json())
+        .then((j) => setSchedules((cur) => ({ ...cur, [p.id]: j.schedule || [] })))
+        .catch(() => {});
+    });
+  }, [data]);
+
+  // today's park hours: live schedule if we have it, otherwise last night's copy
+  const hoursFor = (p) => {
+    const dateKey = parkNow(data.utcOffsetMinutes).dateKey;
+    if (schedules[p.id]) return parkHoursToday(schedules[p.id], dateKey);
+    const saved = p.hours && p.hours[dateKey];
+    return { known: !!p.hours && Object.keys(p.hours).length > 0, main: saved || [], extras: [] };
+  };
+  const hoursLine = (p) => {
+    const h = hoursFor(p);
+    if (h.main.length) return `Open today ${h.main.map(fmtRange).join(', ')}`;
+    return h.known ? 'Closed today' : 'Hours not available';
+  };
 
   useEffect(() => {
     if (loaded.current) AsyncStorage.setItem(STORE_KEY, JSON.stringify(saved)).catch(() => {});
@@ -340,6 +401,10 @@ export default function App() {
                       <Text style={s.parkCardTitle}>{p.name}</Text>
                       <Text style={s.parkCardArrow}>›</Text>
                     </View>
+                    <Text style={[s.parkCardMeta, { color: C.ink, fontWeight: '600' }]}>{hoursLine(p)}</Text>
+                    {hoursFor(p).extras.map((x, k) => (
+                      <Text key={k} style={s.parkCardMeta}>{x.label}: {fmtRange(x.range)}</Text>
+                    ))}
                     <Text style={s.parkCardMeta}>
                       {picked > 0 ? `${picked} ride${picked === 1 ? '' : 's'} picked · ${doneToday} done today` : 'Not started yet'}
                     </Text>
@@ -488,10 +553,22 @@ export default function App() {
     const rest = plan.ranked.slice(1);
     const foodHere = park.food.filter((f) => !mood || f.moods.includes(mood));
     const moodsHere = Object.keys(MOOD_LABELS).filter((m) => park.food.some((f) => f.moods.includes(m)));
+    const hoursToday = (f) => (f.hours && f.hours[now.dateKey]) || null;
+    const isOpen = (f) => {
+      const st = (live[f.id] || {}).status;
+      if (st) return st === 'OPERATING';
+      const h = hoursToday(f);
+      return h ? openAt(h, now.minute) : null; // null = we don't know
+    };
+    const closesAt = (f) => {
+      const h = hoursToday(f);
+      const r = h && h.find(([o, c]) => openAt([[o, c]], now.minute));
+      return r ? r[1] : null;
+    };
     const openFood = foodHere
       .filter((f) => f.service !== 'table')
-      .filter((f) => { const st = (live[f.id] || {}).status; return !st || st === 'OPERATING'; })
-      .map((f) => ({ ...f, walk: saved.useLoc ? walkMinutes(coords, f.loc) : null, known: !!(live[f.id] || {}).status }))
+      .filter((f) => isOpen(f) !== false)
+      .map((f) => ({ ...f, walk: saved.useLoc ? walkMinutes(coords, f.loc) : null, open: isOpen(f), until: closesAt(f) }))
       .sort((a, b) => (a.walk != null && b.walk != null ? a.walk - b.walk : a.name.localeCompare(b.name)));
     const sitDown = foodHere.filter((f) => f.service === 'table');
 
@@ -511,6 +588,7 @@ export default function App() {
         </View>
         <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
           {error ? <Text style={s.errorText}>{error}</Text> : null}
+          <Text style={s.mutedSmall}>{park.name} · {hoursLine(park)}</Text>
           {plan.parkClosed ? (
             <View style={s.card}><Text style={s.h3}>The park looks closed right now</Text><Text style={s.muted}>Waits will appear here when it opens.</Text></View>
           ) : top ? (
@@ -568,7 +646,9 @@ export default function App() {
                     <Text style={s.mutedSmall}>{f.moods.map((m) => MOOD_LABELS[m]).join(' · ')}{f.service === 'snack' ? ' · snack stand' : ''}</Text>
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={[s.mutedSmall, { color: f.known ? C.green : C.muted, fontWeight: '600' }]}>{f.known ? 'Open' : 'Hours not listed'}</Text>
+                    <Text style={[s.mutedSmall, { color: f.open ? C.green : C.muted, fontWeight: '600' }]}>
+                      {f.open ? (f.until ? `Open until ${fmtTime(f.until)}` : 'Open') : 'Hours not listed'}
+                    </Text>
                     {f.walk != null ? <Text style={s.mutedSmall}>{f.walk} min walk</Text> : null}
                   </View>
                 </View>
@@ -578,7 +658,12 @@ export default function App() {
                   <Text style={[s.kicker, { marginTop: 12 }]}>Fancy a sit-down meal?</Text>
                   {sitDown.slice(0, 6).map((f) => (
                     <View key={f.id} style={s.foodRow}>
-                      <Text style={[s.rowTitle, { flex: 1 }]}>{f.name}</Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={s.rowTitle}>{f.name}</Text>
+                        <Text style={s.mutedSmall}>
+                          {hoursToday(f) ? `Today ${hoursToday(f).map(fmtRange).join(', ')}` : f.hours && Object.keys(f.hours).length ? 'Closed today' : 'Hours not listed'}
+                        </Text>
+                      </View>
                       <Pressable style={s.linkBtn} onPress={() => Linking.openURL(DINING_URL)} accessibilityRole="link">
                         <Text style={s.linkBtnText}>Check availability</Text>
                       </Pressable>
@@ -639,6 +724,7 @@ export default function App() {
         </Pressable>
         <Text style={s.kicker}>{park.name}</Text>
         <Text style={s.h1}>Plan my day</Text>
+        <Text style={[s.mutedSmall, { color: C.ink, fontWeight: '600' }]}>{hoursLine(park)}</Text>
         <Text style={s.muted}>Tap the rides you want to do today.</Text>
         <Text style={s.mutedSmall}>{updatedAt ? `Live waits updated ${minutesAgo(updatedAt)}` : 'Loading live waits…'}</Text>
       </View>

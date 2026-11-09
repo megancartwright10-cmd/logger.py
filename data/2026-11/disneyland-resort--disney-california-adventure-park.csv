@@ -325,3 +325,26 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-09T03:06Z,Disneyland Resort,Disney California Adventure Park,d2aa0987-49a2-45dc-a635-3a8bf7401230,Animation Academy,OPERATING,,,,,,,,2026-11-08T16:00:00.680Z
 2026-11-09T03:06Z,Disneyland Resort,Disney California Adventure Park,e1fbc7a1-2cd1-4282-b373-ac11d9d9d38a,The Little Mermaid - Ariel's Undersea Adventure,OPERATING,5,,AVAILABLE,2026-11-08T19:05:00-08:00,,,,2026-11-09T03:05:38.682Z
 2026-11-09T03:06Z,Disneyland Resort,Disney California Adventure Park,f44a5072-3cda-4c7c-8574-33ad09d16cca,Goofy's Sky School,OPERATING,15,,AVAILABLE,2026-11-08T19:15:00-08:00,,,,2026-11-09T03:05:38.694Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,10a5fc6f-5ad3-414b-9bdd-e6bae097b6ad,Golden Zephyr,OPERATING,5,,,,,,,2026-11-08T16:00:42.686Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,1d24dd7a-372b-4195-8ad0-ba9679d72b08,Games of Pixar Pier,OPERATING,,,,,,,,2026-11-08T17:00:47.240Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,2295351d-ce6b-4c04-92d5-5b416372c5b5,WEB SLINGERS: A Spider-Man Adventure,OPERATING,20,,AVAILABLE,2026-11-08T20:00:00-08:00,,,,2026-11-09T03:50:39.800Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,388ad3f1-5cf5-4a9d-8d0e-6dfb817d7822,Jessie's Critter Carousel,OPERATING,5,,,,,,,2026-11-08T16:02:41.354Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,40524fba-5d84-49e7-9204-f493dbe2d5a4,"Monsters, Inc. Mike & Sulley to the Rescue!",OPERATING,15,,AVAILABLE,2026-11-08T20:00:00-08:00,,,,2026-11-09T03:54:09.102Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,44c1f655-25d3-440c-b1a8-db736a12b105,Sorcerer's Workshop,OPERATING,,,,,,,,2026-11-08T16:00:42.979Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,46097afe-a1ea-4807-93d3-14d14f36e55f,Mater's Junkyard Jamboree,OPERATING,10,,,,,,,2026-11-09T01:22:45.840Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,4f5b28d0-b78e-482b-8e2e-1f90756d6220,Silly Symphony Swings,OPERATING,5,,,,,,,2026-11-09T02:46:46.279Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,5d07a2b1-49ca-4de7-9d32-6d08edf69b08,Incredicoaster,OPERATING,10,,AVAILABLE,2026-11-08T19:55:00-08:00,,,,2026-11-09T03:54:09.074Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,6d876f4c-c3ff-4ae3-a2d8-d4b831e1039b,Inside Out Emotional Whirlwind,OPERATING,5,,,,,,,2026-11-09T02:49:54.044Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,7561bcd8-18ea-4e3f-89d5-c905b7ba3d42,Turtle Talk with Crush,OPERATING,,,,,,,,2026-11-08T16:00:00.818Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,77f205a4-d482-4d91-a5ff-71e54a086ad2,Soarin’ Across America,OPERATING,15,,AVAILABLE,2026-11-08T19:55:00-08:00,,,,2026-11-09T03:53:48.100Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,7a09a2f0-e226-4f3e-86f8-2598ab67ec44,Luigi's Rollickin' Roadsters,OPERATING,5,,,,,,,2026-11-09T03:10:45.723Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,86ab3069-110d-49c5-a7e7-29ddf28695a6,Toy Story Midway Mania!,OPERATING,30,,FINISHED,,,,,2026-11-09T03:50:39.883Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,8f586a2f-cef5-46d3-b822-fd622c4e9e33,Mickey's PhilharMagic,OPERATING,10,,,,,,,2026-11-08T17:02:43.366Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,b1d285a7-2444-4a7c-b7bb-d2d4d6428a85,Grizzly River Run,OPERATING,5,,AVAILABLE,2026-11-08T19:55:00-08:00,,,,2026-11-09T03:54:09.083Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,b7678dab-5544-48d5-8fdc-c1a0127cfbcd,Guardians of the Galaxy - Mission: BREAKOUT!,OPERATING,15,,AVAILABLE,2026-11-08T20:25:00-08:00,,,,2026-11-09T03:53:48.090Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,c60c768b-3461-465c-8f4f-b44b087506fc,Radiator Springs Racers,OPERATING,40,,,,AVAILABLE,2026-11-08T19:55:00-08:00,2400 USD,2026-11-09T03:53:48.070Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,c8a4b7b1-c1b2-4dfe-b73c-4e834b4a73db,Jumpin' Jellyfish,OPERATING,5,,,,,,,2026-11-09T03:29:52.220Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,c9803366-6f37-4406-82af-7692357e3ca9,Redwood Creek Challenge Trail,REFURBISHMENT,,,,,,,,2026-11-01T07:41:15.994Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,d2aa0987-49a2-45dc-a635-3a8bf7401230,Animation Academy,OPERATING,,,,,,,,2026-11-08T16:00:00.680Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,e1fbc7a1-2cd1-4282-b373-ac11d9d9d38a,The Little Mermaid - Ariel's Undersea Adventure,OPERATING,5,,AVAILABLE,2026-11-08T19:55:00-08:00,,,,2026-11-09T03:54:09.007Z
+2026-11-09T03:55Z,Disneyland Resort,Disney California Adventure Park,f44a5072-3cda-4c7c-8574-33ad09d16cca,Goofy's Sky School,OPERATING,15,,AVAILABLE,2026-11-08T19:55:00-08:00,,,,2026-11-09T03:54:09.018Z

@@ -1,2 +1,5 @@
 timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wait,return_time_state,return_time_start,paid_return_state,paid_return_start,paid_return_price,source_last_updated
 2026-11-09T14:55Z,Universal Orlando,Universal Studios Florida,25d47d04-a917-405a-9904-9be2b499b2dd,Illumination's Villain-Con Minion Blast,OPERATING,5,,,,,,,2026-11-09T14:49:03.261Z
+2026-11-09T15:00Z,Universal Orlando,Universal Studios Florida,25d47d04-a917-405a-9904-9be2b499b2dd,Illumination's Villain-Con Minion Blast,OPERATING,5,,TEMP_FULL,,,,,2026-11-09T14:55:21.013Z
+2026-11-09T15:00Z,Universal Orlando,Universal Studios Florida,750939c5-a69e-408a-8d55-66c272fa265e,TRANSFORMERS™: The Ride-3D,OPERATING,5,,,,,,,2026-11-09T14:58:06.519Z
+2026-11-09T15:00Z,Universal Orlando,Universal Studios Florida,7e70bc9e-7dce-4dd2-8823-57b8d6ec7570,The Simpsons Ride™,OPERATING,5,,,,,,,2026-11-09T14:58:06.506Z

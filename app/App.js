@@ -1,4 +1,4 @@
-// Ride Next — version 2 (Disneyland Resort)
+// Ride Next — version 3 (Disneyland Resort + Disneyland Paris)
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -11,31 +11,54 @@ import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import { Pedometer } from 'expo-sensors';
 
-const DATA_URL = 'https://raw.githubusercontent.com/megancartwright10-cmd/logger.py/main/data/app/disneyland-resort.json';
+const DATA_BASE = 'https://raw.githubusercontent.com/megancartwright10-cmd/logger.py/main/data/app/';
+const RESORTS = {
+  dlr: {
+    key: 'dlr', name: 'Disneyland Resort', short: 'Disneyland', city: 'Anaheim', country: 'California, USA',
+    parks: 'Disneyland Park · Disney California Adventure', dataUrl: `${DATA_BASE}disneyland-resort.json`,
+    diningUrl: 'https://disneyland.disney.go.com/dining/', cur: '$', payName: 'Lightning Lane Single Pass',
+    payShort: 'Lightning Lane', hasMulti: true, metric: false, switchName: 'Rider Switch',
+    heightOptions: [null, 32, 35, 38, 40, 42, 46, 48], // inches
+  },
+  dlp: {
+    key: 'dlp', name: 'Disneyland Paris', short: 'Disneyland Paris', city: 'Paris', country: 'France',
+    parks: 'Disneyland Park · Disney Adventure World', dataUrl: `${DATA_BASE}disneyland-paris.json`,
+    diningUrl: 'https://www.disneylandparis.com/en-gb/dining/advance-table-booking', cur: '€', payName: 'Premier Access One',
+    payShort: 'Premier Access', hasMulti: false, metric: true, switchName: 'Baby Switch',
+    heightOptions: [null, 81, 95, 102, 107, 120, 132, 140], // cm
+  },
+};
+const toCm = (R, h) => (h == null ? null : R.metric ? h : Math.round(h * 2.54));
+const heightLabel = (R, r) => (R.metric ? `${r.heightCm} cm` : `${r.height} in`);
+const norm = (t) => (t || '').split(/\s+/).join(' ').trim();
 const LIVE_URL = (id) => `https://api.themeparks.wiki/v1/entity/${id}/live`;
 const SCHEDULE_URL = (id) => `https://api.themeparks.wiki/v1/entity/${id}/schedule`;
-const DINING_URL = 'https://disneyland.disney.go.com/dining/';
 const STORE_KEY = 'ridenext:v1';
 const REFRESH_MS = 3 * 60 * 1000;
 const LL_WAIT = 10; // rough Lightning Lane wait, minutes
 const FAST_REFRESH_MS = 60 * 1000; // while a ride you care about is down
 const HOP_MIN = 12; // rough walk between the two parks, minutes
 const MULTI_PASS_GAP_MIN = 120; // Disney: book again after using it, or 2 hours after booking
-const HEIGHT_OPTIONS = [null, 32, 35, 38, 40, 42, 46, 48];
 
 // Rides people rush to at opening, in rough priority order (used when there's no history yet)
 const HEADLINERS = {
-  'Disneyland Park': ['Star Wars: Rise of the Resistance', 'Space Mountain', 'Indiana Jones™ Adventure',
+  'dlr:Disneyland Park': ['Star Wars: Rise of the Resistance', 'Space Mountain', 'Indiana Jones™ Adventure',
     "Mickey & Minnie's Runaway Railway", "Tiana's Bayou Adventure", 'Matterhorn Bobsleds', "Peter Pan's Flight",
     'Millennium Falcon: Smugglers Run', 'Big Thunder Mountain Railroad'],
-  'Disney California Adventure Park': ['Radiator Springs Racers', 'WEB SLINGERS: A Spider-Man Adventure',
+  'dlr:Disney California Adventure Park': ['Radiator Springs Racers', 'WEB SLINGERS: A Spider-Man Adventure',
     'Guardians of the Galaxy - Mission: BREAKOUT!', 'Incredicoaster', 'Toy Story Midway Mania!',
     'Soarin’ Across America', 'Grizzly River Run'],
+  'dlp:Disneyland Park': ["Peter Pan's Flight", 'Star Wars Hyperspace Mountain', 'Big Thunder Mountain',
+    'Indiana Jones™ and the Temple of Peril', 'Phantom Manor', 'Pirates of the Caribbean', 'Buzz Lightyear Laser Blast',
+    'Star Tours: The Adventures Continue*'],
+  'dlp:Disney Adventure World': ['Frozen Ever After', 'Ratatouille : L’Aventure Totalement Toquée de Rémy',
+    'Spider-Man W.E.B. Adventure', 'Avengers Assemble: Flight Force', "Crush's Coaster",
+    'The Twilight Zone Tower of Terror', 'RC Racer'],
 };
 
 // Most popular things people order. Menus change, so people can add their own too.
 const SNACKS = {
-  'Disneyland Park': [
+  'dlr:Disneyland Park': [
     { id: 'dole-whip', name: 'Dole Whip', where: 'Tiki Juice Bar / The Tropical Hideaway' },
     { id: 'mint-julep', name: 'Mint Julep (non-alcoholic)', where: 'Mint Julep Bar' },
     { id: 'beignets', name: 'Mickey beignets', where: 'Mint Julep Bar' },
@@ -48,7 +71,7 @@ const SNACKS = {
     { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
     { id: 'ice-cream', name: 'Ice cream', where: 'Gibson Girl Ice Cream Parlor' },
   ],
-  'Disney California Adventure Park': [
+  'dlr:Disney California Adventure Park': [
     { id: 'churro', name: 'Churro', where: 'Carts and Cozy Cone Motel' },
     { id: 'cozy-cone', name: 'Cozy Cone treat', where: 'Cozy Cone Motel' },
     { id: 'corn-dog', name: 'Corn dog', where: 'Corn Dog Castle' },
@@ -58,7 +81,24 @@ const SNACKS = {
     { id: 'smoothie', name: 'Smoothie', where: 'Schmoozies!' },
     { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
   ],
+  'dlp:Disneyland Park': [
+    { id: 'beignets', name: 'Mickey beignets', where: 'Snack stands around the park' },
+    { id: 'crepe', name: 'Nutella crêpe', where: 'Crêpe stands around the park' },
+    { id: 'churro', name: 'Churro', where: 'Snack carts' },
+    { id: 'cookies', name: 'Character cookie', where: 'Cable Car Bake Shop' },
+    { id: 'candy', name: 'Cake pop or sweets', where: 'Boardwalk Candy Palace' },
+    { id: 'ice-cream', name: 'Ice cream sundae', where: 'The Gibson Girl Ice Cream Parlour' },
+    { id: 'hot-dog', name: 'Hot dog', where: 'Casey’s Corner' },
+    { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
+  ],
+  'dlp:Disney Adventure World': [
+    { id: 'ice-cream', name: 'Themed ice cream', where: 'Ice Cream Creations' },
+    { id: 'crepe', name: 'Nutella crêpe', where: 'Snack stands' },
+    { id: 'churro', name: 'Churro', where: 'Snack carts' },
+    { id: 'popcorn', name: 'Popcorn', where: 'Popcorn carts' },
+  ],
 };
+const STEP_KM = 0.000762; // average stride ~76 cm
 const STEP_MILES = 0.000473; // average stride ~2.5 ft
 
 // ---------- notifications ----------
@@ -191,13 +231,13 @@ const clockFromMs = (ms, offsetMin) => {
   const d = new Date(ms + offsetMin * 60000);
   return fmtTime(`${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`);
 };
-const BIG_SHOW = /firework|parade|world of color|fantasmic|nighttime|spectacular|believe/i;
+const BIG_SHOW = /firework|parade|world of color|fantasmic|nighttime|spectacular|believe|cascade|tales of magic|electrical|illumination/i;
 
 // Rope drop: which picks gain the most wait between opening and midday?
 // Headline rides come first; a smaller ride only makes the cut if history
 // shows its line really balloons (20+ min) after opening.
 function ropeDropPicks(rides, openHour, parkName) {
-  const head = HEADLINERS[parkName] || [];
+  const head = (HEADLINERS[parkName] || []).map(norm);
   const scored = rides.map((r) => {
     const curve = r.typical && (r.typical.weekday || r.typical.weekend);
     let gain = null;
@@ -205,7 +245,7 @@ function ropeDropPicks(rides, openHour, parkName) {
       const later = [1, 2, 3, 4].map((i) => curve[openHour + i]).filter((v) => v != null);
       if (later.length) gain = Math.max(...later) - curve[openHour];
     }
-    const rank = head.indexOf(r.name);
+    const rank = head.indexOf(norm(r.name));
     return { r, gain, headliner: rank !== -1, rank: rank === -1 ? 99 : rank };
   }).filter((x) => x.headliner || (x.gain != null && x.gain >= 20));
   scored.sort((a, b) => {
@@ -275,7 +315,7 @@ function outlook(ride, now, liveWait) {
   return { trend, later, diff, best };
 }
 
-function lightningLane(live, look) {
+function lightningLane(live, look, R) {
   const now = live.wait != null ? live.wait : null;
   const ref = [now, look.best ? look.best.wait : null].filter((v) => v != null);
   const bestStandby = ref.length ? Math.min(...ref) : null;
@@ -284,10 +324,10 @@ function lightningLane(live, look) {
 
   if (live.single && live.single.state === 'AVAILABLE') {
     const price = live.single.price;
-    if (saved == null) return { verdict: 'Maybe', tone: 'amber', body: 'Single Pass is on sale, but there isn\'t enough wait data to judge it yet.', price };
+    if (saved == null) return { verdict: 'Maybe', tone: 'amber', body: `${R.payName} is on sale, but there isn't enough wait data to judge it yet.`, price };
     if (saved < 15) return { verdict: 'Skip it', tone: 'grey', body: `The standby line is about ${bestStandby} min${when}. Ride standby and keep your money.`, price };
-    const perHour = price ? ` That's about $${Math.round((price * 60) / saved)} for every hour saved.` : '';
-    if (saved >= 30) return { verdict: 'Worth it', tone: 'green', body: `Even at its best today, standby is about ${bestStandby} min. Single Pass saves you roughly ${saved} min.${perHour}`, price };
+    const perHour = price ? ` That's about ${R.cur}${Math.round((price * 60) / saved)} for every hour saved.` : '';
+    if (saved >= 30) return { verdict: 'Worth it', tone: 'green', body: `Even at its best today, standby is about ${bestStandby} min. ${R.payName} saves you roughly ${saved} min.${perHour}`, price };
     return { verdict: 'Maybe', tone: 'amber', body: `Saves about ${saved} min compared with standby${when}.${perHour} Worth it if your day is packed.`, price };
   }
   if (live.multi === 'AVAILABLE') {
@@ -295,9 +335,9 @@ function lightningLane(live, look) {
     return { verdict: 'Save it', tone: 'grey', body: `This ride is part of Multi Pass, but standby is short${when}. Use your booking on a busier ride.` };
   }
   if ((live.single && live.single.state === 'FINISHED') || live.multi === 'FINISHED') {
-    return { verdict: 'Sold out', tone: 'grey', body: 'Lightning Lane for this ride has run out for today.' };
+    return { verdict: 'Sold out', tone: 'grey', body: `${R.payShort} for this ride has run out for today.` };
   }
-  return { verdict: 'Not offered', tone: 'grey', body: 'No Lightning Lane for this ride right now.' };
+  return { verdict: 'Not offered', tone: 'grey', body: `No ${R.payShort} for this ride right now.` };
 }
 
 const TONES = {
@@ -316,10 +356,11 @@ export default function App() {
   const [detailId, setDetailId] = useState(null);
   const [saved, setSaved] = useState({
     selected: {}, done: {}, useLoc: false, hopper: false, useSingle: false, multiPass: false, rain: false,
-    minHeight: null, watch: [], customSnacks: [], log: {}, ll: null, reminders: {},
+    resort: null, minHeightCm: null, watch: [], customSnacks: [], log: {}, ll: null, reminders: {},
     snackCounts: {}, meals: {}, areas: {}, day: null, stepsAndroid: {}, waitAlerts: {}, ratings: {},
   });
   const [snacksOpen, setSnacksOpen] = useState(false);
+  const [storeReady, setStoreReady] = useState(false);
   const [backTo, setBackTo] = useState('welcome');
   const [steps, setSteps] = useState(null);
   const [banner, setBanner] = useState(null);
@@ -336,23 +377,40 @@ export default function App() {
   const [, setTick] = useState(0);
   const loaded = useRef(false);
 
-  const park = data ? data.parks[parkIdx] : null;
+  const R = RESORTS[saved.resort] || RESORTS.dlr;
+  const park = data ? (data.parks[parkIdx] || data.parks[0]) : null;
   const now = data ? parkNow(data.utcOffsetMinutes) : null;
 
-  // load saved choices + static data
+  // load saved choices
   useEffect(() => {
     AsyncStorage.getItem(STORE_KEY)
-      .then((s) => { if (s) setSaved((prev) => ({ ...prev, ...JSON.parse(s) })); })
+      .then((raw) => {
+        if (!raw) return;
+        const stored = JSON.parse(raw);
+        // earlier versions: Disneyland only, heights in inches
+        if (stored.minHeight != null && stored.minHeightCm == null) stored.minHeightCm = Math.round(stored.minHeight * 2.54);
+        if (!stored.resort && Object.values(stored.selected || {}).some((l) => l && l.length)) stored.resort = 'dlr';
+        setSaved((prev) => ({ ...prev, ...stored }));
+      })
       .catch(() => {})
-      .finally(() => { loaded.current = true; });
-    fetch(DATA_URL)
+      .finally(() => { loaded.current = true; setStoreReady(true); });
+  }, []);
+
+  // load the chosen resort's park data
+  useEffect(() => {
+    if (!storeReady || !saved.resort) return undefined;
+    let alive = true;
+    setData(null); setLive({}); setSchedules({}); setParkIdx(0); setError(null);
+    prevLive.current = {};
+    fetch(RESORTS[saved.resort].dataUrl)
       .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
       .then((d) => {
         d.parks.forEach((p) => p.rides.forEach((r) => { r.parkId = p.id; r.parkName = p.name; }));
-        setData(d);
+        if (alive) setData(d);
       })
-      .catch((e) => setError(`Couldn't load park data (${e.message}).`));
-  }, []);
+      .catch((e) => { if (alive) setError(`Couldn't load park data (${e.message}).`); });
+    return () => { alive = false; };
+  }, [storeReady, saved.resort]);
 
   useEffect(() => {
     if (!data) return;
@@ -490,7 +548,7 @@ export default function App() {
     return { ...k, [pid]: [...cur, ride.id] };
   });
   const setOpt = (key, value) => setSaved((cur) => ({ ...cur, [key]: value }));
-  const tooTall = (r) => saved.minHeight != null && r.height != null && r.height > saved.minHeight;
+  const tooTall = (r) => saved.minHeightCm != null && r.heightCm != null && r.heightCm > saved.minHeightCm;
 
   // ---------- Day Recap ----------
   const today = now ? now.dateKey : '';
@@ -564,19 +622,20 @@ export default function App() {
     const snackList = Object.entries(snackCountsToday).map(([id, n]) => ({ name: allSnackNames[id] || 'Snack', n }));
     const mealList = Object.entries(mealsToday).map(([name, n]) => ({ name, n }));
     return {
-      minutes, stepCount, miles: Math.round(stepCount * STEP_MILES * 10) / 10, stepsPartial: !(steps && steps.whole),
+      minutes, stepCount, stepsPartial: !(steps && steps.whole),
+      dist: Math.round(stepCount * (R.metric ? STEP_KM : STEP_MILES) * 10) / 10, unit: R.metric ? 'km' : 'mi',
       rides: todayLog.length, queue: queueToday,
       areas: [...visitedLands].filter((l) => allLands.has(l)), areaTotal: allLands.size,
       missed: [...allLands].filter((l) => !visitedLands.has(l)),
       snacks: snackList, meals: mealList,
     };
-  }, [data, now && now.minute, day, steps, saved, todayLog, park]);
+  }, [data, now && now.minute, day, steps, saved, todayLog, park, R]);
 
   const shareRecap = () => {
     if (!recap) return;
-    const lines = ['My Disneyland Day ✨'];
+    const lines = [`My ${R.short} Day ✨`];
     if (recap.minutes) lines.push(`${fmtDuration(recap.minutes)} in the park`);
-    if (recap.miles) lines.push(`${recap.miles} miles walked`);
+    if (recap.dist) lines.push(`${recap.dist} ${recap.unit} walked`);
     lines.push(`${recap.rides} ride${recap.rides === 1 ? '' : 's'} · ${fmtDuration(recap.queue)} queuing`);
     if (recap.areaTotal) lines.push(`${recap.areas.length} of ${recap.areaTotal} areas visited`);
     recap.meals.forEach((m) => lines.push(`${m.name} ×${m.n}`));
@@ -701,6 +760,55 @@ export default function App() {
   }, [park, data, now && now.hour, live, saved, skippedBy, coords]);
 
   // ---------- render ----------
+  if (!storeReady) {
+    return <SafeAreaView style={[s.welcome, { alignItems: 'center', justifyContent: 'center' }]}><ActivityIndicator color="#fff" /></SafeAreaView>;
+  }
+
+  if (!saved.resort || screen === 'city') {
+    const chooseResort = (key) => {
+      setSaved((cur) => ({ ...cur, resort: key }));
+      setParkIdx(0);
+      setScreen('welcome');
+    };
+    return (
+      <SafeAreaView style={s.welcome}>
+        <StatusBar style="light" />
+        <ScrollView contentContainerStyle={s.welcomeInner}>
+          <View style={{ gap: 10 }}>
+            <Text style={s.welcomeTitle}>Ride Next</Text>
+            <Text style={s.welcomeTag}>Less queuing, more riding.</Text>
+          </View>
+          <View style={{ gap: 12 }}>
+            <Text style={s.welcomeKicker}>WHERE ARE YOU VISITING?</Text>
+            {Object.values(RESORTS).map((x) => {
+              const on = saved.resort === x.key;
+              return (
+                <Pressable key={x.key} style={[s.parkCard, on && { borderWidth: 3, borderColor: C.accentSoft }]} onPress={() => chooseResort(x.key)}
+                  accessibilityRole="button" accessibilityLabel={`${x.city}, ${x.name}`} accessibilityState={{ selected: on }}>
+                  <View style={s.rowBetween}>
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text style={s.cityName}>{x.city}</Text>
+                      <Text style={s.parkCardMeta}>{x.country}</Text>
+                    </View>
+                    <Text style={s.parkCardArrow}>›</Text>
+                  </View>
+                  <Text style={[s.parkCardMeta, { color: C.ink, fontWeight: '700' }]}>{x.name}</Text>
+                  <Text style={s.parkCardMeta}>{x.parks}</Text>
+                </Pressable>
+              );
+            })}
+            {saved.resort ? (
+              <Pressable style={s.ghostBtnDark} onPress={() => setScreen('welcome')} accessibilityRole="button">
+                <Text style={{ color: '#fff', fontWeight: '600', fontSize: 15 }}>Cancel</Text>
+              </Pressable>
+            ) : null}
+            <Text style={s.welcomeSmall}>You can change this any time from the home screen.</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   if (screen === 'welcome') {
     const ready = !!data;
     const anyToday = ready && (todayLog.length > 0 || !!day);
@@ -709,7 +817,13 @@ export default function App() {
         <StatusBar style="light" />
         <ScrollView contentContainerStyle={s.welcomeInner}>
           <View style={{ gap: 10 }}>
-            <Text style={s.welcomeKicker}>DISNEYLAND RESORT</Text>
+            <View style={s.rowBetween}>
+              <Text style={s.welcomeKicker}>{R.name.toUpperCase()} · {R.city.toUpperCase()}</Text>
+              <Pressable onPress={() => setScreen('city')} accessibilityRole="button" accessibilityLabel="Change where you're visiting"
+                style={s.changeBtn}>
+                <Text style={s.changeBtnText}>Change</Text>
+              </Pressable>
+            </View>
             <Text style={s.welcomeTitle}>Ride Next</Text>
             <Text style={s.welcomeTag}>Less queuing, more riding.</Text>
           </View>
@@ -823,7 +937,7 @@ export default function App() {
     }
     if (!rd) return null;
     const openHour = Math.floor(toMin(rd.open) / 60);
-    rd.picks = ropeDropPicks(pool, openHour, p.name);
+    rd.picks = ropeDropPicks(pool, openHour, `${R.key}:${p.name}`);
     rd.by = fmtHour(openHour + 2);
     rd.fromList = sel.length > 0;
     return rd.picks.length ? rd : null;
@@ -861,10 +975,10 @@ export default function App() {
         </View>
         <ScrollView contentContainerStyle={s.pad}>
           <View style={s.hero}>
-            <Text style={s.heroKicker}>MY DISNEYLAND DAY · {DAY_NAMES[now.dow].toUpperCase()}</Text>
+            <Text style={s.heroKicker}>MY {R.short.toUpperCase()} DAY · {DAY_NAMES[now.dow].toUpperCase()}</Text>
             <View style={s.recapGrid}>
               <Stat label="In the park" value={r.minutes ? fmtDuration(r.minutes) : '—'} />
-              <Stat label="Walked" value={r.miles ? `${r.miles} mi` : '—'} />
+              <Stat label="Walked" value={r.dist ? `${r.dist} ${r.unit}` : '—'} />
               <Stat label="Rides" value={String(r.rides)} />
               <Stat label="Queuing" value={fmtDuration(r.queue)} />
             </View>
@@ -887,51 +1001,48 @@ export default function App() {
             <Text style={s.mutedSmall}>
               {`Started ${clockFromMs(day.start, data.utcOffsetMinutes)}`}
               {ended ? ` · ended ${clockFromMs(day.end, data.utcOffsetMinutes)}` : ''}
-              {r.stepsPartial && r.miles ? ' · on Android, steps only count while the app is open' : ''}
+              {r.stepCount ? ` · ${r.stepCount.toLocaleString()} steps` : ''}
+              {r.stepsPartial && r.dist ? ' · on Android, steps only count while the app is open' : ''}
             </Text>
           )}
 
-          {todayLog.length ? (
-            <View style={s.card}>
-              <Text style={s.h3}>Rides</Text>
-              {todayLog.map((x, i) => (
-                <View key={`${x.id}-${i}`} style={s.listLine}>
-                  <Text style={[s.body, { flex: 1 }]}>{x.name}</Text>
-                  <Text style={s.mutedSmall}>{x.wait ? `${x.wait} min wait` : ''}</Text>
-                </View>
-              ))}
-            </View>
-          ) : null}
+          <View style={s.card}>
+            <Text style={s.h3}>Rides · {todayLog.length}</Text>
+            {todayLog.length ? todayLog.map((x, i) => (
+              <View key={`${x.id}-${i}`} style={s.listLine}>
+                <Text style={[s.body, { flex: 1 }]}>{x.name}</Text>
+                <Text style={s.mutedSmall}>{x.wait ? `${x.wait} min wait` : ''}</Text>
+              </View>
+            )) : <Text style={s.muted}>No rides logged yet. Tap "Done, ridden it" on Ride next and they'll appear here.</Text>}
+          </View>
 
-          {r.areas.length ? (
-            <View style={s.card}>
-              <Text style={s.h3}>Areas visited</Text>
+          <View style={s.card}>
+            <Text style={s.h3}>Areas visited · {r.areas.length}{r.areaTotal ? ` of ${r.areaTotal}` : ''}</Text>
+            {r.areas.length ? (
               <View style={s.chips}>
                 {r.areas.map((a) => <View key={a} style={s.tag}><Text style={s.tagText}>{a}</Text></View>)}
               </View>
-            </View>
-          ) : null}
+            ) : <Text style={s.muted}>Areas fill in as you ride, or as you walk around with location turned on.</Text>}
+            {r.areas.length && r.missed.length ? <Text style={s.mutedSmall}>Not visited yet: {r.missed.join(', ')}</Text> : null}
+          </View>
 
-          {r.meals.length ? (
-            <View style={s.card}>
-              <Text style={s.h3}>Where you ate</Text>
+          <View style={s.card}>
+            <Text style={s.h3}>Where you ate · {r.meals.reduce((a, m) => a + m.n, 0)}</Text>
+            {r.meals.length ? null : <Text style={s.muted}>Tap "I ate here" in Hungry? on Ride next to add restaurants.</Text>}
               {r.meals.map((m) => (
                 <View key={m.name} style={s.listLine}>
                   <Text style={[s.body, { flex: 1 }]}>{m.name} ×{m.n}</Text>
                   {(saved.ratings || {})[m.name] ? <Text style={s.mutedSmall}>{'★'.repeat(saved.ratings[m.name])}</Text> : null}
                 </View>
               ))}
-            </View>
-          ) : null}
+          </View>
 
-          {r.snacks.length ? (
-            <View style={s.card}>
-              <Text style={s.h3}>Snacks</Text>
-              {r.snacks.map((x) => (
-                <View key={x.name} style={s.listLine}><Text style={s.body}>{x.name} ×{x.n}</Text></View>
-              ))}
-            </View>
-          ) : null}
+          <View style={s.card}>
+            <Text style={s.h3}>Snacks · {r.snacks.reduce((a, x) => a + x.n, 0)}</Text>
+            {r.snacks.length ? r.snacks.map((x) => (
+              <View key={x.name} style={s.listLine}><Text style={s.body}>{x.name} ×{x.n}</Text></View>
+            )) : <Text style={s.muted}>Use the Snack tracker on Ride next to count every treat.</Text>}
+          </View>
 
           {day && !ended ? (
             <Pressable style={s.ghostBtnWide} onPress={endDay} accessibilityRole="button">
@@ -958,7 +1069,7 @@ export default function App() {
     }).filter((x) => x.ex);
     const lastUpd = minutesAgo(l.updated);
     const max = Math.max(1, ...hours.map((x) => x.v));
-    const ll = lightningLane(l, look);
+    const ll = lightningLane(l, look, R);
     const tone = TONES[ll.tone];
     const target = alertFor(ride.id);
     const isDown = l.status === 'DOWN';
@@ -1015,11 +1126,11 @@ export default function App() {
             </View>
           ) : null}
 
-          {ride.height ? (
+          {ride.heightCm ? (
             <View style={s.card}>
-              <Text style={s.h3}>Height: {ride.height} in ({Math.round(ride.height * 2.54)} cm)</Text>
+              <Text style={s.h3}>Height: {R.metric ? `${ride.heightCm} cm` : `${ride.height} in (${ride.heightCm} cm)`}</Text>
               <Text style={s.body}>
-                Rider Switch: if someone in your group is too short, one adult waits with them while the others ride,
+                {R.switchName}: if someone in your group is too short, one adult waits with them while the others ride,
                 then swaps and rides without queuing again. Ask the Cast Member at the entrance.
               </Text>
             </View>
@@ -1093,11 +1204,11 @@ export default function App() {
 
           <View style={s.card}>
             <View style={s.rowBetween}>
-              <Text style={s.h3}>Lightning Lane: worth it?</Text>
+              <Text style={s.h3}>{R.payShort}: worth it?</Text>
               <View style={[s.pill, { backgroundColor: tone.bg }]}><Text style={[s.pillText, { color: tone.fg }]}>{ll.verdict}</Text></View>
             </View>
             <Text style={s.body}>{ll.body}</Text>
-            {ll.price ? <Text style={s.mutedSmall}>Single Pass price right now: ${ll.price} per person</Text> : null}
+            {ll.price ? <Text style={s.mutedSmall}>{R.payName} price right now: {R.cur}{ll.price} per person</Text> : null}
             {l.multiReturn ? <Text style={s.mutedSmall}>Multi Pass return times currently from {fmtTime(l.multiReturn)}</Text> : null}
           </View>
         </ScrollView>
@@ -1146,7 +1257,7 @@ export default function App() {
 
     // snacks
     const snackMenu = [
-      ...(SNACKS[park.name] || []),
+      ...(SNACKS[`${R.key}:${park.name}`] || []),
       ...(saved.customSnacks || []).map((x) => ({ ...x, where: 'Added by you', custom: true })),
     ];
     const snackTotal = Object.values(snackCountsToday).reduce((a, b) => a + b, 0);
@@ -1164,7 +1275,7 @@ export default function App() {
 
     const quickToggles = [
       ['rain', 'Rainy day'], ['hopper', 'Park Hopper'], ['useSingle', 'Single Rider'], ['multiPass', 'Multi Pass'],
-    ];
+    ].filter(([key]) => key !== 'multiPass' || R.hasMulti);
 
     return (
       <SafeAreaView style={s.screen}>
@@ -1234,7 +1345,7 @@ export default function App() {
                 </Pressable>
               </View>
               <Pressable onPress={() => openRide(top.id)} accessibilityRole="button" style={{ paddingVertical: 10 }}>
-                <Text style={{ color: C.accentSoft, fontWeight: '600' }}>Wait pattern, alerts & Lightning Lane ›</Text>
+                <Text style={{ color: C.accentSoft, fontWeight: '600' }}>Wait pattern, alerts & {R.payShort} ›</Text>
               </Pressable>
             </View>
           ) : selected.length === 0 ? (
@@ -1243,7 +1354,7 @@ export default function App() {
             <View style={s.card}><Text style={s.h3}>You've done your whole list</Text><Text style={s.muted}>Add more from Edit list, or go find a snack.</Text></View>
           )}
 
-          {saved.multiPass ? (
+          {saved.multiPass && R.hasMulti ? (
             <View style={s.card}>
               <Text style={s.kicker}>Lightning Lane coach</Text>
               {llNow && !llNow.used && !canBook ? (
@@ -1336,7 +1447,7 @@ export default function App() {
                       onAte={() => ateHere(f)} onRate={(n) => rateMeal(f.name, n)}
                       sub={hoursToday(f) ? `Today ${hoursToday(f).map(fmtRange).join(', ')}` : null}
                       right={(
-                        <Pressable style={s.linkBtn} onPress={() => Linking.openURL(DINING_URL)} accessibilityRole="link">
+                        <Pressable style={s.linkBtn} onPress={() => Linking.openURL(R.diningUrl)} accessibilityRole="link">
                           <Text style={s.linkBtnText}>Check availability</Text>
                         </Pressable>
                       )} />
@@ -1439,12 +1550,12 @@ export default function App() {
             <View style={s.card}>
               <Text style={s.h3}>Hidden for height</Text>
               <Text style={s.muted}>
-                {hiddenTall.length} ride{hiddenTall.length === 1 ? '' : 's'} on your list {hiddenTall.length === 1 ? 'is' : 'are'} too tall for your shortest rider. With Rider Switch, the grown-ups can still ride. Tap one for details.
+                {hiddenTall.length} ride{hiddenTall.length === 1 ? '' : 's'} on your list {hiddenTall.length === 1 ? 'is' : 'are'} too tall for your shortest rider. With {R.switchName}, the grown-ups can still ride. Tap one for details.
               </Text>
               {hiddenTall.map((r) => (
                 <Pressable key={r.id} style={s.listLine} onPress={() => openRide(r.id)} accessibilityRole="button">
                   <Text style={[s.body, { flex: 1 }]}>{r.name}</Text>
-                  <Text style={s.mutedSmall}>{r.height} in · Rider Switch</Text>
+                  <Text style={s.mutedSmall}>{heightLabel(R, r)} · {R.switchName}</Text>
                 </Pressable>
               ))}
             </View>
@@ -1477,7 +1588,7 @@ export default function App() {
             ['useSingle', 'Happy to ride Single Rider', 'Use it when it\'s quicker'],
             ['multiPass', 'I have Lightning Lane Multi Pass', 'Get tips on what to book and when'],
             ['rain', 'Rainy day mode', 'Put indoor rides first'],
-          ].map(([key, title, sub]) => (
+          ].filter(([key]) => key !== 'multiPass' || R.hasMulti).map(([key, title, sub]) => (
             <Pressable key={key} style={s.optionRow} onPress={() => setOpt(key, !saved[key])}
               accessibilityRole="switch" accessibilityState={{ checked: !!saved[key] }} accessibilityLabel={title}>
               <View style={{ flex: 1 }}>
@@ -1489,12 +1600,13 @@ export default function App() {
           ))}
           <Text style={[s.rowTitle, { marginTop: 8 }]}>Shortest rider in your group</Text>
           <View style={s.chips}>
-            {HEIGHT_OPTIONS.map((h) => {
-              const on = saved.minHeight === h;
+            {R.heightOptions.map((h) => {
+              const cm = toCm(R, h);
+              const on = saved.minHeightCm === cm;
               return (
-                <Pressable key={String(h)} onPress={() => setOpt('minHeight', h)} accessibilityRole="button"
+                <Pressable key={String(h)} onPress={() => setOpt('minHeightCm', cm)} accessibilityRole="button"
                   accessibilityState={{ selected: on }} style={[s.chip, on && s.chipOn]}>
-                  <Text style={[s.chipText, on && { color: '#fff' }]}>{h == null ? 'No limit' : `${h} in`}</Text>
+                  <Text style={[s.chipText, on && { color: '#fff' }]}>{h == null ? 'No limit' : `${h} ${R.metric ? 'cm' : 'in'}`}</Text>
                 </Pressable>
               );
             })}
@@ -1516,7 +1628,7 @@ export default function App() {
                 <View style={[s.check, on && s.checkOn]}>{on ? <Text style={{ color: '#fff', fontWeight: '800' }}>✓</Text> : null}</View>
                 <View style={{ flex: 1 }}>
                   <Text style={s.rowTitle}>{r.name}</Text>
-                  {r.height ? <Text style={[s.mutedSmall, tall && { color: C.red }]}>{tall ? `Needs ${r.height} in · Rider Switch` : `${r.height} in`}</Text> : null}
+                  {r.heightCm ? <Text style={[s.mutedSmall, tall && { color: C.red }]}>{tall ? `Needs ${heightLabel(R, r)} · ${R.switchName}` : heightLabel(R, r)}</Text> : null}
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
                   <Text style={s.rowWaitSmall}>{label}</Text>
@@ -1637,6 +1749,10 @@ const s = StyleSheet.create({
   parkCardMeta: { color: C.muted, fontSize: 14 },
   resetBtn: { alignSelf: 'flex-start', minHeight: 40, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: '#CBD5E1' },
   resetBtnText: { color: C.red, fontSize: 14, fontWeight: '600' },
+  cityName: { color: C.ink, fontSize: 26, fontWeight: '800' },
+  changeBtn: { minHeight: 36, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: '#475569', justifyContent: 'center' },
+  changeBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  ghostBtnDark: { minHeight: 48, borderRadius: 14, borderWidth: 1, borderColor: '#475569', alignItems: 'center', justifyContent: 'center' },
   welcomeSmall: { color: '#94A3B8', fontSize: 12, textAlign: 'center', marginTop: 4 },
   header: { backgroundColor: C.card, padding: 20, paddingTop: 12, borderBottomWidth: 1, borderColor: C.line, gap: 8 },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10 },

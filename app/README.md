@@ -1,8 +1,8 @@
-# Ride Next (version 2: Disneyland Resort)
+# Ride Next (version 3: Disneyland Resort + Disneyland Paris)
 
 The whole app is in `App.js`. It reads:
 - live waits from the free ThemeParks.wiki feed, every 3 minutes
-- typical waits, ride/restaurant locations and food tags from `data/app/disneyland-resort.json` in this repo (rebuilt nightly by the "Build app data" workflow)
+- typical waits, ride/restaurant locations and food tags from `data/app/disneyland-resort.json` and `data/app/disneyland-paris.json` in this repo (rebuilt nightly by the "Build app data" workflow)
 
 ## Try it on your phone (no installs)
 1. Install **Expo Go** from the App Store or Google Play.

@@ -1,4 +1,5 @@
 // Ride Next — version 5 (Disneyland Resort, Disneyland Paris and Walt Disney World, with Day Wrapped)
+/* eslint-disable react-hooks/exhaustive-deps -- some hooks re-run on purpose only every few minutes, to save battery */
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

@@ -552,6 +552,8 @@ export default function App() {
   const [sortBy, setSortBy] = useState('best'); // 'best' | 'area'
   const [schedules, setSchedules] = useState({}); // parkId -> schedule list
   const [, setTick] = useState(0);
+  const [recapAdd, setRecapAdd] = useState(null); // 'ride' | 'meal' | 'snack' while adding on the Day Recap
+  const [recapQuery, setRecapQuery] = useState('');
   const loaded = useRef(false);
 
   const R = RESORTS[saved.resort] || RESORTS.dlr;
@@ -765,6 +767,32 @@ export default function App() {
     setNewSnack('');
   };
   const removeCustomSnack = (id) => setSaved((cur) => ({ ...cur, customSnacks: (cur.customSnacks || []).filter((x) => x.id !== id) }));
+  // Day Recap editing: add rides the app missed, change counts, remove mistakes
+  const addRideLog = (ride) => setSaved((cur) => {
+    const list = (cur.log || {})[today] || [];
+    const dk = `${today}:${ride.parkId}`;
+    const done = Object.fromEntries(Object.entries(cur.done || {}).filter(([k]) => k.startsWith(today)));
+    return { ...cur, log: { [today]: [...list, { id: ride.id, name: ride.name, parkId: ride.parkId, land: ride.land, wait: 0, at: Date.now(), manual: true }] },
+      done: { ...done, [dk]: [...new Set([...(done[dk] || []), ride.id])] } };
+  });
+  const removeRideLog = (id) => setSaved((cur) => {
+    const list = [...((cur.log || {})[today] || [])];
+    let i = -1;
+    for (let j = list.length - 1; j >= 0; j--) if (list[j].id === id) { i = j; break; }
+    if (i < 0) return cur;
+    list.splice(i, 1);
+    const still = list.some((x) => x.id === id);
+    const done = still ? cur.done : Object.fromEntries(Object.entries(cur.done || {})
+      .map(([k, v]) => [k, k.startsWith(today) ? v.filter((x) => x !== id) : v]));
+    return { ...cur, log: { [today]: list }, done };
+  });
+  const bumpMeal = (name, delta) => setSaved((cur) => {
+    const m = { ...((cur.meals || {})[today] || {}) };
+    m[name] = Math.max(0, (m[name] || 0) + delta);
+    if (!m[name]) delete m[name];
+    return { ...cur, meals: { [today]: m } };
+  });
+
   const ateHere = (f) => setSaved((cur) => {
     const m = { ...((cur.meals || {})[today] || {}) };
     m[f.name] = (m[f.name] || 0) + 1;
@@ -1402,6 +1430,49 @@ export default function App() {
 
   // ----- Day Recap -----
   if (screen === 'recap') {
+    const rideGroups = [];
+    todayLog.forEach((x) => {
+      const g = rideGroups.find((y) => y.id === x.id);
+      if (g) { g.n += 1; g.wait += x.wait || 0; } else rideGroups.push({ id: x.id, name: x.name, parkId: x.parkId, land: x.land, n: 1, wait: x.wait || 0 });
+    });
+    const snackGroups = Object.entries(snackCountsToday).filter(([, n]) => n > 0).map(([id, n]) => ({ id, n, name: allSnackNames[id] || 'Snack' }));
+    const q = norm(recapQuery).toLowerCase();
+    const match = (name) => !q || name.toLowerCase().includes(q);
+    const rideChoices = data.parks.flatMap((p) => p.rides.map((x) => ({ ...x, parkId: p.id, label: x.name, sub: `${shortPark(p.name)} · ${x.land}` })))
+      .filter((x) => match(x.name)).slice(0, 8);
+    const mealChoices = data.parks.flatMap((p) => (p.food || []).filter((f) => f.service !== 'snack')
+      .map((f) => ({ ...f, label: f.name, sub: shortPark(p.name) }))).filter((x) => match(x.name)).slice(0, 8);
+    const snackSeen = new Set();
+    const parkOrder = [park, ...data.parks.filter((p) => p.id !== park.id)];
+    const snackChoices = [...(saved.customSnacks || []), ...parkOrder.flatMap((p) => SNACKS[`${R.key}:${p.name}`] || [])]
+      .filter((x) => (snackSeen.has(x.id) ? false : snackSeen.add(x.id)))
+      .map((x) => ({ ...x, label: x.name, sub: x.where || 'Your own' }));
+    const addPanel = (kind, title, placeholder, choices, onPick) => (recapAdd !== kind ? (
+      <Pressable onPress={() => { setRecapAdd(kind); setRecapQuery(''); }} accessibilityRole="button"
+        style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <Text style={{ color: C.blue, fontSize: 22, fontWeight: '700', lineHeight: 24 }}>+</Text>
+        <Text style={{ color: C.blue, fontSize: 15, fontWeight: '700' }}>{title}</Text>
+      </Pressable>
+    ) : (
+      <View style={{ gap: 6, marginTop: 6 }}>
+        <TextInput value={recapQuery} onChangeText={setRecapQuery} placeholder={placeholder} autoFocus
+          style={{ minHeight: 44, borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 12, paddingHorizontal: 12, fontSize: 16, color: C.ink }} />
+        {choices.length ? choices.map((x) => (
+          <Pressable key={x.id} onPress={() => onPick(x)} accessibilityRole="button" accessibilityLabel={`Add ${x.label}`}
+            style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10, borderBottomWidth: 1, borderColor: C.line, paddingVertical: 6 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={s.body}>{x.label}</Text>
+              {x.sub ? <Text style={s.mutedSmall}>{x.sub}</Text> : null}
+            </View>
+            <Text style={{ color: C.blue, fontSize: 15, fontWeight: '700' }}>Add</Text>
+          </Pressable>
+        )) : <Text style={s.mutedSmall}>Nothing matches "{recapQuery}".</Text>}
+        <Pressable onPress={() => { setRecapAdd(null); setRecapQuery(''); }} accessibilityRole="button"
+          style={{ minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: C.muted, fontSize: 15, fontWeight: '700' }}>Done</Text>
+        </Pressable>
+      </View>
+    ));
     const r = recap;
     const ended = day && day.end;
     return (
@@ -1449,12 +1520,16 @@ export default function App() {
 
           <View style={s.card}>
             <Text style={s.h3}>Rides · {todayLog.length}</Text>
-            {todayLog.length ? todayLog.map((x, i) => (
-              <View key={`${x.id}-${i}`} style={s.listLine}>
-                <Text style={[s.body, { flex: 1 }]}>{x.name}</Text>
-                <Text style={s.mutedSmall}>{x.wait ? `${x.wait} min wait` : ''}</Text>
+            {rideGroups.length ? rideGroups.map((g) => (
+              <View key={g.id} style={s.listLine}>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.body}>{g.name}</Text>
+                  {g.wait ? <Text style={s.mutedSmall}>{fmtDuration(g.wait)} queuing</Text> : null}
+                </View>
+                <Counter n={g.n} label={g.name} onMinus={() => removeRideLog(g.id)} onPlus={() => addRideLog(g)} />
               </View>
-            )) : <Text style={s.muted}>No rides logged yet. Tap "Done, ridden it" on Ride next and they'll appear here.</Text>}
+            )) : <Text style={s.muted}>No rides logged yet. Tap "Done, ridden it" on Ride next, or add them here.</Text>}
+            {addPanel('ride', 'Add a ride', 'Search rides', rideChoices, (x) => addRideLog(x))}
           </View>
 
           <View style={s.card}>
@@ -1469,20 +1544,57 @@ export default function App() {
 
           <View style={s.card}>
             <Text style={s.h3}>Where you ate · {r.meals.reduce((a, m) => a + m.n, 0)}</Text>
-            {r.meals.length ? null : <Text style={s.muted}>Tap "I ate here" in Hungry? on Ride next to add restaurants.</Text>}
-              {r.meals.map((m) => (
-                <View key={m.name} style={s.listLine}>
-                  <Text style={[s.body, { flex: 1 }]}>{m.name} ×{m.n}</Text>
+            {r.meals.length ? r.meals.map((m) => (
+              <View key={m.name} style={s.listLine}>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.body}>{m.name}</Text>
                   {(saved.ratings || {})[m.name] ? <Text style={s.mutedSmall}>{'★'.repeat(saved.ratings[m.name])}</Text> : null}
                 </View>
-              ))}
+                <Counter n={m.n} label={m.name} onMinus={() => bumpMeal(m.name, -1)} onPlus={() => bumpMeal(m.name, 1)} />
+              </View>
+            )) : <Text style={s.muted}>Tap "I ate here" in Hungry? on Ride next, or add a restaurant here.</Text>}
+            {addPanel('meal', 'Add a restaurant', 'Search restaurants', mealChoices, (x) => bumpMeal(x.name, 1))}
           </View>
 
           <View style={s.card}>
             <Text style={s.h3}>Snacks · {r.snacks.reduce((a, x) => a + x.n, 0)}</Text>
-            {r.snacks.length ? r.snacks.map((x) => (
-              <View key={x.name} style={s.listLine}><Text style={s.body}>{x.name} ×{x.n}</Text></View>
-            )) : <Text style={s.muted}>Use the Snack tracker on Ride next to count every treat.</Text>}
+            {snackGroups.length ? snackGroups.map((x) => (
+              <View key={x.id} style={s.listLine}>
+                <Text style={[s.body, { flex: 1 }]}>{x.name}</Text>
+                <Counter n={x.n} label={x.name} onMinus={() => bumpSnack(x.id, -1)} onPlus={() => bumpSnack(x.id, 1)} />
+              </View>
+            )) : <Text style={s.muted}>Use the Snack tracker on Ride next, or add a treat here.</Text>}
+            {recapAdd !== 'snack' ? (
+              <Pressable onPress={() => { setRecapAdd('snack'); setRecapQuery(''); }} accessibilityRole="button"
+                style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Text style={{ color: C.blue, fontSize: 22, fontWeight: '700', lineHeight: 24 }}>+</Text>
+                <Text style={{ color: C.blue, fontSize: 15, fontWeight: '700' }}>Open snack tracker</Text>
+              </Pressable>
+            ) : (
+              <View style={{ gap: 2, marginTop: 6 }}>
+                <Text style={s.kicker}>Popular in the park</Text>
+                {snackChoices.map((x) => (
+                  <View key={x.id} style={s.listLine}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.body}>{x.name}</Text>
+                      <Text style={s.mutedSmall}>{x.sub}</Text>
+                    </View>
+                    <Counter n={snackCountsToday[x.id] || 0} label={x.name} onMinus={() => bumpSnack(x.id, -1)} onPlus={() => bumpSnack(x.id, 1)} />
+                  </View>
+                ))}
+                <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+                  <TextInput value={newSnack} onChangeText={setNewSnack} placeholder="Add your own, e.g. Pumpkin churro"
+                    onSubmitEditing={() => addCustomSnack(newSnack)} returnKeyType="done"
+                    style={{ flex: 1, minHeight: 44, borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 12, paddingHorizontal: 12, fontSize: 16, color: C.ink }} />
+                  <Pressable onPress={() => addCustomSnack(newSnack)} accessibilityRole="button" style={[s.smallBtn, { minHeight: 44 }]}>
+                    <Text style={s.smallBtnText}>Add</Text>
+                  </Pressable>
+                </View>
+                <Pressable onPress={() => setRecapAdd(null)} accessibilityRole="button" style={{ minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ color: C.muted, fontSize: 15, fontWeight: '700' }}>Done</Text>
+                </Pressable>
+              </View>
+            )}
           </View>
 
           {day && !ended ? (
@@ -2397,6 +2509,22 @@ function WrapSummary({ k, c, d }) {
 }
 
 const WRAP_COMPONENTS = { open: WrapOpen, rides: WrapRides, queue: WrapQueue, walk: WrapWalk, snacks: WrapSnacks, persona: WrapPersona, summary: WrapSummary };
+
+// − 2 + counter used on the Day Recap
+function Counter({ n, label, onMinus, onPlus }) {
+  const btn = { width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: '#CBD5E1', alignItems: 'center', justifyContent: 'center' };
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <Pressable onPress={onMinus} style={btn} accessibilityRole="button" accessibilityLabel={`One less ${label}`} hitSlop={4}>
+        <Text style={{ fontSize: 20, fontWeight: '700', color: C.ink, lineHeight: 22 }}>−</Text>
+      </Pressable>
+      <Text style={{ minWidth: 22, textAlign: 'center', fontSize: 16, fontWeight: '800', color: C.ink }} accessibilityLabel={`${n} times`}>{n}</Text>
+      <Pressable onPress={onPlus} style={btn} accessibilityRole="button" accessibilityLabel={`One more ${label}`} hitSlop={4}>
+        <Text style={{ fontSize: 20, fontWeight: '700', color: C.ink, lineHeight: 22 }}>+</Text>
+      </Pressable>
+    </View>
+  );
+}
 
 // Two-tone icons drawn in the app's own colours (used instead of emoji): a soft fill under a darker outline
 const ICONS = {

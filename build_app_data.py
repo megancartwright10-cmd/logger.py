@@ -82,6 +82,36 @@ LANDS = {
 }
 
 
+# Minimum height in inches (only rides that have one). Check signs at the ride.
+HEIGHTS = {
+    "Matterhorn Bobsleds": 42, "Indiana Jones™ Adventure": 46, "Space Mountain": 40,
+    "Big Thunder Mountain Railroad": 40, "Star Wars: Rise of the Resistance": 40,
+    "Star Tours - The Adventures Continue": 40, "Millennium Falcon: Smugglers Run": 38,
+    "Tiana's Bayou Adventure": 40, "Chip 'n' Dale's GADGETcoaster": 35, "Autopia": 32,
+    "Incredicoaster": 48, "Guardians of the Galaxy - Mission: BREAKOUT!": 40,
+    "Grizzly River Run": 42, "Radiator Springs Racers": 40, "Soarin’ Across America": 40,
+    "Soarin' Around the World": 40, "Goofy's Sky School": 42, "Silly Symphony Swings": 40,
+    "Jumpin' Jellyfish": 40, "Mater's Junkyard Jamboree": 32,
+}
+
+# Rides that are mostly indoors (for rainy day mode).
+INDOOR = {
+    "Pirates of the Caribbean", "Haunted Mansion Holiday", "Haunted Mansion", "Indiana Jones™ Adventure",
+    "Space Mountain", "Star Tours - The Adventures Continue", "Buzz Lightyear Astro Blasters",
+    "Star Wars: Rise of the Resistance", "Millennium Falcon: Smugglers Run",
+    "Mickey & Minnie's Runaway Railway", "Roger Rabbit's Car Toon Spin", "Peter Pan's Flight",
+    "Mr. Toad's Wild Ride", "Snow White's Enchanted Wish", "Pinocchio's Daring Journey",
+    "\"it's a small world\"", "The Many Adventures of Winnie the Pooh", "Walt Disney's Enchanted Tiki Room",
+    "Great Moments with Mr. Lincoln", "Main Street Cinema", "Opera House - Walt Disney - A Magical Life",
+    "Walt Disney - A Magical Life", "The Disney Gallery", "Sleeping Beauty Castle Walkthrough",
+    "Pixar Short Film Spotlight", "Fortune Tellers", "Minnie's House",
+    "Monsters, Inc. Mike & Sulley to the Rescue!", "Mickey's PhilharMagic", "Animation Academy",
+    "Sorcerer's Workshop", "Turtle Talk with Crush", "Guardians of the Galaxy - Mission: BREAKOUT!",
+    "WEB SLINGERS: A Spider-Man Adventure", "The Little Mermaid - Ariel's Undersea Adventure",
+    "Soarin’ Across America", "Soarin' Around the World", "Toy Story Midway Mania!", "The Bakery Tour",
+}
+
+
 def land_lookup(park_name):
     """ride name -> (land, order of that land in the park)"""
     out = {}
@@ -185,7 +215,9 @@ def main():
                 land, order = lands.get(" ".join((k.get("name") or "").split()), ("Other", 99))
                 if land == "Other":
                     print(f"  no land for: {k.get('name')}")
+                clean = " ".join((k.get("name") or "").split())
                 rides.append({"id": k["id"], "name": k.get("name"), "land": land, "landOrder": order,
+                              "height": HEIGHTS.get(clean), "indoor": clean in INDOOR,
                               "loc": location_of(k["id"], cache),
                               "typical": history.get(k["id"])})
             food = []

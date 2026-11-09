@@ -148,19 +148,20 @@ LANDS_DLP = {
             "Disneyland Railroad Main Street Station", "Horse-Drawn Streetcars", "Main Street Vehicles"],
         "Frontierland": [
             "Big Thunder Mountain", "Phantom Manor", "Thunder Mesa Riverboat Landing",
-            "Rustler Roundup Shootin' Gallery", "Frontierland Playground"],
+            "Rustler Roundup Shootin' Gallery", "Frontierland Playground", "Disneyland Railroad Frontierland Depot"],
         "Adventureland": [
             "Indiana Jones™ and the Temple of Peril", "Pirates of the Caribbean", "Adventure Isle",
-            "La Cabane des Robinson", "Le Passage Enchanté d'Aladdin", "Pirates' Beach"],
+            "La Cabane des Robinson", "Le Passage Enchanté d'Aladdin", "Pirates' Beach", "Pirate Galleon"],
         "Fantasyland": [
-            "Peter Pan's Flight", "\"it's a small world\"", "Blanche-Neige et les Sept Nains®",
+            "Peter Pan's Flight", "\"it's a small world\"", "Blanche-Neige et les Sept Nains®", "Les Voyages de Pinocchio",
             "Le Carrousel de Lancelot", "Dumbo the Flying Elephant", "Mad Hatter's Tea Cups",
             "Alice's Curious Labyrinth", "Casey Jr. – le Petit Train du Cirque",
             "Le Pays des Contes de Fées, presented by Vittel", "La Tanière du Dragon",
             "La Galerie de la Belle au Bois Dormant", "Disneyland Railroad Fantasyland Station"],
         "Discoveryland": [
             "Star Wars Hyperspace Mountain", "Star Tours: The Adventures Continue*", "Buzz Lightyear Laser Blast",
-            "Orbitron®", "Autopia, presented by Avis", "Les Mystères du Nautilus", "Mickey’s PhilharMagic"],
+            "Orbitron®", "Autopia, presented by Avis", "Les Mystères du Nautilus", "Mickey’s PhilharMagic",
+            "Disneyland Railroad Discoveryland Station"],
     },
     "Disney Adventure World": {
         "World Premiere Plaza": [
@@ -184,7 +185,7 @@ HEIGHTS_DLP = {
 
 INDOOR_DLP = {
     "Phantom Manor", "Pirates of the Caribbean", "Peter Pan's Flight", "\"it's a small world\"",
-    "Blanche-Neige et les Sept Nains®", "La Tanière du Dragon", "La Galerie de la Belle au Bois Dormant",
+    "Blanche-Neige et les Sept Nains®", "Les Voyages de Pinocchio", "La Tanière du Dragon", "La Galerie de la Belle au Bois Dormant",
     "Le Passage Enchanté d'Aladdin", "Star Wars Hyperspace Mountain", "Star Tours: The Adventures Continue*",
     "Buzz Lightyear Laser Blast", "Les Mystères du Nautilus", "Mickey’s PhilharMagic",
     "The Twilight Zone Tower of Terror", "Avengers Assemble: Flight Force", "Spider-Man W.E.B. Adventure",

@@ -520,7 +520,7 @@ export default function App() {
   const [detailId, setDetailId] = useState(null);
   const [saved, setSaved] = useState({
     selected: {}, done: {}, useLoc: false, hopper: false, useSingle: false, multiPass: false, rain: false,
-    resort: null, minHeightCm: null, watch: [], customSnacks: [], log: {}, ll: null, reminders: {},
+    resort: null, minHeightCm: null, watch: [], noRemind: [], locAsked: false, customSnacks: [], log: {}, ll: null, reminders: {},
     snackCounts: {}, meals: {}, areas: {}, day: null, stepsAndroid: {}, waitAlerts: {}, ratings: {},
   });
   const [snacksOpen, setSnacksOpen] = useState(false);
@@ -645,16 +645,22 @@ export default function App() {
 
       // "It's back up!" — any watched ride, or any ride on your list, that just reopened
       const sv = savedRef.current;
-      const watched = new Set([...(sv.watch || []), ...Object.values(sv.selected || {}).flat()]);
-      const reopened = [...watched].filter((id) => {
-        const before = prevLive.current[id], after = merged[id];
-        return before && after && before.status === 'DOWN' && after.status === 'OPERATING';
-      });
-      if (reopened.length) {
-        const names = reopened.map((id) => merged[id].name);
+      const asked = new Set(sv.watch || []);
+      const muted = new Set(sv.noRemind || []);
+      const auto = new Set(Object.values(sv.selected || {}).flat().filter((id) => !muted.has(id)));
+      const opened = (id) => { const b = prevLive.current[id], a = merged[id]; return b && a && b.status !== 'OPERATING' && a.status === 'OPERATING'; };
+      const backUp = [...new Set([...asked, ...auto])].filter((id) => opened(id) && prevLive.current[id].status === 'DOWN');
+      const nowOpen = [...asked].filter((id) => opened(id) && prevLive.current[id].status !== 'DOWN');
+      if (backUp.length || nowOpen.length) {
         Vibration.vibrate([0, 300, 150, 300]);
-        setBanner(`It's back up! ${names.join(', ')} just reopened. Lines are short right now.`);
-        names.forEach((n) => notifyNow("It's back up!", `${n} just reopened. Lines are short right now, head over!`));
+        const b = backUp.map((id) => merged[id].name), o = nowOpen.map((id) => merged[id].name);
+        setBanner([b.length ? `It's back up! ${b.join(', ')} just reopened. Lines are short right now.` : '',
+          o.length ? `It's open! ${o.join(', ')} just opened.` : ''].filter(Boolean).join(' '));
+        b.forEach((n) => notifyNow("It's back up!", `${n} just reopened. Lines are short right now, head over!`));
+        o.forEach((n) => notifyNow("It's open!", `${n} just opened. Head over before the line builds!`));
+        const fired = new Set([...backUp, ...nowOpen]);
+        setSaved((cur) => ({ ...cur, watch: (cur.watch || []).filter((id) => !fired.has(id)),
+          noRemind: (cur.noRemind || []).filter((id) => !fired.has(id)) }));
       }
       const alerts = sv.waitAlerts || {};
       const hits = Object.entries(alerts).filter(([id, target]) => {
@@ -951,6 +957,20 @@ export default function App() {
     setSaved((cur) => ({ ...cur, watch: on ? cur.watch.filter((x) => x !== id) : [...(cur.watch || []), id] }));
   };
 
+  // "Remind me when it opens": rides on your list that break down are on automatically, anything else you ask for
+  const remindOn = (id, status) => (saved.watch || []).includes(id)
+    || (status === 'DOWN' && onMyList(id) && !(saved.noRemind || []).includes(id));
+  const toggleRemind = async (id, status) => {
+    if (remindOn(id, status)) {
+      setSaved((cur) => ({ ...cur, watch: (cur.watch || []).filter((x) => x !== id),
+        noRemind: status === 'DOWN' && onMyList(id) ? [...(cur.noRemind || []), id] : (cur.noRemind || []) }));
+      return;
+    }
+    await askNotifyPermission();
+    setSaved((cur) => ({ ...cur, watch: [...(cur.watch || []).filter((x) => x !== id), id],
+      noRemind: (cur.noRemind || []).filter((x) => x !== id) }));
+  };
+
   const toggleReminder = async (key, startIso, name) => {
     const existing = (saved.reminders || {})[key];
     if (existing) {
@@ -1036,11 +1056,61 @@ export default function App() {
     return <SafeAreaView style={[s.welcome, { alignItems: 'center', justifyContent: 'center' }]}><ActivityIndicator color="#fff" /></SafeAreaView>;
   }
 
+  if (saved.resort && screen === 'location') {
+    const turnOn = async () => {
+      let status = 'denied';
+      try { ({ status } = await Location.requestForegroundPermissionsAsync()); } catch (e) { /* ignore */ }
+      setSaved((cur) => ({ ...cur, locAsked: true, useLoc: status === 'granted' }));
+      if (status !== 'granted') {
+        Alert.alert('Location is off', 'Ride Next still works, just without walking times. You can turn it on any time in Settings.',
+          [{ text: 'Open Settings', onPress: () => Linking.openSettings().catch(() => {}) }, { text: 'OK' }]);
+      }
+      setScreen('welcome');
+    };
+    const later = () => { setSaved((cur) => ({ ...cur, locAsked: true })); setScreen('welcome'); };
+    const perks = [
+      ['🚶', 'Closest rides first', 'Walking time from where you are, so you never cross the park for nothing.'],
+      ['🗺️', 'Areas you explored', 'Your Day Recap and Wrapped fill in the lands you visited.'],
+      ['🍔', 'Food nearby', 'Quick bites sorted by how close they are.'],
+    ];
+    return (
+      <SafeAreaView style={s.welcome}>
+        <StatusBar style="light" />
+        <ScrollView contentContainerStyle={s.welcomeInner}>
+          <View style={{ gap: 10 }}>
+            <Text style={s.welcomeKicker}>ONE QUICK THING</Text>
+            <Text style={s.welcomeTitle}>Ride Next works best with your location</Text>
+            <Text style={s.welcomeTag}>We only use it while the app is open, and it never leaves your phone.</Text>
+          </View>
+          <View style={{ gap: 12 }}>
+            {perks.map(([icon, title, body]) => (
+              <View key={title} style={[s.parkCard, { flexDirection: 'row', gap: 12, alignItems: 'flex-start' }]}>
+                <Text style={{ fontSize: 26 }}>{icon}</Text>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text style={[s.parkCardMeta, { color: C.ink, fontWeight: '700', fontSize: 16 }]}>{title}</Text>
+                  <Text style={s.parkCardMeta}>{body}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+          <View style={{ gap: 10 }}>
+            <Pressable style={[s.btnLight, { minHeight: 52 }]} onPress={turnOn} accessibilityRole="button">
+              <Text style={s.btnLightText}>Turn on location</Text>
+            </Pressable>
+            <Pressable onPress={later} accessibilityRole="button" style={{ alignSelf: 'center', minHeight: 44, justifyContent: 'center' }}>
+              <Text style={{ color: '#CBD5E1', fontSize: 15, fontWeight: '600' }}>Not now</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   if (!saved.resort || screen === 'city') {
     const chooseResort = (key) => {
       setSaved((cur) => ({ ...cur, resort: key }));
       setParkIdx(0);
-      setScreen('welcome');
+      setScreen(saved.locAsked ? 'welcome' : 'location');
     };
     return (
       <SafeAreaView style={s.welcome}>
@@ -1434,7 +1504,8 @@ export default function App() {
     const ll = lightningLane(l, look, R);
     const tone = TONES[ll.tone];
     const target = alertFor(ride.id);
-    const isDown = l.status === 'DOWN';
+    const isDown = l.status === 'DOWN' || l.status === 'CLOSED';
+    const remind = remindOn(ride.id, l.status);
     return (
       <SafeAreaView style={s.screen}>
         <StatusBar style="dark" />
@@ -1474,17 +1545,13 @@ export default function App() {
 
           {isDown ? (
             <View style={[s.card, { backgroundColor: C.redSoft, borderColor: '#FECACA' }]}>
-              <Text style={s.h3}>Temporarily down</Text>
-              {onMyList(ride.id) ? (
-                <Text style={s.body}>It's on your list, so we'll buzz you the moment it's back up.</Text>
-              ) : (
-                <>
-                  <Text style={s.body}>Want a buzz the moment it reopens? Lines are short for a few minutes after.</Text>
-                  <Pressable style={s.btnDark} onPress={() => toggleWatch(ride.id)} accessibilityRole="button">
-                    <Text style={s.btnDarkText}>{(saved.watch || []).includes(ride.id) ? "Watching: we'll buzz you" : "Tell me when it's back up"}</Text>
-                  </Pressable>
-                </>
-              )}
+              <Text style={s.h3}>{l.status === 'DOWN' ? 'Temporarily down' : 'Closed right now'}</Text>
+              <Text style={s.body}>{remind ? "We'll buzz you the moment it opens. Lines are short for a few minutes after."
+                : 'Want a buzz the moment it opens? Lines are short for a few minutes after.'}</Text>
+              <Pressable style={s.btnDark} onPress={() => toggleRemind(ride.id, l.status)} accessibilityRole="button">
+                <Text style={s.btnDarkText}>{remind ? 'Reminder on · tap to cancel' : 'Remind me when it opens'}</Text>
+              </Pressable>
+              <Text style={s.mutedSmall}>Works while Ride Next is open.</Text>
             </View>
           ) : null}
 
@@ -1903,7 +1970,14 @@ export default function App() {
             <Pressable key={r.id} style={s.rideRow} onPress={() => openRide(r.id)} accessibilityRole="button">
               <View style={{ flex: 1 }}>
                 <Text style={[s.rowTitle, { color: C.muted }]}>{r.name}</Text>
-                {r.status === 'DOWN' ? <Text style={s.mutedSmall}>We'll buzz you when it's back up</Text> : null}
+                {r.status === 'REFURBISHMENT' ? <Text style={s.mutedSmall}>Closed for refurbishment, back another day</Text> : (
+                  <Pressable onPress={() => toggleRemind(r.id, r.status)} hitSlop={8} accessibilityRole="switch"
+                    accessibilityState={{ checked: remindOn(r.id, r.status) }} style={{ minHeight: 32, justifyContent: 'center' }}>
+                    <Text style={[s.mutedSmall, { color: C.blue, fontWeight: '700' }]}>
+                      {remindOn(r.id, r.status) ? "🔔 Reminder on: we'll buzz you when it opens" : '🔔 Remind me when it opens'}
+                    </Text>
+                  </Pressable>
+                )}
               </View>
               <View style={[s.pill, { backgroundColor: C.redSoft }]}><Text style={[s.pillText, { color: C.red }]}>{r.status === 'REFURBISHMENT' ? 'Refurbishment' : 'Temporarily closed'}</Text></View>
             </Pressable>
@@ -2006,7 +2080,7 @@ export default function App() {
           accessibilityRole="switch" accessibilityState={{ checked: !!saved.useLoc }} accessibilityLabel="Use my location">
           <View style={{ flex: 1 }}>
             <Text style={s.rowTitle}>Use my location</Text>
-            <Text style={s.mutedSmall}>Adds walking time and areas visited</Text>
+            <Text style={s.mutedSmall}>{saved.useLoc ? 'Adds walking time and areas visited' : 'Off: turn on for walking times and areas visited'}</Text>
           </View>
           <Switch value={!!saved.useLoc} onValueChange={toggleLoc} />
         </Pressable>

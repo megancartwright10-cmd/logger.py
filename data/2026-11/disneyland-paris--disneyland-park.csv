@@ -1334,3 +1334,36 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-09T12:46Z,Disneyland Paris,Disneyland Park,d8d9f62a-9fa3-4aae-a568-4225afc35924,Les Mystères du Nautilus,OPERATING,5,,,,,,,2026-11-09T08:23:39.602Z
 2026-11-09T12:46Z,Disneyland Paris,Disneyland Park,ddca340c-7ba1-4f23-89eb-0d3d52c84bda,Star Wars Hyperspace Mountain,OPERATING,25,15,,,AVAILABLE,2026-11-09T13:45:00+01:00,1200 EUR,2026-11-09T12:42:40.834Z
 2026-11-09T12:46Z,Disneyland Paris,Disneyland Park,f0525c25-4ea2-49b7-aab5-150b27658fb6,Orbitron®,OPERATING,30,,,,AVAILABLE,2026-11-09T13:45:00+01:00,500 EUR,2026-11-09T12:42:40.870Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,0216ad22-bada-4303-9635-d7350a942fbc,Disneyland Railroad Fantasyland Station,OPERATING,30,,,,,,,2026-11-09T12:14:44.288Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,03871aa6-a0b5-41ee-8fd3-b2f4b8dccc79,Frontierland Playground,OPERATING,0,,,,,,,2026-11-09T08:29:38.741Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,03992704-698d-474b-a721-a5ac3498edb9,Buzz Lightyear Laser Blast,OPERATING,15,,,,AVAILABLE,2026-11-09T13:50:00+01:00,1200 EUR,2026-11-09T12:48:38.933Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,07782089-5e83-4bee-8a39-735818551844,Le Passage Enchanté d'Aladdin,OPERATING,0,,,,,,,2026-11-09T08:32:38.153Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,0d822af0-bf02-47a7-bc29-672d2fa4f7ab,Pirates of the Caribbean,OPERATING,20,,,,AVAILABLE,2026-11-09T13:50:00+01:00,500 EUR,2026-11-09T12:45:38.792Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,14f756d6-d6fa-4200-8b41-db84ba294fa6,Phantom Manor,OPERATING,20,,,,AVAILABLE,2026-11-09T13:50:00+01:00,500 EUR,2026-11-09T12:48:38.869Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,252b9b03-f770-4979-b3b2-f4ffecc3894d,Alice's Curious Labyrinth,OPERATING,5,,,,,,,2026-11-09T08:32:38.100Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,2aa73e46-8dcf-4201-b334-db31e6e6ca06,Pirates' Beach,OPERATING,0,,,,,,,2026-11-09T08:26:38.939Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,323bec06-fef7-4a60-989d-e3fcf9d3db7e,Thunder Mesa Riverboat Landing,OPERATING,20,,,,,,,2026-11-09T12:20:34.875Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,38bafc85-cb48-488e-aa68-3e2d01ae6a10,La Galerie de la Belle au Bois Dormant,OPERATING,,,,,,,,2026-11-09T07:02:33.340Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,3a1cd3f7-9c42-4f9b-90fa-dab7ba113862,"Autopia, presented by Avis",OPERATING,20,,,,AVAILABLE,2026-11-09T13:50:00+01:00,500 EUR,2026-11-09T12:45:38.898Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,46406e4a-4a02-4d30-89bc-ef1ed63c1ff9,Dumbo the Flying Elephant,OPERATING,35,,,,,,,2026-11-09T12:48:38.855Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,5d0ce227-7ad0-4402-a95b-6cf56f25a8ec,Indiana Jones™ and the Temple of Peril,OPERATING,30,20,,,AVAILABLE,2026-11-09T13:50:00+01:00,500 EUR,2026-11-09T12:48:38.912Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,5d10b8b2-7d34-4794-8857-76688e5864bc,Star Tours: The Adventures Continue*,OPERATING,10,,,,AVAILABLE,2026-11-09T13:50:00+01:00,500 EUR,2026-11-09T12:45:38.865Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,63dfcdab-86c2-4185-99b1-5a353d81bb52,Adventure Isle,OPERATING,0,,,,,,,2026-11-09T08:32:38.169Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,6bb88973-80d0-45cf-bffe-433f1c551362,Horse-Drawn Streetcars,OPERATING,,,,,,,,2026-11-09T07:32:34.116Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,7c5b2c2d-1082-4e5c-b155-dc492db16e6e,Peter Pan's Flight,OPERATING,70,,,,AVAILABLE,2026-11-09T14:00:00+01:00,1600 EUR,2026-11-09T12:48:38.901Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,7e426533-7727-47e5-8c8e-0dcd46198e57,La Cabane des Robinson,OPERATING,5,,,,,,,2026-11-09T08:26:38.949Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,7ff5d512-aed5-479a-8b3d-9bd1efb4177b,Casey Jr. – le Petit Train du Cirque,OPERATING,10,,,,,,,2026-11-09T11:56:44.156Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,83fa9e7f-4a25-4bee-8e61-4fb8c59cd350,La Tanière du Dragon,OPERATING,0,,,,,,,2026-11-09T07:02:33.324Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,852d957c-382e-4afb-bb74-70c9a79055df,Big Thunder Mountain,OPERATING,50,,,,AVAILABLE,2026-11-09T13:50:00+01:00,1300 EUR,2026-11-09T12:45:38.740Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,8ed1472a-4d2e-47f1-b848-353de0bc3670,Blanche-Neige et les Sept Nains®,DOWN,,,,,,,,2026-11-09T12:39:39.996Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,9056906c-0030-4951-be5e-44ac1f273491,"Le Pays des Contes de Fées, presented by Vittel",OPERATING,5,,,,,,,2026-11-09T11:02:43.080Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,a5afa85c-ee58-4f47-8626-fa4057e7d266,Disneyland Railroad Main Street Station,OPERATING,15,,,,,,,2026-11-09T10:05:45.605Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,a970c245-4924-48bd-bced-efc14850b116,Mickey’s PhilharMagic,OPERATING,0,,,,,,,2026-11-09T11:23:44.274Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,bcbd2214-0f75-4cae-8cff-087adf621330,Rustler Roundup Shootin' Gallery,OPERATING,0,,,,,,,2026-11-09T07:32:34.009Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,bcc5567f-f00b-4a7d-8ee6-526cc8d3d5de,Mad Hatter's Tea Cups,OPERATING,5,,,,,,,2026-11-09T11:59:44.315Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,ce87a0fe-c644-475e-abb6-9727e05cebff,"""it's a small world""",OPERATING,10,,,,AVAILABLE,2026-11-09T13:50:00+01:00,500 EUR,2026-11-09T12:45:38.729Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,ced30c44-9b79-45de-a8c9-6347298756c1,Le Carrousel de Lancelot,OPERATING,5,,,,,,,2026-11-09T12:20:34.903Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,d6c61231-8f9b-40fa-943a-fe1454e185e7,Main Street Vehicles,OPERATING,5,,,,,,,2026-11-09T12:45:38.772Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,d8d9f62a-9fa3-4aae-a568-4225afc35924,Les Mystères du Nautilus,OPERATING,5,,,,,,,2026-11-09T08:23:39.602Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,ddca340c-7ba1-4f23-89eb-0d3d52c84bda,Star Wars Hyperspace Mountain,OPERATING,25,20,,,AVAILABLE,2026-11-09T13:50:00+01:00,1200 EUR,2026-11-09T12:48:38.923Z
+2026-11-09T12:51Z,Disneyland Paris,Disneyland Park,f0525c25-4ea2-49b7-aab5-150b27658fb6,Orbitron®,OPERATING,30,,,,AVAILABLE,2026-11-09T13:50:00+01:00,500 EUR,2026-11-09T12:45:38.876Z

@@ -2670,7 +2670,6 @@ function IconBadge({ name, tone = 'orange', size = 46 }) {
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.ground },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: C.ground, padding: 24 },
   welcome: { flex: 1, backgroundColor: C.dark },
   welcomeInner: { flexGrow: 1, justifyContent: 'space-between', padding: 24, paddingTop: 48, gap: 40 },
   welcomeKicker: { color: C.accentSoft, fontSize: 13, fontWeight: '700', letterSpacing: 1.5 },
@@ -2769,9 +2768,4 @@ const s = StyleSheet.create({
   smallBtnText: { fontSize: 13, fontWeight: '600', color: C.ink },
   pill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
   pillText: { fontSize: 13, fontWeight: '700' },
-  chart: { flexDirection: 'row', alignItems: 'flex-end', height: 130, gap: 3, borderBottomWidth: 1, borderColor: '#CBD5E1', marginTop: 6 },
-  barCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end' },
-  bar: { width: '80%', borderTopLeftRadius: 3, borderTopRightRadius: 3 },
-  chartLabels: { flexDirection: 'row', gap: 3 },
-  chartLabel: { flex: 1, fontSize: 10, color: C.muted, textAlign: 'center' },
 });

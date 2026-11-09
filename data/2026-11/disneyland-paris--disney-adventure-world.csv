@@ -1,3 +1,6 @@
 timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wait,return_time_state,return_time_start,paid_return_state,paid_return_start,paid_return_price,source_last_updated
 2026-11-09T07:27Z,Disneyland Paris,Disney Adventure World,f710814b-232d-4469-aad7-d98b328a15b7,Spider-Man W.E.B. Adventure,OPERATING,5,5,,,AVAILABLE,2026-11-09T09:15:00+01:00,1300 EUR,2026-11-09T07:23:33.538Z
 2026-11-09T07:27Z,Disneyland Paris,Disney Adventure World,ff2e7d6f-5aaf-47b8-8695-53a66e9fe073,Avengers Assemble: Flight Force,OPERATING,0,0,,,AVAILABLE,2026-11-09T09:30:00+01:00,900 EUR,2026-11-09T07:26:32.379Z
+2026-11-09T07:32Z,Disneyland Paris,Disney Adventure World,337bce77-57bd-49c7-83d7-662f16c162ea,Slinky® Dog Zigzag Spin,OPERATING,5,,,,,,,2026-11-09T07:29:33.079Z
+2026-11-09T07:32Z,Disneyland Paris,Disney Adventure World,f710814b-232d-4469-aad7-d98b328a15b7,Spider-Man W.E.B. Adventure,OPERATING,5,5,,,AVAILABLE,2026-11-09T09:15:00+01:00,1300 EUR,2026-11-09T07:23:33.538Z
+2026-11-09T07:32Z,Disneyland Paris,Disney Adventure World,ff2e7d6f-5aaf-47b8-8695-53a66e9fe073,Avengers Assemble: Flight Force,OPERATING,5,5,,,AVAILABLE,2026-11-09T09:30:00+01:00,900 EUR,2026-11-09T07:29:33.052Z

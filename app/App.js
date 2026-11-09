@@ -1970,14 +1970,15 @@ export default function App() {
             <Pressable key={r.id} style={s.rideRow} onPress={() => openRide(r.id)} accessibilityRole="button">
               <View style={{ flex: 1 }}>
                 <Text style={[s.rowTitle, { color: C.muted }]}>{r.name}</Text>
-                {r.status === 'REFURBISHMENT' ? <Text style={s.mutedSmall}>Closed for refurbishment, back another day</Text> : (
+                {r.status === 'REFURBISHMENT' ? <Text style={s.mutedSmall}>Closed for refurbishment, back another day</Text> : null}
+                {r.status !== 'REFURBISHMENT' ? (
                   <Pressable onPress={() => toggleRemind(r.id, r.status)} hitSlop={8} accessibilityRole="switch"
                     accessibilityState={{ checked: remindOn(r.id, r.status) }} style={{ minHeight: 32, justifyContent: 'center' }}>
                     <Text style={[s.mutedSmall, { color: C.blue, fontWeight: '700' }]}>
                       {remindOn(r.id, r.status) ? "🔔 Reminder on: we'll buzz you when it opens" : '🔔 Remind me when it opens'}
                     </Text>
                   </Pressable>
-                )}
+                ) : null}
               </View>
               <View style={[s.pill, { backgroundColor: C.redSoft }]}><Text style={[s.pillText, { color: C.red }]}>{r.status === 'REFURBISHMENT' ? 'Refurbishment' : 'Temporarily closed'}</Text></View>
             </Pressable>

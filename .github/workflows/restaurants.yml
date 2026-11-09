@@ -1,0 +1,37 @@
+name: Save restaurant list
+
+on:
+  workflow_dispatch:         # "Run workflow" button
+  push:
+    paths:
+      - restaurants.py
+      - .github/workflows/restaurants.yml
+
+permissions:
+  contents: write
+
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch restaurants
+        run: python3 restaurants.py
+
+      - name: Save to repo
+        run: |
+          git config user.name "wait-logger"
+          git config user.email "wait-logger@users.noreply.github.com"
+          git add data/restaurants.json
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Restaurant list $(date -u +%Y-%m-%d)"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          exit 1

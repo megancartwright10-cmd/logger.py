@@ -1,0 +1,38 @@
+name: Log wait times
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # every 5 minutes (GitHub may run it a few minutes late)
+  workflow_dispatch:         # adds a "Run workflow" button for manual tests
+
+permissions:
+  contents: write
+
+concurrency:
+  group: log-waits
+  cancel-in-progress: false
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch wait times
+        run: python3 logger.py
+
+      - name: Save data to repo
+        if: always()
+        run: |
+          mkdir -p data
+          git config user.name "wait-logger"
+          git config user.email "wait-logger@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "Nothing new (parks probably closed)"
+            exit 0
+          fi
+          git commit -m "Wait times $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase
+          git push

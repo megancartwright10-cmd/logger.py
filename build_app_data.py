@@ -24,6 +24,71 @@ from zoneinfo import ZoneInfo
 from logger import fetch, find_parks, slugify
 
 APP_RESORTS = {"Disneyland Resort": "America/Los_Angeles"}
+
+# Areas ("lands"), listed in rough walking order round each park.
+# The live feed doesn't say which land a ride is in, so it's kept here.
+LANDS = {
+    "Disneyland Park": {
+        "Main Street, U.S.A.": [
+            "Disneyland Railroad", "Main Street Vehicles", "Main Street Cinema",
+            "Great Moments with Mr. Lincoln", "Opera House - Walt Disney - A Magical Life",
+            "Walt Disney - A Magical Life", "The Disney Gallery", "Fortune Tellers"],
+        "Adventureland": [
+            "Indiana Jones™ Adventure", "Jungle Cruise", "Walt Disney's Enchanted Tiki Room",
+            "Adventureland Treehouse inspired by Walt Disney’s Swiss Family Robinson"],
+        "New Orleans Square": ["Pirates of the Caribbean", "Haunted Mansion Holiday", "Haunted Mansion"],
+        "Bayou Country": [
+            "Tiana's Bayou Adventure", "The Many Adventures of Winnie the Pooh",
+            "Davy Crockett's Explorer Canoes"],
+        "Frontierland": [
+            "Big Thunder Mountain Railroad", "Mark Twain Riverboat", "Sailing Ship Columbia",
+            "Pirate's Lair on Tom Sawyer Island", "Frontierland Shootin' Exposition"],
+        "Star Wars: Galaxy's Edge": [
+            "Star Wars: Rise of the Resistance", "Millennium Falcon: Smugglers Run"],
+        "Fantasyland": [
+            "Matterhorn Bobsleds", "Peter Pan's Flight", "Alice in Wonderland", "Mr. Toad's Wild Ride",
+            "Snow White's Enchanted Wish", "Pinocchio's Daring Journey", "Dumbo the Flying Elephant",
+            "Mad Tea Party", "King Arthur Carrousel", "Casey Jr. Circus Train", "Storybook Land Canal Boats",
+            "\"it's a small world\"", "Sleeping Beauty Castle Walkthrough",
+            "Bluey’s Best Day Ever! at Fantasyland Theatre"],
+        "Mickey's Toontown": [
+            "Mickey & Minnie's Runaway Railway", "Roger Rabbit's Car Toon Spin",
+            "Chip 'n' Dale's GADGETcoaster", "Goofy's How-to-Play Yard", "Minnie's House",
+            "Donald's Duck Pond"],
+        "Tomorrowland": [
+            "Space Mountain", "Star Tours - The Adventures Continue", "Buzz Lightyear Astro Blasters",
+            "Finding Nemo Submarine Voyage", "Autopia", "Astro Orbitor", "Disneyland Monorail",
+            "Pixar Short Film Spotlight"],
+    },
+    "Disney California Adventure Park": {
+        "Hollywood Land": [
+            "Monsters, Inc. Mike & Sulley to the Rescue!", "Mickey's PhilharMagic", "Animation Academy",
+            "Sorcerer's Workshop", "Turtle Talk with Crush"],
+        "Avengers Campus": [
+            "Guardians of the Galaxy - Mission: BREAKOUT!", "WEB SLINGERS: A Spider-Man Adventure"],
+        "Cars Land": [
+            "Radiator Springs Racers", "Luigi's Rollickin' Roadsters", "Mater's Junkyard Jamboree"],
+        "San Fransokyo Square": ["The Bakery Tour"],
+        "Pixar Pier": [
+            "Incredicoaster", "Toy Story Midway Mania!", "Inside Out Emotional Whirlwind",
+            "Jessie's Critter Carousel", "Pixar Pal-A-Round - Swinging", "Pixar Pal-A-Round – Non-Swinging",
+            "Games of Pixar Pier"],
+        "Paradise Gardens Park": [
+            "The Little Mermaid - Ariel's Undersea Adventure", "Goofy's Sky School", "Silly Symphony Swings",
+            "Golden Zephyr", "Jumpin' Jellyfish"],
+        "Grizzly Peak": ["Soarin’ Across America", "Soarin' Around the World", "Grizzly River Run",
+                         "Redwood Creek Challenge Trail"],
+    },
+}
+
+
+def land_lookup(park_name):
+    """ride name -> (land, order of that land in the park)"""
+    out = {}
+    for i, (land, rides) in enumerate(LANDS.get(park_name, {}).items()):
+        for r in rides:
+            out[" ".join(r.split())] = (land, i)
+    return out
 DATA = Path("data")
 MIN_SAMPLES = 3          # readings needed before we trust an hour's typical wait
 
@@ -59,11 +124,19 @@ def typical_waits(resort, tz):
                     continue
                 local = t.replace(tzinfo=timezone.utc).astimezone(tz)
                 day = "weekend" if local.weekday() >= 5 else "weekday"
+                dow = (local.weekday() + 1) % 7  # 0 = Sunday, like JavaScript
                 buckets[(row["ride_id"], day, local.hour)].append(wait)
-    out = defaultdict(lambda: {"weekday": [None] * 24, "weekend": [None] * 24})
+                buckets[(row["ride_id"], dow, local.hour)].append(wait)
+    out = defaultdict(lambda: {"weekday": [None] * 24, "weekend": [None] * 24,
+                               "dow": [[None] * 24 for _ in range(7)]})
     for (ride, day, hour), waits in buckets.items():
-        if len(waits) >= MIN_SAMPLES:
-            out[ride][day][hour] = round(statistics.median(waits))
+        if len(waits) < MIN_SAMPLES:
+            continue
+        value = round(statistics.median(waits))
+        if isinstance(day, int):
+            out[ride]["dow"][day][hour] = value
+        else:
+            out[ride][day][hour] = value
     print(f"  history from {len(files)} files, {len(out)} rides with enough readings")
     return out
 
@@ -85,11 +158,15 @@ def main():
             if label != resort:
                 continue
             kids = fetch(f"/entity/{park_id}/children").get("children", [])
+            lands = land_lookup(park_name)
             rides = []
             for k in kids:
                 if k.get("entityType") != "ATTRACTION":
                     continue
-                rides.append({"id": k["id"], "name": k.get("name"),
+                land, order = lands.get(" ".join((k.get("name") or "").split()), ("Other", 99))
+                if land == "Other":
+                    print(f"  no land for: {k.get('name')}")
+                rides.append({"id": k["id"], "name": k.get("name"), "land": land, "landOrder": order,
                               "loc": location_of(k["id"], cache),
                               "typical": history.get(k["id"])})
             food = []
@@ -98,7 +175,7 @@ def main():
                         and t["service"] in ("quick", "snack", "table"):
                     food.append({"id": rid, "name": t["name"], "service": t["service"],
                                  "moods": t["moods"], "loc": location_of(rid, cache)})
-            rides.sort(key=lambda r: r["name"] or "")
+            rides.sort(key=lambda r: (r["landOrder"], (r["name"] or "").strip('"').lower()))
             food.sort(key=lambda r: r["name"])
             out["parks"].append({"id": park_id, "name": park_name,
                                  "rides": rides, "food": food})

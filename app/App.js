@@ -356,9 +356,14 @@ function extremes(curve) {
 }
 
 // "08:00" -> "8am", "21:30" -> "9:30pm"
+// Paris uses the 24-hour clock (14:30); Anaheim and Orlando use 2:30pm. Set from the chosen resort on every render.
+let CLOCK24 = false;
+const pad2 = (n) => String(n).padStart(2, '0');
+
 function fmtTime(hhmm) {
   if (!hhmm) return '';
   const [h, m] = hhmm.split(':').map(Number);
+  if (CLOCK24) return `${pad2(h % 24)}:${pad2(m || 0)}`;
   const suffix = h >= 12 && h < 24 ? 'pm' : 'am';
   const h12 = h % 12 === 0 ? 12 : h % 12;
   if (h === 0 && m === 0) return 'midnight';
@@ -423,6 +428,7 @@ function ropeDropPicks(rides, openHour, parkName) {
 }
 
 function fmtHour(h) {
+  if (CLOCK24) return `${pad2(h % 24)}:00`;
   if (h === 0) return 'midnight';
   if (h === 12) return 'noon';
   return h < 12 ? `${h}am` : `${h - 12}pm`;
@@ -549,6 +555,7 @@ export default function App() {
   const loaded = useRef(false);
 
   const R = RESORTS[saved.resort] || RESORTS.dlr;
+  CLOCK24 = !!R.metric;
   const park = data ? (data.parks[parkIdx] || data.parks[0]) : null;
   const now = data ? parkNow(data.utcOffsetMinutes) : null;
 
@@ -1601,7 +1608,7 @@ export default function App() {
                 </View>
                 <View style={s.chartLabels}>
                   {hours.map((x) => (
-                    <Text key={x.h} style={s.chartLabel}>{x.h % 3 === 0 ? fmtHour(x.h).replace('noon', '12p').replace('am', 'a').replace('pm', 'p') : ''}</Text>
+                    <Text key={x.h} style={s.chartLabel}>{x.h % 3 === 0 ? (CLOCK24 ? pad2(x.h) : fmtHour(x.h).replace('noon', '12p').replace('am', 'a').replace('pm', 'p')) : ''}</Text>
                   ))}
                 </View>
                 <Text style={s.mutedSmall}>Orange = this hour</Text>

@@ -1218,3 +1218,10 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-09T22:19Z,Walt Disney World,Disney's Animal Kingdom Theme Park,7a5af3b7-9bc1-4962-92d0-3ea9c9ce35f0,Na'vi River Journey,OPERATING,45,,AVAILABLE,2026-11-09T18:25:00-05:00,,,,2026-11-09T22:12:02.375Z
 2026-11-09T22:19Z,Walt Disney World,Disney's Animal Kingdom Theme Park,bc997600-fcc0-4f6f-b908-a1419b26cfd8,The Oasis Exhibits,OPERATING,,,,,,,,2026-11-09T13:00:01.344Z
 2026-11-09T22:19Z,Walt Disney World,Disney's Animal Kingdom Theme Park,d58d9262-ec95-4161-80a0-07ca43b2f5f3,Kali River Rapids,OPERATING,5,,AVAILABLE,2026-11-09T17:15:00-05:00,,,,2026-11-09T22:15:27.025Z
+2026-11-09T22:24Z,Walt Disney World,Disney's Animal Kingdom Theme Park,1b15c77b-0311-4171-8e59-7f38e6d60754,Zootopia: Better Zoogether!,OPERATING,15,,AVAILABLE,2026-11-09T17:40:00-05:00,,,,2026-11-09T22:20:26.624Z
+2026-11-09T22:24Z,Walt Disney World,Disney's Animal Kingdom Theme Park,24cf863c-b6ba-4826-a056-0b698989cbf7,Avatar Flight of Passage,OPERATING,50,,,,AVAILABLE,2026-11-09T17:20:00-05:00,1900 USD,2026-11-09T22:20:26.548Z
+2026-11-09T22:24Z,Walt Disney World,Disney's Animal Kingdom Theme Park,4d27b0d7-2b0a-4569-90fa-e79f117ec7ef,Discovery Island Trails,OPERATING,,,,,,,,2026-11-09T13:00:01.018Z
+2026-11-09T22:24Z,Walt Disney World,Disney's Animal Kingdom Theme Park,64a6915f-a835-4226-ba5c-8389fc4cade3,Expedition Everest - Legend of the Forbidden Mountain,OPERATING,20,,AVAILABLE,2026-11-09T17:20:00-05:00,,,,2026-11-09T22:20:26.605Z
+2026-11-09T22:24Z,Walt Disney World,Disney's Animal Kingdom Theme Park,7a5af3b7-9bc1-4962-92d0-3ea9c9ce35f0,Na'vi River Journey,OPERATING,45,,AVAILABLE,2026-11-09T18:25:00-05:00,,,,2026-11-09T22:12:02.375Z
+2026-11-09T22:24Z,Walt Disney World,Disney's Animal Kingdom Theme Park,bc997600-fcc0-4f6f-b908-a1419b26cfd8,The Oasis Exhibits,OPERATING,,,,,,,,2026-11-09T13:00:01.344Z
+2026-11-09T22:24Z,Walt Disney World,Disney's Animal Kingdom Theme Park,d58d9262-ec95-4161-80a0-07ca43b2f5f3,Kali River Rapids,OPERATING,5,,AVAILABLE,2026-11-09T17:20:00-05:00,,,,2026-11-09T22:20:26.643Z

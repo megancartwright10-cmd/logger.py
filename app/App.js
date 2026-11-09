@@ -130,7 +130,7 @@ export default function App() {
   const [live, setLive] = useState({});
   const [updatedAt, setUpdatedAt] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [screen, setScreen] = useState('setup');
+  const [screen, setScreen] = useState('welcome');
   const [detailId, setDetailId] = useState(null);
   const [saved, setSaved] = useState({ selected: {}, done: {}, useLoc: false });
   const [skipped, setSkipped] = useState([]);
@@ -239,6 +239,60 @@ export default function App() {
   }, [park, now && now.hour, live, selected, done, skipped, coords, saved.useLoc]);
 
   // ---------- render ----------
+  if (screen === 'welcome') {
+    const hasPlan = Object.values(saved.selected).some((list) => list && list.length > 0);
+    const ready = !!data;
+    return (
+      <SafeAreaView style={s.welcome}>
+        <StatusBar style="light" />
+        <ScrollView contentContainerStyle={s.welcomeInner}>
+          <View style={{ gap: 10 }}>
+            <Text style={s.welcomeKicker}>DISNEYLAND RESORT</Text>
+            <Text style={s.welcomeTitle}>Ride Next</Text>
+            <Text style={s.welcomeTag}>Less queuing, more riding.</Text>
+          </View>
+
+          <View style={{ gap: 14 }}>
+            {[
+              ['1', 'Pick your rides', 'Tick everything you want to do today.'],
+              ['2', 'We tell you what to ride next', 'Live waits, walking time, and whether the line will get worse later.'],
+              ['3', 'Hungry or tired of queuing?', 'Find food by mood and see if Lightning Lane is worth it.'],
+            ].map(([n, title, body]) => (
+              <View key={n} style={s.stepRow}>
+                <View style={s.stepNum}><Text style={s.stepNumText}>{n}</Text></View>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.stepTitle}>{title}</Text>
+                  <Text style={s.stepBody}>{body}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          <View style={{ gap: 10 }}>
+            {error && !ready ? <Text style={[s.errorText, { color: '#FCA5A5' }]}>{error}</Text> : null}
+            {hasPlan ? (
+              <Pressable style={[s.welcomeBtn, !ready && { opacity: 0.5 }]} disabled={!ready}
+                onPress={() => {
+                  const i = data.parks.findIndex((p) => (saved.selected[p.id] || []).length > 0);
+                  if (i >= 0) setParkIdx(i);
+                  setSkipped([]); setScreen('next');
+                }} accessibilityRole="button">
+                <Text style={s.welcomeBtnText}>{ready ? 'Carry on with my day' : 'Loading park data…'}</Text>
+              </Pressable>
+            ) : null}
+            <Pressable style={[hasPlan ? s.welcomeBtnOutline : s.welcomeBtn, !ready && { opacity: 0.5 }]} disabled={!ready}
+              onPress={() => setScreen('setup')} accessibilityRole="button">
+              <Text style={hasPlan ? s.welcomeBtnOutlineText : s.welcomeBtnText}>
+                {!ready && !hasPlan ? 'Loading park data…' : hasPlan ? 'Change my rides' : 'Plan my day'}
+              </Text>
+            </Pressable>
+            <Text style={s.welcomeSmall}>Unofficial app. Not affiliated with or endorsed by Disney. Wait times are estimates.</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   if (!data) {
     return (
       <SafeAreaView style={s.center}>
@@ -519,6 +573,21 @@ function TrendLabel({ trend }) {
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.ground },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: C.ground, padding: 24 },
+  welcome: { flex: 1, backgroundColor: C.dark },
+  welcomeInner: { flexGrow: 1, justifyContent: 'space-between', padding: 24, paddingTop: 48, gap: 40 },
+  welcomeKicker: { color: C.accentSoft, fontSize: 13, fontWeight: '700', letterSpacing: 1.5 },
+  welcomeTitle: { color: '#fff', fontSize: 48, fontWeight: '800', letterSpacing: -1 },
+  welcomeTag: { color: '#CBD5E1', fontSize: 20, fontWeight: '500' },
+  stepRow: { flexDirection: 'row', gap: 14, alignItems: 'flex-start', backgroundColor: C.dark2, borderRadius: 16, padding: 16 },
+  stepNum: { width: 32, height: 32, borderRadius: 16, backgroundColor: C.accentSoft, alignItems: 'center', justifyContent: 'center' },
+  stepNumText: { color: C.dark, fontWeight: '800', fontSize: 15 },
+  stepTitle: { color: '#fff', fontSize: 17, fontWeight: '700' },
+  stepBody: { color: '#CBD5E1', fontSize: 14, lineHeight: 20, marginTop: 2 },
+  welcomeBtn: { minHeight: 56, borderRadius: 16, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+  welcomeBtnText: { color: C.dark, fontSize: 17, fontWeight: '800' },
+  welcomeBtnOutline: { minHeight: 52, borderRadius: 16, borderWidth: 1, borderColor: '#64748B', alignItems: 'center', justifyContent: 'center' },
+  welcomeBtnOutlineText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  welcomeSmall: { color: '#94A3B8', fontSize: 12, textAlign: 'center', marginTop: 4 },
   header: { backgroundColor: C.card, padding: 20, paddingTop: 12, borderBottomWidth: 1, borderColor: C.line, gap: 8 },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10 },
   pad: { padding: 16, gap: 10, paddingBottom: 40 },

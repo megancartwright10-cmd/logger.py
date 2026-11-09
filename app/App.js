@@ -14,6 +14,7 @@ import { Pedometer } from 'expo-sensors';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import Svg, { Circle, Path } from 'react-native-svg';
 
 const DATA_BASE = 'https://raw.githubusercontent.com/megancartwright10-cmd/logger.py/main/data/app/';
 const RESORTS = {
@@ -1070,9 +1071,9 @@ export default function App() {
     };
     const later = () => { setSaved((cur) => ({ ...cur, locAsked: true })); setScreen('welcome'); };
     const perks = [
-      ['Closest rides first', 'Walking time from where you are, so you never cross the park for nothing.'],
-      ['Areas you explored', 'Your Day Recap and Wrapped fill in the lands you visited.'],
-      ['Food nearby', 'Quick bites sorted by how close they are.'],
+      ['pin', 'Closest rides first', 'Walking time from where you are, so you never cross the park for nothing.'],
+      ['map', 'Areas you explored', 'Your Day Recap and Wrapped fill in the lands you visited.'],
+      ['food', 'Food nearby', 'Quick bites sorted by how close they are.'],
     ];
     return (
       <SafeAreaView style={s.welcome}>
@@ -1084,10 +1085,13 @@ export default function App() {
             <Text style={s.welcomeTag}>We only use it while the app is open, and it never leaves your phone.</Text>
           </View>
           <View style={{ gap: 12 }}>
-            {perks.map(([title, body]) => (
-              <View key={title} style={[s.parkCard, { gap: 2 }]}>
-                <Text style={[s.parkCardMeta, { color: C.ink, fontWeight: '700', fontSize: 16 }]}>{title}</Text>
-                <Text style={s.parkCardMeta}>{body}</Text>
+            {perks.map(([icon, title, body]) => (
+              <View key={title} style={[s.parkCard, { flexDirection: 'row', gap: 14, alignItems: 'center' }]}>
+                <IconBadge name={icon} />
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text style={[s.parkCardMeta, { color: C.ink, fontWeight: '700', fontSize: 16 }]}>{title}</Text>
+                  <Text style={s.parkCardMeta}>{body}</Text>
+                </View>
               </View>
             ))}
           </View>
@@ -1546,7 +1550,8 @@ export default function App() {
               <Text style={s.h3}>{l.status === 'DOWN' ? 'Temporarily down' : 'Closed right now'}</Text>
               <Text style={s.body}>{remind ? "We'll buzz you the moment it opens. Lines are short for a few minutes after."
                 : 'Want a buzz the moment it opens? Lines are short for a few minutes after.'}</Text>
-              <Pressable style={s.btnDark} onPress={() => toggleRemind(ride.id, l.status)} accessibilityRole="button">
+              <Pressable style={[s.btnDark, { flexDirection: 'row', gap: 10 }]} onPress={() => toggleRemind(ride.id, l.status)} accessibilityRole="button">
+                <Icon name="bell" size={20} tone="white" />
                 <Text style={s.btnDarkText}>{remind ? 'Reminder on · tap to cancel' : 'Remind me when it opens'}</Text>
               </Pressable>
               <Text style={s.mutedSmall}>Works while Ride Next is open.</Text>
@@ -1971,8 +1976,9 @@ export default function App() {
                 {r.status === 'REFURBISHMENT' ? <Text style={s.mutedSmall}>Closed for refurbishment, back another day</Text> : null}
                 {r.status !== 'REFURBISHMENT' ? (
                   <Pressable onPress={() => toggleRemind(r.id, r.status)} hitSlop={8} accessibilityRole="switch"
-                    accessibilityState={{ checked: remindOn(r.id, r.status) }} style={{ minHeight: 32, justifyContent: 'center' }}>
-                    <Text style={[s.mutedSmall, { color: C.blue, fontWeight: '700' }]}>
+                    accessibilityState={{ checked: remindOn(r.id, r.status) }} style={{ minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Icon name="bell" size={16} tone="blue" stroke={2.2} />
+                    <Text style={[s.mutedSmall, { color: C.blue, fontWeight: '700', flexShrink: 1 }]}>
                       {remindOn(r.id, r.status) ? "Reminder on: we'll buzz you when it opens" : 'Remind me when it opens'}
                     </Text>
                   </Pressable>
@@ -2368,6 +2374,40 @@ function WrapSummary({ k, c, d }) {
 }
 
 const WRAP_COMPONENTS = { open: WrapOpen, rides: WrapRides, queue: WrapQueue, walk: WrapWalk, snacks: WrapSnacks, persona: WrapPersona, summary: WrapSummary };
+
+// Two-tone icons drawn in the app's own colours (used instead of emoji): a soft fill under a darker outline
+const ICONS = {
+  pin: { fill: ['M12 21.5s-7-6.1-7-11.6a7 7 0 0 1 14 0c0 5.5-7 11.6-7 11.6z'], line: ['M12 21.5s-7-6.1-7-11.6a7 7 0 0 1 14 0c0 5.5-7 11.6-7 11.6z', ['c', 12, 9.8, 2.6]] },
+  walk: { fill: [['c', 14, 4.2, 2.6]], line: [['c', 14, 4.2, 2.3], 'M13.4 7.8L11 13.4', 'M11 13.4l3 3.4-.5 4.7', 'M11 13.4L8.4 21.2', 'M12.8 9.4L8.8 12', 'M12.8 9.4l3.1 3.1 3 .5'] },
+  map: { fill: ['M9 3.5l6 3v14l-6-3z'], line: ['M3 6.5l6-3 6 3 6-3v14l-6 3-6-3-6 3z', 'M9 3.5v14', 'M15 6.5v14'] },
+  food: { fill: ['M17 3c-2.5 1.5-3.5 4.5-3.5 8h3.5z', 'M4.5 3v5a2.5 2.5 0 0 0 5 0V3z'], line: ['M7 3v18', 'M4.5 3v5a2.5 2.5 0 0 0 5 0V3', 'M17 21V3c-2.5 1.5-3.5 4.5-3.5 8h3.5'] },
+  bell: { fill: ['M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z'], line: ['M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z', 'M10 20.5a2 2 0 0 0 4 0'] },
+};
+const ICON_TONES = {
+  orange: { line: C.accent, fill: C.accentSoft, bg: '#FFF4E8' },
+  blue: { line: C.blue, fill: '#BFDBFE', bg: '#EFF6FF' },
+  white: { line: '#FFFFFF', fill: 'rgba(255,255,255,0.35)', bg: 'transparent' },
+};
+function Icon({ name, size = 22, tone = 'orange', stroke = 2 }) {
+  const t = ICON_TONES[tone] || ICON_TONES.orange;
+  const ic = ICONS[name] || { fill: [], line: [] };
+  const draw = (d, i, props) => (Array.isArray(d)
+    ? <Circle key={i} cx={d[1]} cy={d[2]} r={d[3]} {...props} />
+    : <Path key={i} d={d} {...props} />);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      {ic.fill.map((d, i) => draw(d, `f${i}`, { fill: t.fill, stroke: 'none' }))}
+      {ic.line.map((d, i) => draw(d, `l${i}`, { fill: 'none', stroke: t.line, strokeWidth: stroke, strokeLinecap: 'round', strokeLinejoin: 'round' }))}
+    </Svg>
+  );
+}
+function IconBadge({ name, tone = 'orange', size = 46 }) {
+  return (
+    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: (ICON_TONES[tone] || ICON_TONES.orange).bg, alignItems: 'center', justifyContent: 'center' }}>
+      <Icon name={name} size={size * 0.6} tone={tone} />
+    </View>
+  );
+}
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.ground },

@@ -809,7 +809,7 @@ export default function App() {
 
   const shareRecap = () => {
     if (!recap) return;
-    const lines = [`My ${R.short} Day ✨`];
+    const lines = [`My ${R.short} Day`];
     if (recap.minutes) lines.push(`${fmtDuration(recap.minutes)} in the park`);
     if (recap.dist) lines.push(`${recap.dist} ${recap.unit} walked`);
     lines.push(`${recap.rides} ride${recap.rides === 1 ? '' : 's'} · ${fmtDuration(recap.queue)} queuing`);
@@ -1070,9 +1070,9 @@ export default function App() {
     };
     const later = () => { setSaved((cur) => ({ ...cur, locAsked: true })); setScreen('welcome'); };
     const perks = [
-      ['🚶', 'Closest rides first', 'Walking time from where you are, so you never cross the park for nothing.'],
-      ['🗺️', 'Areas you explored', 'Your Day Recap and Wrapped fill in the lands you visited.'],
-      ['🍔', 'Food nearby', 'Quick bites sorted by how close they are.'],
+      ['Closest rides first', 'Walking time from where you are, so you never cross the park for nothing.'],
+      ['Areas you explored', 'Your Day Recap and Wrapped fill in the lands you visited.'],
+      ['Food nearby', 'Quick bites sorted by how close they are.'],
     ];
     return (
       <SafeAreaView style={s.welcome}>
@@ -1084,13 +1084,10 @@ export default function App() {
             <Text style={s.welcomeTag}>We only use it while the app is open, and it never leaves your phone.</Text>
           </View>
           <View style={{ gap: 12 }}>
-            {perks.map(([icon, title, body]) => (
-              <View key={title} style={[s.parkCard, { flexDirection: 'row', gap: 12, alignItems: 'flex-start' }]}>
-                <Text style={{ fontSize: 26 }}>{icon}</Text>
-                <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={[s.parkCardMeta, { color: C.ink, fontWeight: '700', fontSize: 16 }]}>{title}</Text>
-                  <Text style={s.parkCardMeta}>{body}</Text>
-                </View>
+            {perks.map(([title, body]) => (
+              <View key={title} style={[s.parkCard, { gap: 2 }]}>
+                <Text style={[s.parkCardMeta, { color: C.ink, fontWeight: '700', fontSize: 16 }]}>{title}</Text>
+                <Text style={s.parkCardMeta}>{body}</Text>
               </View>
             ))}
           </View>
@@ -1976,7 +1973,7 @@ export default function App() {
                   <Pressable onPress={() => toggleRemind(r.id, r.status)} hitSlop={8} accessibilityRole="switch"
                     accessibilityState={{ checked: remindOn(r.id, r.status) }} style={{ minHeight: 32, justifyContent: 'center' }}>
                     <Text style={[s.mutedSmall, { color: C.blue, fontWeight: '700' }]}>
-                      {remindOn(r.id, r.status) ? "🔔 Reminder on: we'll buzz you when it opens" : '🔔 Remind me when it opens'}
+                      {remindOn(r.id, r.status) ? "Reminder on: we'll buzz you when it opens" : 'Remind me when it opens'}
                     </Text>
                   </Pressable>
                 ) : null}

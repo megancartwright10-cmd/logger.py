@@ -766,7 +766,9 @@ export default function App() {
     return { ...k, [pid]: [...cur, ride.id] };
   });
   const setOpt = (key, value) => setSaved((cur) => ({ ...cur, [key]: value }));
-  const tooTall = (r) => saved.minHeightCm != null && r.heightCm != null && r.heightCm > saved.minHeightCm;
+  // shortest rider: "No limit" unless one of this resort's height options is picked
+  const minH = R.heightOptions.map((h) => toCm(R, h)).includes(saved.minHeightCm) ? saved.minHeightCm : null;
+  const tooTall = (r) => minH != null && r.heightCm != null && r.heightCm > minH;
 
   // ---------- Day Recap ----------
   const today = now ? now.dateKey : '';
@@ -2217,7 +2219,7 @@ export default function App() {
           <View style={s.chips}>
             {R.heightOptions.map((h) => {
               const cm = toCm(R, h);
-              const on = saved.minHeightCm === cm;
+              const on = minH === cm;
               return (
                 <Pressable key={String(h)} onPress={() => setOpt('minHeightCm', cm)} accessibilityRole="button"
                   accessibilityState={{ selected: on }} style={[s.chip, on && s.chipOn]}>

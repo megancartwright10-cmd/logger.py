@@ -48,3 +48,7 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-09T06:51Z,Disneyland Paris,Disneyland Park,a970c245-4924-48bd-bced-efc14850b116,Mickey’s PhilharMagic,OPERATING,,,,,,,,2026-11-08T23:01:33.040Z
 2026-11-09T06:56Z,Disneyland Paris,Disneyland Park,a970c245-4924-48bd-bced-efc14850b116,Mickey’s PhilharMagic,OPERATING,,,,,,,,2026-11-08T23:01:33.040Z
 2026-11-09T07:01Z,Disneyland Paris,Disneyland Park,a970c245-4924-48bd-bced-efc14850b116,Mickey’s PhilharMagic,OPERATING,,,,,,,,2026-11-08T23:01:33.040Z
+2026-11-09T07:27Z,Disneyland Paris,Disneyland Park,38bafc85-cb48-488e-aa68-3e2d01ae6a10,La Galerie de la Belle au Bois Dormant,OPERATING,,,,,,,,2026-11-09T07:02:33.340Z
+2026-11-09T07:27Z,Disneyland Paris,Disneyland Park,46406e4a-4a02-4d30-89bc-ef1ed63c1ff9,Dumbo the Flying Elephant,OPERATING,5,,,,,,,2026-11-09T07:23:33.528Z
+2026-11-09T07:27Z,Disneyland Paris,Disneyland Park,83fa9e7f-4a25-4bee-8e61-4fb8c59cd350,La Tanière du Dragon,OPERATING,0,,,,,,,2026-11-09T07:02:33.324Z
+2026-11-09T07:27Z,Disneyland Paris,Disneyland Park,a970c245-4924-48bd-bced-efc14850b116,Mickey’s PhilharMagic,OPERATING,,,,,,,,2026-11-08T23:01:33.040Z

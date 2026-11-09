@@ -70,3 +70,14 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-09T07:37Z,Disneyland Paris,Disneyland Park,bcbd2214-0f75-4cae-8cff-087adf621330,Rustler Roundup Shootin' Gallery,OPERATING,0,,,,,,,2026-11-09T07:32:34.009Z
 2026-11-09T07:37Z,Disneyland Paris,Disneyland Park,d6c61231-8f9b-40fa-943a-fe1454e185e7,Main Street Vehicles,OPERATING,5,,,,,,,2026-11-09T07:32:34.049Z
 2026-11-09T07:37Z,Disneyland Paris,Disneyland Park,ddca340c-7ba1-4f23-89eb-0d3d52c84bda,Star Wars Hyperspace Mountain,OPERATING,5,0,,,AVAILABLE,2026-11-09T09:30:00+01:00,1200 EUR,2026-11-09T07:29:33.062Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,03992704-698d-474b-a721-a5ac3498edb9,Buzz Lightyear Laser Blast,OPERATING,5,,,,AVAILABLE,2026-11-09T09:30:00+01:00,1200 EUR,2026-11-09T07:29:33.070Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,38bafc85-cb48-488e-aa68-3e2d01ae6a10,La Galerie de la Belle au Bois Dormant,OPERATING,,,,,,,,2026-11-09T07:02:33.340Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,46406e4a-4a02-4d30-89bc-ef1ed63c1ff9,Dumbo the Flying Elephant,OPERATING,5,,,,,,,2026-11-09T07:23:33.528Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,6bb88973-80d0-45cf-bffe-433f1c551362,Horse-Drawn Streetcars,OPERATING,,,,,,,,2026-11-09T07:32:34.116Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,7c5b2c2d-1082-4e5c-b155-dc492db16e6e,Peter Pan's Flight,OPERATING,20,,,,AVAILABLE,2026-11-09T09:30:00+01:00,1600 EUR,2026-11-09T07:35:34.031Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,83fa9e7f-4a25-4bee-8e61-4fb8c59cd350,La Tanière du Dragon,OPERATING,0,,,,,,,2026-11-09T07:02:33.324Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,852d957c-382e-4afb-bb74-70c9a79055df,Big Thunder Mountain,OPERATING,15,,,,AVAILABLE,2026-11-09T09:30:00+01:00,1300 EUR,2026-11-09T07:38:34.552Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,a970c245-4924-48bd-bced-efc14850b116,Mickey’s PhilharMagic,OPERATING,,,,,,,,2026-11-08T23:01:33.040Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,bcbd2214-0f75-4cae-8cff-087adf621330,Rustler Roundup Shootin' Gallery,OPERATING,0,,,,,,,2026-11-09T07:32:34.009Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,d6c61231-8f9b-40fa-943a-fe1454e185e7,Main Street Vehicles,OPERATING,5,,,,,,,2026-11-09T07:32:34.049Z
+2026-11-09T07:42Z,Disneyland Paris,Disneyland Park,ddca340c-7ba1-4f23-89eb-0d3d52c84bda,Star Wars Hyperspace Mountain,OPERATING,5,0,,,AVAILABLE,2026-11-09T09:30:00+01:00,1200 EUR,2026-11-09T07:29:33.062Z

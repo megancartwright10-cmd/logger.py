@@ -1501,7 +1501,20 @@ export default function App() {
     const l = live[ride.id] || {};
     const look = outlook(ride, now, l.wait);
     const typ = typicalFor(ride, now.dow, now.dayType);
-    const hours = typ ? typ.map((v, h) => ({ v, h })).filter((x) => x.v != null) : [];
+    // every hour the park is open today, with "no data yet" for hours the logger hasn't covered
+    const rideParkObj = data.parks.find((p) => p.id === ride.parkId) || park;
+    const openRange = (hoursFor(rideParkObj).main || [])[0];
+    let hourList = [];
+    if (openRange) {
+      const o = Math.floor(toMin(openRange[0]) / 60);
+      let c = Math.ceil(toMin(openRange[1]) / 60);
+      if (c <= o) c += 24; // closes after midnight
+      for (let h = o; h < c; h++) hourList.push(h % 24);
+    }
+    if (typ) typ.forEach((v, h) => { if (v != null && !hourList.includes(h)) hourList.push(h); });
+    if (!openRange) hourList.sort((a, b) => a - b);
+    const hours = hourList.map((h) => ({ h, v: typ ? typ[h] : null }));
+    const hasAnyHistory = hours.some((x) => x.v != null);
     const today = extremes(typ);
     const week = [1, 2, 3, 4, 5, 6, 0].map((d) => {
       const curve = ride.typical && ride.typical.dow && ride.typical.dow[d];
@@ -1509,7 +1522,7 @@ export default function App() {
       return { d, ex };
     }).filter((x) => x.ex);
     const lastUpd = minutesAgo(l.updated);
-    const max = Math.max(1, ...hours.map((x) => x.v));
+    const max = Math.max(1, ...hours.map((x) => x.v || 0));
     const ll = lightningLane(l, look, R);
     const tone = TONES[ll.tone];
     const target = alertFor(ride.id);
@@ -1595,8 +1608,8 @@ export default function App() {
 
           <View style={s.card}>
             <Text style={s.h3}>Typical waits by hour</Text>
-            {hours.length === 0 ? (
-              <Text style={s.muted}>Not enough history yet. This fills in as your logger collects data over the next few days.</Text>
+            {!hasAnyHistory ? (
+              <Text style={s.muted}>Not enough history yet. This fills in as Ride Next collects waits over the next few days.</Text>
             ) : (
               <>
                 <View style={{ gap: 4, marginTop: 4 }} accessibilityLabel="Typical wait for each hour">
@@ -1604,17 +1617,17 @@ export default function App() {
                     const isNow = x.h === now.hour;
                     return (
                       <View key={x.h} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 24 }}
-                        accessibilityLabel={`${fmtHour(x.h)}, about ${x.v} minutes${isNow ? ', this hour' : ''}`}>
+                        accessibilityLabel={`${fmtHour(x.h)}, ${x.v == null ? 'no data yet' : `about ${x.v} minutes`}${isNow ? ', this hour' : ''}`}>
                         <Text style={{ width: 62, fontSize: 13, fontWeight: isNow ? '800' : '600', color: isNow ? C.accent : C.ink }}>{fmtHour(x.h)}</Text>
                         <View style={{ flex: 1, height: 12, borderRadius: 6, backgroundColor: '#F1F5F9', overflow: 'hidden' }}>
-                          <View style={{ width: `${Math.max(3, Math.round((x.v / max) * 100))}%`, height: 12, borderRadius: 6, backgroundColor: isNow ? C.accent : '#94A3B8' }} />
+                          {x.v == null ? null : <View style={{ width: `${Math.max(3, Math.round((x.v / max) * 100))}%`, height: 12, borderRadius: 6, backgroundColor: isNow ? C.accent : '#94A3B8' }} />}
                         </View>
-                        <Text style={{ width: 52, textAlign: 'right', fontSize: 13, fontWeight: isNow ? '800' : '600', color: isNow ? C.accent : C.muted }}>{x.v} min</Text>
+                        <Text style={{ width: 52, textAlign: 'right', fontSize: 13, fontWeight: isNow ? '800' : '600', color: x.v == null ? '#94A3B8' : isNow ? C.accent : C.muted }}>{x.v == null ? '—' : `${x.v} min`}</Text>
                       </View>
                     );
                   })}
                 </View>
-                <Text style={s.mutedSmall}>Orange = this hour</Text>
+                <Text style={s.mutedSmall}>Orange = this hour.{hours.some((x) => x.v == null) ? ' "—" = no data yet, fills in over the coming days.' : ''}</Text>
               </>
             )}
           </View>

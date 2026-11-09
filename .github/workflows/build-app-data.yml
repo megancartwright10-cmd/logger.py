@@ -2,7 +2,7 @@ name: Build app data
 
 on:
   schedule:
-    - cron: "17 11 * * *"   # daily, ~3am in California, after the parks close
+    - cron: "37 */2 * * *"   # every 2 hours, so today's waits fill in as the day goes
   workflow_dispatch:
   push:
     paths:

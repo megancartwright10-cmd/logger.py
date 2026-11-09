@@ -194,6 +194,8 @@ const clockFromMs = (ms, offsetMin) => {
 const BIG_SHOW = /firework|parade|world of color|fantasmic|nighttime|spectacular|believe/i;
 
 // Rope drop: which picks gain the most wait between opening and midday?
+// Headline rides come first; a smaller ride only makes the cut if history
+// shows its line really balloons (20+ min) after opening.
 function ropeDropPicks(rides, openHour, parkName) {
   const head = HEADLINERS[parkName] || [];
   const scored = rides.map((r) => {
@@ -203,16 +205,15 @@ function ropeDropPicks(rides, openHour, parkName) {
       const later = [1, 2, 3, 4].map((i) => curve[openHour + i]).filter((v) => v != null);
       if (later.length) gain = Math.max(...later) - curve[openHour];
     }
-    const h = head.indexOf(r.name);
-    return { r, gain, rank: h === -1 ? 99 : h };
-  });
+    const rank = head.indexOf(r.name);
+    return { r, gain, headliner: rank !== -1, rank: rank === -1 ? 99 : rank };
+  }).filter((x) => x.headliner || (x.gain != null && x.gain >= 20));
   scored.sort((a, b) => {
-    if (a.gain != null && b.gain != null) return b.gain - a.gain;
-    if (a.gain != null) return -1;
-    if (b.gain != null) return 1;
+    if (a.gain != null && b.gain != null && Math.abs(a.gain - b.gain) >= 10) return b.gain - a.gain;
+    if (a.headliner !== b.headliner) return a.headliner ? -1 : 1;
     return a.rank - b.rank;
   });
-  return scored.filter((x) => x.gain != null || x.rank < 99).slice(0, 3).map((x) => x.r);
+  return scored.slice(0, 3).map((x) => x.r);
 }
 
 function fmtHour(h) {
@@ -805,6 +806,47 @@ export default function App() {
     </Pressable>
   ) : null;
 
+  // rope drop: before opening, the first 45 minutes, or tonight for tomorrow
+  const ropeDropFor = (p) => {
+    const sel = saved.selected[p.id] || [];
+    const todayHours = hoursFor(p).main[0];
+    const opensMin = todayHours ? toMin(todayHours[0]) : null;
+    const closesMin = todayHours ? toMin(todayHours[1]) : null;
+    let rd = null;
+    const pool = (sel.length ? p.rides.filter((r) => sel.includes(r.id)) : p.rides).filter((r) => !tooTall(r));
+    if (opensMin != null && now.minute < opensMin + 45 && !(closesMin != null && closesMin < opensMin && now.minute < closesMin)) {
+      rd = { when: now.minute < opensMin ? 'today' : 'now', open: todayHours[0] };
+    } else {
+      const tomorrow = hoursFor(p, nextDateKey(now.dateKey)).main[0];
+      const afterClose = !todayHours || (closesMin != null && closesMin > opensMin && now.minute >= closesMin);
+      if (tomorrow && afterClose) rd = { when: 'tomorrow', open: tomorrow[0] };
+    }
+    if (!rd) return null;
+    const openHour = Math.floor(toMin(rd.open) / 60);
+    rd.picks = ropeDropPicks(pool, openHour, p.name);
+    rd.by = fmtHour(openHour + 2);
+    rd.fromList = sel.length > 0;
+    return rd.picks.length ? rd : null;
+  };
+  const ropeDropCard = (p) => {
+    const ropeDrop = ropeDropFor(p);
+    if (!ropeDrop) return null;
+    return (
+      <View style={[s.card, { backgroundColor: '#FFF7ED', borderColor: '#FED7AA' }]}>
+        <Text style={s.kicker}>Rope drop plan{ropeDrop.when === 'tomorrow' ? ' for tomorrow' : ''}</Text>
+        <Text style={s.body}>
+          {ropeDrop.when === 'now' ? 'The park just opened. ' : `Opens ${fmtTime(ropeDrop.open)}${ropeDrop.when === 'tomorrow' ? ' tomorrow' : ''}. `}
+          Head to {ropeDrop.picks[0].name} first
+          {ropeDrop.picks[1] ? `, then ${ropeDrop.picks[1].name}` : ''}
+          {ropeDrop.picks[2] ? `, then ${ropeDrop.picks[2].name}` : ''} before {ropeDrop.by}.
+        </Text>
+        <Text style={s.mutedSmall}>
+          {ropeDrop.fromList ? 'From the rides you picked: these' : 'These'} lines grow fastest after opening, so they're worth doing first.
+        </Text>
+      </View>
+    );
+  };
+
   // ----- Day Recap -----
   if (screen === 'recap') {
     const r = recap;
@@ -1109,27 +1151,6 @@ export default function App() {
     ];
     const snackTotal = Object.values(snackCountsToday).reduce((a, b) => a + b, 0);
 
-    // rope drop: before opening, the first 45 minutes, or tonight for tomorrow
-    const todayHours = hoursFor(park).main[0];
-    const opensMin = todayHours ? toMin(todayHours[0]) : null;
-    const closesMin = todayHours ? toMin(todayHours[1]) : null;
-    let ropeDrop = null;
-    const pool = (selected.length ? park.rides.filter((r) => selected.includes(r.id)) : park.rides).filter((r) => !tooTall(r));
-    if (opensMin != null && now.minute < opensMin + 45 && !(closesMin != null && closesMin < opensMin && now.minute < closesMin)) {
-      ropeDrop = { when: now.minute < opensMin ? 'today' : 'now', open: todayHours[0] };
-    } else {
-      const tomorrowKey = nextDateKey(now.dateKey);
-      const tomorrow = hoursFor(park, tomorrowKey).main[0];
-      const afterClose = !todayHours || (closesMin != null && closesMin > opensMin && now.minute >= closesMin);
-      if (tomorrow && afterClose) ropeDrop = { when: 'tomorrow', open: tomorrow[0] };
-    }
-    if (ropeDrop) {
-      const openHour = Math.floor(toMin(ropeDrop.open) / 60);
-      ropeDrop.picks = ropeDropPicks(pool, openHour, park.name);
-      ropeDrop.by = fmtHour(openHour + 2);
-      if (!ropeDrop.picks.length) ropeDrop = null;
-    }
-
     // Lightning Lane coach
     const llNow = saved.ll && saved.ll.dateKey === now.dateKey ? saved.ll : null;
     const nextBookAt = llNow && !llNow.used ? llNow.bookedAt + MULTI_PASS_GAP_MIN * 60000 : null;
@@ -1163,6 +1184,7 @@ export default function App() {
         </View>
         <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
           {bannerView}
+          {ropeDropCard(park)}
           {error ? <Text style={s.errorText}>{error}</Text> : null}
           <Text style={s.mutedSmall}>{saved.hopper ? 'Both parks' : park.name} · {hoursLine(park)} · {updatedText}</Text>
 
@@ -1179,19 +1201,6 @@ export default function App() {
               </Pressable>
             ))}
           </ScrollView>
-
-          {ropeDrop ? (
-            <View style={[s.card, { backgroundColor: '#FFF7ED', borderColor: '#FED7AA' }]}>
-              <Text style={s.kicker}>Rope drop plan{ropeDrop.when === 'tomorrow' ? ' for tomorrow' : ''}</Text>
-              <Text style={s.body}>
-                {ropeDrop.when === 'now' ? 'The park just opened. ' : `Opens ${fmtTime(ropeDrop.open)}${ropeDrop.when === 'tomorrow' ? ' tomorrow' : ''}. `}
-                Head to {ropeDrop.picks[0].name} first
-                {ropeDrop.picks[1] ? `, then ${ropeDrop.picks[1].name}` : ''}
-                {ropeDrop.picks[2] ? `, then ${ropeDrop.picks[2].name}` : ''} before {ropeDrop.by}.
-              </Text>
-              <Text style={s.mutedSmall}>These lines grow fastest after opening, so they're worth doing first.</Text>
-            </View>
-          ) : null}
 
           {plan.parkClosed ? (
             <View style={s.card}><Text style={s.h3}>The park looks closed right now</Text><Text style={s.muted}>Waits will appear here when it opens.</Text></View>
@@ -1460,6 +1469,7 @@ export default function App() {
         <Text style={s.mutedSmall}>{updatedAt ? `Live waits updated ${minutesAgo(updatedAt)}` : 'Loading live waits…'}</Text>
       </View>
       <ScrollView contentContainerStyle={s.pad} refreshControl={refresh}>
+        {ropeDropCard(park)}
         <View style={s.card}>
           <Text style={s.h3}>Your day</Text>
           {[

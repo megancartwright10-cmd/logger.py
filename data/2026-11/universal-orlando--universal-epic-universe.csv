@@ -1,0 +1,3 @@
+timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wait,return_time_state,return_time_start,paid_return_state,paid_return_start,paid_return_price,source_last_updated
+2026-11-09T01:10Z,Universal Orlando,Universal Epic Universe,07143999-bacd-475f-a00b-8cc476204aff,Constellation Carousel,OPERATING,30,,,,,,,2026-11-09T01:04:46.250Z
+2026-11-09T01:10Z,Universal Orlando,Universal Epic Universe,447033ce-ee1f-4cca-bb12-47d22583ac12,Stardust Racers,OPERATING,25,,,,,,,2026-11-09T00:52:42.055Z

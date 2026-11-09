@@ -2192,6 +2192,10 @@ function Brand({ k, fg, bg, inline = false }) {
 const tx = (k, size, color, extra) => ({ color, fontSize: size * k, ...(extra || {}) });
 
 function WrapOpen({ k, c, d }) {
+  // one word per line, sized so the longest word fits the slide (312 of 360 wide)
+  const titleLines = ['Your', ...d.resortShort.split(' '), 'Day'];
+  const longest = Math.max(...titleLines.map((x) => x.length));
+  const titleSize = Math.min(60, Math.floor(312 / (longest * 0.62)));
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <Dot k={k} size={340} color={c.a} r={-130} t={460} />
@@ -2200,8 +2204,12 @@ function WrapOpen({ k, c, d }) {
       <Brand k={k} fg={c.fg} bg={c.bg} />
       <View style={{ position: 'absolute', left: 24 * k, right: 24 * k, top: 140 * k, gap: 14 * k }}>
         <Text style={tx(k, 15, c.kicker, { fontWeight: '800', letterSpacing: 1.2 * k })}>{d.dateLabel}</Text>
-        <Text numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.55}
-          style={tx(k, 60, c.fg, { fontWeight: '900', lineHeight: 62 * k, letterSpacing: -1 * k })}>{`Your\n${d.resortShort}\nDay`}</Text>
+        <View>
+          {titleLines.map((line, i) => (
+            <Text key={i} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}
+              style={tx(k, titleSize, c.fg, { fontWeight: '900', lineHeight: titleSize * 1.04 * k, letterSpacing: -1 * k })}>{line}</Text>
+          ))}
+        </View>
         <Text style={tx(k, 18, c.sub, { fontWeight: '500', maxWidth: 250 * k })}>{d.openLine}</Text>
         <Text style={tx(k, 13, c.sub, { fontWeight: '800' })}>Tap to start</Text>
       </View>

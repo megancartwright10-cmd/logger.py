@@ -14,7 +14,7 @@ import { Pedometer } from 'expo-sensors';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
-import Svg, { Circle, Path } from 'react-native-svg';
+import { Ionicons } from '@expo/vector-icons'; // built into Expo, so it always matches Expo Go
 
 const DATA_BASE = 'https://raw.githubusercontent.com/megancartwright10-cmd/logger.py/main/data/app/';
 const RESORTS = {
@@ -2151,7 +2151,7 @@ export default function App() {
                 {r.status !== 'REFURBISHMENT' ? (
                   <Pressable onPress={() => toggleRemind(r.id, r.status)} hitSlop={8} accessibilityRole="switch"
                     accessibilityState={{ checked: remindOn(r.id, r.status) }} style={{ minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Icon name="bell" size={16} tone="blue" stroke={2.2} />
+                    <Icon name="bell" size={16} tone="blue" />
                     <Text style={[s.mutedSmall, { color: C.blue, fontWeight: '700', flexShrink: 1 }]}>
                       {remindOn(r.id, r.status) ? "Reminder on: we'll buzz you when it opens" : 'Remind me when it opens'}
                     </Text>
@@ -2559,9 +2559,10 @@ function LoadingScreen({ message = 'Checking live waits' }) {
     <View style={{ flex: 1, backgroundColor: BRAND.night, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 }}
       accessibilityLabel={`Ride Next. ${message}`}>
       <StatusBar style="light" />
-      <Svg width={width} height={height} style={{ position: 'absolute', left: 0, top: 0 }} pointerEvents="none">
-        {stars.map((st, i) => <Circle key={i} cx={st.x * width} cy={st.y * height} r={st.r} fill={st.col} />)}
-      </Svg>
+      {stars.map((st, i) => (
+        <View key={i} pointerEvents="none" style={{ position: 'absolute', left: st.x * width - st.r, top: st.y * height - st.r,
+          width: st.r * 2, height: st.r * 2, borderRadius: st.r, backgroundColor: st.col }} />
+      ))}
       <View style={{ alignItems: 'center', gap: 30, marginTop: -40 }}>
         <View style={{ width: 310, height: 176, borderRadius: 16, backgroundColor: BRAND.mint, flexDirection: 'row', overflow: 'hidden' }}>
           <View style={{ flex: 1, paddingLeft: 30, justifyContent: 'center', gap: 6 }}>
@@ -2573,10 +2574,7 @@ function LoadingScreen({ message = 'Checking live waits' }) {
           </View>
           <View style={{ width: 75, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: BRAND.night, alignItems: 'center', justifyContent: 'center' }}>
-              <Svg width={26} height={26} viewBox="0 0 24 24">
-                <Path d="M5 12h13" stroke={BRAND.gold} strokeWidth={2.8} strokeLinecap="round" fill="none" />
-                <Path d="M13 6l6 6-6 6" stroke={BRAND.gold} strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </Svg>
+              <Ionicons name="arrow-forward" size={28} color={BRAND.gold} />
             </View>
           </View>
           <View style={{ position: 'absolute', left: -16, top: 72, width: 32, height: 32, borderRadius: 16, backgroundColor: BRAND.night }} />
@@ -2634,30 +2632,21 @@ function Counter({ n, label, onMinus, onPlus }) {
   );
 }
 
-// Two-tone icons drawn in the app's own colours (used instead of emoji): a soft fill under a darker outline
-const ICONS = {
-  pin: { fill: ['M12 21.5s-7-6.1-7-11.6a7 7 0 0 1 14 0c0 5.5-7 11.6-7 11.6z'], line: ['M12 21.5s-7-6.1-7-11.6a7 7 0 0 1 14 0c0 5.5-7 11.6-7 11.6z', ['c', 12, 9.8, 2.6]] },
-  walk: { fill: [['c', 14, 4.2, 2.6]], line: [['c', 14, 4.2, 2.3], 'M13.4 7.8L11 13.4', 'M11 13.4l3 3.4-.5 4.7', 'M11 13.4L8.4 21.2', 'M12.8 9.4L8.8 12', 'M12.8 9.4l3.1 3.1 3 .5'] },
-  map: { fill: ['M9 3.5l6 3v14l-6-3z'], line: ['M3 6.5l6-3 6 3 6-3v14l-6 3-6-3-6 3z', 'M9 3.5v14', 'M15 6.5v14'] },
-  food: { fill: ['M17 3c-2.5 1.5-3.5 4.5-3.5 8h3.5z', 'M4.5 3v5a2.5 2.5 0 0 0 5 0V3z'], line: ['M7 3v18', 'M4.5 3v5a2.5 2.5 0 0 0 5 0V3', 'M17 21V3c-2.5 1.5-3.5 4.5-3.5 8h3.5'] },
-  bell: { fill: ['M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z'], line: ['M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z', 'M10 20.5a2 2 0 0 0 4 0'] },
-};
+// Two-tone icons from Expo's built-in icon set: a filled icon in the soft colour under an outline in the dark colour
+const ICONS = { pin: 'location', map: 'map', food: 'restaurant', bell: 'notifications', walk: 'walk' };
 const ICON_TONES = {
   orange: { line: C.accent, fill: C.accentSoft, bg: '#FFF4E8' },
   blue: { line: C.blue, fill: '#BFDBFE', bg: '#EFF6FF' },
   white: { line: '#FFFFFF', fill: 'rgba(255,255,255,0.35)', bg: 'transparent' },
 };
-function Icon({ name, size = 22, tone = 'orange', stroke = 2 }) {
+function Icon({ name, size = 22, tone = 'orange' }) {
   const t = ICON_TONES[tone] || ICON_TONES.orange;
-  const ic = ICONS[name] || { fill: [], line: [] };
-  const draw = (d, i, props) => (Array.isArray(d)
-    ? <Circle key={i} cx={d[1]} cy={d[2]} r={d[3]} {...props} />
-    : <Path key={i} d={d} {...props} />);
+  const base = ICONS[name] || 'ellipse';
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
-      {ic.fill.map((d, i) => draw(d, `f${i}`, { fill: t.fill, stroke: 'none' }))}
-      {ic.line.map((d, i) => draw(d, `l${i}`, { fill: 'none', stroke: t.line, strokeWidth: stroke, strokeLinecap: 'round', strokeLinejoin: 'round' }))}
-    </Svg>
+    <View style={{ width: size, height: size }}>
+      <Ionicons name={base} size={size} color={t.fill} style={{ position: 'absolute', left: 0, top: 0 }} />
+      <Ionicons name={`${base}-outline`} size={size} color={t.line} style={{ position: 'absolute', left: 0, top: 0 }} />
+    </View>
   );
 }
 function IconBadge({ name, tone = 'orange', size = 46 }) {

@@ -22,8 +22,8 @@ const RESORTS = {
     key: 'dlr', name: 'Disneyland Resort', short: 'Disneyland', city: 'Anaheim', country: 'California, USA',
     parks: 'Disneyland Park · Disney California Adventure', dataUrl: `${DATA_BASE}disneyland-resort.json`,
     diningUrl: 'https://disneyland.disney.go.com/dining/', cur: '$', payName: 'Lightning Lane Single Pass',
-    payShort: 'Lightning Lane', hasMulti: true, metric: true, clock24: false, switchName: 'Rider Switch',
-    heightOptions: [null, 81, 89, 97, 102, 107, 117, 122], // cm (Disney's 32-48 inch limits)
+    payShort: 'Lightning Lane', hasMulti: true, metric: false, distKm: true, clock24: false, switchName: 'Rider Switch',
+    heightOptions: [null, 32, 35, 38, 40, 42, 46, 48], // inches (distances in km)
     hopMin: 12, hopLabel: 'Walk',
   },
   dlp: {
@@ -869,7 +869,7 @@ export default function App() {
     const mealList = Object.entries(mealsToday).map(([name, n]) => ({ name, n }));
     return {
       minutes, stepCount, stepsPartial: !(steps && steps.whole),
-      dist: Math.round(stepCount * (R.metric ? STEP_KM : STEP_MILES) * 10) / 10, unit: R.metric ? 'km' : 'mi',
+      dist: Math.round(stepCount * (R.metric || R.distKm ? STEP_KM : STEP_MILES) * 10) / 10, unit: R.metric || R.distKm ? 'km' : 'mi',
       rides: todayLog.length, queue: queueToday,
       areas: [...visitedLands].filter((l) => allLands.has(l)), areaTotal: allLands.size,
       missed: [...allLands].filter((l) => !visitedLands.has(l)),

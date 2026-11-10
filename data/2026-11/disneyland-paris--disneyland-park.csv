@@ -3129,3 +3129,10 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-10T07:18Z,Disneyland Paris,Disneyland Park,38bafc85-cb48-488e-aa68-3e2d01ae6a10,La Galerie de la Belle au Bois Dormant,OPERATING,,,,,,,,2026-11-10T07:02:40.357Z
 2026-11-10T07:18Z,Disneyland Paris,Disneyland Park,83fa9e7f-4a25-4bee-8e61-4fb8c59cd350,La Tanière du Dragon,OPERATING,0,,,,,,,2026-11-10T07:02:40.343Z
 2026-11-10T07:18Z,Disneyland Paris,Disneyland Park,a970c245-4924-48bd-bced-efc14850b116,Mickey’s PhilharMagic,OPERATING,,,,,,,,2026-11-09T23:01:04.154Z
+2026-11-10T07:23Z,Disneyland Paris,Disneyland Park,03992704-698d-474b-a721-a5ac3498edb9,Buzz Lightyear Laser Blast,OPERATING,5,,,,AVAILABLE,2026-11-10T09:30:00+01:00,1200 EUR,2026-11-10T07:23:38.371Z
+2026-11-10T07:23Z,Disneyland Paris,Disneyland Park,38bafc85-cb48-488e-aa68-3e2d01ae6a10,La Galerie de la Belle au Bois Dormant,OPERATING,,,,,,,,2026-11-10T07:02:40.357Z
+2026-11-10T07:23Z,Disneyland Paris,Disneyland Park,46406e4a-4a02-4d30-89bc-ef1ed63c1ff9,Dumbo the Flying Elephant,OPERATING,5,,,,,,,2026-11-10T07:20:38.764Z
+2026-11-10T07:23Z,Disneyland Paris,Disneyland Park,83fa9e7f-4a25-4bee-8e61-4fb8c59cd350,La Tanière du Dragon,OPERATING,0,,,,,,,2026-11-10T07:02:40.343Z
+2026-11-10T07:23Z,Disneyland Paris,Disneyland Park,852d957c-382e-4afb-bb74-70c9a79055df,Big Thunder Mountain,OPERATING,5,,,,AVAILABLE,2026-11-10T09:30:00+01:00,1300 EUR,2026-11-10T07:23:38.325Z
+2026-11-10T07:23Z,Disneyland Paris,Disneyland Park,a970c245-4924-48bd-bced-efc14850b116,Mickey’s PhilharMagic,OPERATING,,,,,,,,2026-11-09T23:01:04.154Z
+2026-11-10T07:23Z,Disneyland Paris,Disneyland Park,ddca340c-7ba1-4f23-89eb-0d3d52c84bda,Star Wars Hyperspace Mountain,OPERATING,5,0,,,AVAILABLE,2026-11-10T09:30:00+01:00,1200 EUR,2026-11-10T07:23:38.355Z

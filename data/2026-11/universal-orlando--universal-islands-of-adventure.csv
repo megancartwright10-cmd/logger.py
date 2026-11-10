@@ -1803,3 +1803,7 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-10T12:41Z,Universal Orlando,Universal Islands of Adventure,3daca54f-50f0-44e9-a993-d706ce7520a0,Pteranodon Flyers,OPERATING,5,,,,,,,2026-11-10T12:36:33.488Z
 2026-11-10T13:04Z,Universal Orlando,Universal Islands of Adventure,578bbd12-1975-4ec3-9879-ea641c780342,Hagrid's Magical Creatures Motorbike Adventure™,OPERATING,30,,,,,,,2026-11-10T13:00:33.250Z
 2026-11-10T13:04Z,Universal Orlando,Universal Islands of Adventure,6af80308-647d-4d8b-bcf6-37517a93bdbc,Harry Potter and the Forbidden Journey™,OPERATING,15,,,,,,,2026-11-10T13:00:33.263Z
+2026-11-10T13:09Z,Universal Orlando,Universal Islands of Adventure,23b613e0-ae83-455b-9163-231bdbd5c427,Flight of the Hippogriff™,OPERATING,5,,,,,,,2026-11-10T13:03:33.590Z
+2026-11-10T13:09Z,Universal Orlando,Universal Islands of Adventure,578bbd12-1975-4ec3-9879-ea641c780342,Hagrid's Magical Creatures Motorbike Adventure™,OPERATING,30,,,,,,,2026-11-10T13:00:33.250Z
+2026-11-10T13:09Z,Universal Orlando,Universal Islands of Adventure,61079a31-4165-4fb0-b36f-c01c5971f80a,Jurassic World VelociCoaster,DOWN,,,,,,,,2026-11-10T13:03:33.606Z
+2026-11-10T13:09Z,Universal Orlando,Universal Islands of Adventure,6af80308-647d-4d8b-bcf6-37517a93bdbc,Harry Potter and the Forbidden Journey™,OPERATING,15,,,,,,,2026-11-10T13:00:33.263Z

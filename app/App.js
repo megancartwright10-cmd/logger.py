@@ -1386,14 +1386,14 @@ export default function App() {
     const Slide = WRAP_COMPONENTS[key];
     const slideW = Math.max(220, Math.min(winW - 40, (winH - 330) * 9 / 16));
     const k = slideW / 360;
-    const onStart = (e) => { touchRef.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, lx: e.nativeEvent.locationX }; };
-    const onEnd = (e) => {
+    // two invisible halves over the slide: tap left = back, tap right = next, swipe sideways = new colours
+    const onDown = (e) => { touchRef.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY }; };
+    const onUp = (side) => (e) => {
       const t = touchRef.current;
       touchRef.current = null;
-      if (!t) return;
-      const dx = e.nativeEvent.pageX - t.x, dy = e.nativeEvent.pageY - t.y;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) setWrapPal((pi + (dx < 0 ? 1 : -1) + N) % N);
-      else if (Math.abs(dx) < 12 && Math.abs(dy) < 12) setWrapSlide((sIdx) => (t.lx < slideW / 2 ? Math.max(0, sIdx - 1) : Math.min(WRAP_SLIDES.length - 1, sIdx + 1)));
+      const dx = t ? e.nativeEvent.pageX - t.x : 0, dy = t ? e.nativeEvent.pageY - t.y : 0;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { setWrapPal((pi + (dx < 0 ? 1 : -1) + N) % N); return; }
+      setWrapSlide((sIdx) => (side === 'back' ? Math.max(0, sIdx - 1) : Math.min(WRAP_SLIDES.length - 1, sIdx + 1)));
     };
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
@@ -1412,10 +1412,16 @@ export default function App() {
             </Pressable>
           </View>
 
-          <View onTouchStart={onStart} onTouchEnd={onEnd} style={{ width: slideW, height: slideW * 16 / 9, borderRadius: 16, overflow: 'hidden' }}
+          <View style={{ width: slideW, height: slideW * 16 / 9, borderRadius: 16, overflow: 'hidden' }}
             accessibilityLabel={`Slide ${wrapSlide + 1} of ${WRAP_SLIDES.length}, ${P.name} colours`}>
             <View ref={slideRef} collapsable={false} style={{ width: slideW, height: slideW * 16 / 9 }}>
               <Slide k={k} c={P[key]} d={d} />
+            </View>
+            <View style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, flexDirection: 'row' }}>
+              <Pressable style={{ flex: 1 }} onPressIn={onDown} onPressOut={onUp('back')}
+                accessibilityRole="button" accessibilityLabel="Previous slide" />
+              <Pressable style={{ flex: 1 }} onPressIn={onDown} onPressOut={onUp('next')}
+                accessibilityRole="button" accessibilityLabel="Next slide" />
             </View>
           </View>
 

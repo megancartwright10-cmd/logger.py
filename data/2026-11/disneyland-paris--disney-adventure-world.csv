@@ -1247,3 +1247,6 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-09T20:00Z,Disneyland Paris,Disney Adventure World,f710814b-232d-4469-aad7-d98b328a15b7,Spider-Man W.E.B. Adventure,OPERATING,5,5,,,FINISHED,,1300 EUR,2026-11-09T19:22:02.429Z
 2026-11-09T20:00Z,Disneyland Paris,Disney Adventure World,ff2e7d6f-5aaf-47b8-8695-53a66e9fe073,Avengers Assemble: Flight Force,OPERATING,5,5,,,FINISHED,,900 EUR,2026-11-09T19:31:01.528Z
 2026-11-10T07:23Z,Disneyland Paris,Disney Adventure World,ff2e7d6f-5aaf-47b8-8695-53a66e9fe073,Avengers Assemble: Flight Force,OPERATING,0,0,,,AVAILABLE,2026-11-10T09:30:00+01:00,900 EUR,2026-11-10T07:20:38.802Z
+2026-11-10T07:28Z,Disneyland Paris,Disney Adventure World,337bce77-57bd-49c7-83d7-662f16c162ea,Slinky® Dog Zigzag Spin,OPERATING,5,,,,,,,2026-11-10T07:26:38.481Z
+2026-11-10T07:28Z,Disneyland Paris,Disney Adventure World,630e2675-f9fc-4984-ba83-03daf5fc89ed,Frozen Ever After,OPERATING,5,0,,,AVAILABLE,2026-11-10T12:00:00+01:00,1600 EUR,2026-11-10T07:26:38.442Z
+2026-11-10T07:28Z,Disneyland Paris,Disney Adventure World,ff2e7d6f-5aaf-47b8-8695-53a66e9fe073,Avengers Assemble: Flight Force,OPERATING,5,5,,,AVAILABLE,2026-11-10T09:30:00+01:00,900 EUR,2026-11-10T07:26:38.462Z

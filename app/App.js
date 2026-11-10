@@ -2551,44 +2551,44 @@ function WrapSummary({ k, c, d }) {
 
 const WRAP_COMPONENTS = { open: WrapOpen, rides: WrapRides, queue: WrapQueue, walk: WrapWalk, snacks: WrapSnacks, persona: WrapPersona, summary: WrapSummary };
 
-// Branded loading screen: the Admit One ticket in the Night ride colours (design E on the canvas)
-const BRAND = { night: '#241A33', mint: '#A7E8C3', lilac: '#8B7BA8', gold: '#E6B85C', ink: '#4B3F5E', soft: '#D9D2E6', tear: '#6E5E8C' };
+// Branded loading screen: the Admit One ticket in Coral sunset (design L on the canvas)
+const BRAND = { bg: '#FF7A5C', ticket: '#FFF4E6', plum: '#3B1F2B', admit: '#A63A2B', peach: '#FFB4A2' };
 function LoadingScreen({ message = 'Checking live waits' }) {
   const { width, height } = useWindowDimensions();
-  const stars = [{ x: 0.15, y: 0.2, r: 3, col: BRAND.gold }, { x: 0.85, y: 0.15, r: 2, col: '#FFFFFF' }, { x: 0.9, y: 0.7, r: 3, col: BRAND.gold },
-    { x: 0.09, y: 0.73, r: 2, col: '#FFFFFF' }, { x: 0.77, y: 0.3, r: 2, col: BRAND.mint }, { x: 0.23, y: 0.62, r: 2, col: BRAND.mint }];
+  const stars = [{ x: 0.15, y: 0.2, r: 3, col: BRAND.ticket }, { x: 0.85, y: 0.15, r: 2, col: BRAND.plum }, { x: 0.9, y: 0.7, r: 3, col: BRAND.ticket },
+    { x: 0.09, y: 0.73, r: 2, col: BRAND.plum }];
   return (
-    <View style={{ flex: 1, backgroundColor: BRAND.night, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 }}
+    <View style={{ flex: 1, backgroundColor: BRAND.bg, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 }}
       accessibilityLabel={`Ride Next. ${message}`}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       {stars.map((st, i) => (
         <View key={i} pointerEvents="none" style={{ position: 'absolute', left: st.x * width - st.r, top: st.y * height - st.r,
           width: st.r * 2, height: st.r * 2, borderRadius: st.r, backgroundColor: st.col }} />
       ))}
       <View style={{ alignItems: 'center', gap: 30, marginTop: -40 }}>
-        <View style={{ width: 310, height: 176, borderRadius: 16, backgroundColor: BRAND.mint, flexDirection: 'row', overflow: 'hidden' }}>
+        <View style={{ width: 310, height: 176, borderRadius: 16, backgroundColor: BRAND.ticket, flexDirection: 'row', overflow: 'hidden' }}>
           <View style={{ flex: 1, paddingLeft: 30, justifyContent: 'center', gap: 6 }}>
-            <Text style={{ fontSize: 12, fontWeight: '700', letterSpacing: 2.4, color: BRAND.ink }}>ADMIT ONE</Text>
-            <Text style={{ fontSize: 58, fontWeight: '900', letterSpacing: -1.5, lineHeight: 54, color: BRAND.night }}>{'RIDE\nNEXT'}</Text>
+            <Text style={{ fontSize: 12, fontWeight: '700', letterSpacing: 2.4, color: BRAND.admit }}>ADMIT ONE</Text>
+            <Text style={{ fontSize: 58, fontWeight: '900', letterSpacing: -1.5, lineHeight: 54, color: BRAND.plum }}>{'RIDE\nNEXT'}</Text>
           </View>
           <View style={{ width: 3, paddingVertical: 10, justifyContent: 'space-between' }}>
-            {Array.from({ length: 12 }, (_, i) => <View key={i} style={{ width: 3, height: 7, borderRadius: 1.5, backgroundColor: BRAND.tear }} />)}
+            {Array.from({ length: 12 }, (_, i) => <View key={i} style={{ width: 3, height: 7, borderRadius: 1.5, backgroundColor: BRAND.peach }} />)}
           </View>
           <View style={{ width: 75, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: BRAND.night, alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="arrow-forward" size={28} color={BRAND.gold} />
+            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: BRAND.plum, alignItems: 'center', justifyContent: 'center' }}>
+              <Ionicons name="arrow-forward" size={28} color={BRAND.bg} />
             </View>
           </View>
-          <View style={{ position: 'absolute', left: -16, top: 72, width: 32, height: 32, borderRadius: 16, backgroundColor: BRAND.night }} />
-          <View style={{ position: 'absolute', right: -16, top: 72, width: 32, height: 32, borderRadius: 16, backgroundColor: BRAND.night }} />
+          <View style={{ position: 'absolute', left: -16, top: 72, width: 32, height: 32, borderRadius: 16, backgroundColor: BRAND.bg }} />
+          <View style={{ position: 'absolute', right: -16, top: 72, width: 32, height: 32, borderRadius: 16, backgroundColor: BRAND.bg }} />
         </View>
-        <Text style={{ fontSize: 17, color: BRAND.soft }}>Less queuing, more riding.</Text>
+        <Text style={{ fontSize: 17, fontWeight: '600', color: BRAND.plum }}>Less queuing, more riding.</Text>
       </View>
       <View style={{ position: 'absolute', left: 24, right: 24, bottom: 72, alignItems: 'center', gap: 12 }}>
         <View style={{ flexDirection: 'row', gap: 8 }}>
-          {[BRAND.mint, BRAND.lilac, BRAND.gold].map((col) => <View key={col} style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: col }} />)}
+          {[BRAND.ticket, BRAND.peach, BRAND.plum].map((col) => <View key={col} style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: col }} />)}
         </View>
-        <Text style={{ fontSize: 13, color: BRAND.soft, textAlign: 'center' }}>{message}</Text>
+        <Text style={{ fontSize: 13, fontWeight: '600', color: BRAND.plum, textAlign: 'center' }}>{message}</Text>
       </View>
     </View>
   );

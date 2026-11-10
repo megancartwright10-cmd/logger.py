@@ -12,7 +12,7 @@
     "android": {
       "package": "com.ridenext.app",
       "adaptiveIcon": {
-        "backgroundColor": "#241A33"
+        "backgroundColor": "#FF7A5C"
       }
     },
     "plugins": [
@@ -39,7 +39,7 @@
       ]
     ],
     "splash": {
-      "backgroundColor": "#241A33",
+      "backgroundColor": "#FF7A5C",
       "resizeMode": "contain"
     }
   }

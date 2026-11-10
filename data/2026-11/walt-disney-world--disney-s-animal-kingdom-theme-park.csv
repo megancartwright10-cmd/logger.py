@@ -2671,3 +2671,10 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-10T21:42Z,Walt Disney World,Disney's Animal Kingdom Theme Park,91237556-7557-4b18-88a8-581254de96c6,Jumping Junction,OPERATING,,,,,,,,2026-11-10T14:00:00.903Z
 2026-11-10T21:42Z,Walt Disney World,Disney's Animal Kingdom Theme Park,bc997600-fcc0-4f6f-b908-a1419b26cfd8,The Oasis Exhibits,OPERATING,,,,,,,,2026-11-10T13:00:00.696Z
 2026-11-10T21:42Z,Walt Disney World,Disney's Animal Kingdom Theme Park,d58d9262-ec95-4161-80a0-07ca43b2f5f3,Kali River Rapids,OPERATING,5,,AVAILABLE,2026-11-10T16:40:00-05:00,,,,2026-11-10T21:42:24.448Z
+2026-11-10T22:41Z,Walt Disney World,Disney's Animal Kingdom Theme Park,1b15c77b-0311-4171-8e59-7f38e6d60754,Zootopia: Better Zoogether!,OPERATING,10,,FINISHED,,,,,2026-11-10T22:36:06.661Z
+2026-11-10T22:41Z,Walt Disney World,Disney's Animal Kingdom Theme Park,24cf863c-b6ba-4826-a056-0b698989cbf7,Avatar Flight of Passage,OPERATING,25,,,,FINISHED,,1800 USD,2026-11-10T22:36:06.635Z
+2026-11-10T22:41Z,Walt Disney World,Disney's Animal Kingdom Theme Park,4d27b0d7-2b0a-4569-90fa-e79f117ec7ef,Discovery Island Trails,OPERATING,,,,,,,,2026-11-10T13:00:00.672Z
+2026-11-10T22:41Z,Walt Disney World,Disney's Animal Kingdom Theme Park,64a6915f-a835-4226-ba5c-8389fc4cade3,Expedition Everest - Legend of the Forbidden Mountain,OPERATING,15,,FINISHED,,,,,2026-11-10T22:36:06.653Z
+2026-11-10T22:41Z,Walt Disney World,Disney's Animal Kingdom Theme Park,7a5af3b7-9bc1-4962-92d0-3ea9c9ce35f0,Na'vi River Journey,OPERATING,35,,FINISHED,,,,,2026-11-10T22:36:06.625Z
+2026-11-10T22:41Z,Walt Disney World,Disney's Animal Kingdom Theme Park,bc997600-fcc0-4f6f-b908-a1419b26cfd8,The Oasis Exhibits,OPERATING,,,,,,,,2026-11-10T13:00:00.696Z
+2026-11-10T22:41Z,Walt Disney World,Disney's Animal Kingdom Theme Park,d58d9262-ec95-4161-80a0-07ca43b2f5f3,Kali River Rapids,OPERATING,5,,FINISHED,,,,,2026-11-10T22:36:06.710Z

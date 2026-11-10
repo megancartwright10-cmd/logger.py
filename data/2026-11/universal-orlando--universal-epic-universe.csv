@@ -1959,3 +1959,14 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-10T20:17Z,Universal Orlando,Universal Epic Universe,dbc4f0d8-fdef-4dfc-a1c2-33917f742f40,Harry Potter and the Battle at the Ministry™,OPERATING,85,,,,,,,2026-11-10T20:07:13.571Z
 2026-11-10T20:17Z,Universal Orlando,Universal Epic Universe,dd8c015d-511f-47d4-b98b-18ce15735588,Mine-Cart Madness™,OPERATING,80,,,,,,,2026-11-10T20:07:13.580Z
 2026-11-10T20:17Z,Universal Orlando,Universal Epic Universe,eaca831d-bcbb-4a1e-9bf0-6ea97ccc88e0,Curse of the Werewolf,OPERATING,50,,,,,,,2026-11-10T20:01:14.342Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,00feb57b-4fcc-48bc-9490-c9af71f30c1c,Yoshi's Adventure™,OPERATING,30,,TEMP_FULL,,,,,2026-11-10T20:16:15.908Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,07143999-bacd-475f-a00b-8cc476204aff,Constellation Carousel,OPERATING,25,,,,,,,2026-11-10T20:07:13.561Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,0c6a9af8-c006-4849-8475-1a6925e8f7d4,Bowser Jr. Challenge,OPERATING,5,,,,,,,2026-11-10T13:51:33.555Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,1fda5e1f-8712-4165-a81d-ad74eef3e8ee,Monsters Unchained: The Frankenstein Experiment,OPERATING,15,,TEMP_FULL,,,,,2026-11-10T19:01:06.601Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,43df71bf-aa7c-46c0-925c-46f69d8bf23f,Mario Kart™: Bowser's Challenge,OPERATING,50,,TEMP_FULL,,,,,2026-11-10T20:19:15.669Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,447033ce-ee1f-4cca-bb12-47d22583ac12,Stardust Racers,OPERATING,15,,,,,,,2026-11-10T19:43:14.340Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,76caa8d0-f54b-4601-9d57-a7f1ddc02af4,Dragon Racer's Rally,OPERATING,30,,,,,,,2026-11-10T18:40:09.487Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,c6b1b8cf-55ef-416c-b00d-e469993617b0,Hiccup's Wing Gliders,OPERATING,40,,TEMP_FULL,,,,,2026-11-10T20:10:13.124Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,dbc4f0d8-fdef-4dfc-a1c2-33917f742f40,Harry Potter and the Battle at the Ministry™,OPERATING,85,,,,,,,2026-11-10T20:07:13.571Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,dd8c015d-511f-47d4-b98b-18ce15735588,Mine-Cart Madness™,OPERATING,80,,,,,,,2026-11-10T20:07:13.580Z
+2026-11-10T20:22Z,Universal Orlando,Universal Epic Universe,eaca831d-bcbb-4a1e-9bf0-6ea97ccc88e0,Curse of the Werewolf,OPERATING,50,,,,,,,2026-11-10T20:01:14.342Z

@@ -10917,3 +10917,53 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-10T19:25Z,Disneyland Resort,Disneyland Park,f7904912-3f08-4563-b99e-fd59f43cc9f2,King Arthur Carrousel,OPERATING,10,,,,,,,2026-11-10T17:56:07.712Z
 2026-11-10T19:25Z,Disneyland Resort,Disneyland Park,faaa8be9-cc1e-4535-ac20-04a535654bd0,Matterhorn Bobsleds,DOWN,,,AVAILABLE,2026-11-10T11:25:00-08:00,,,,2026-11-10T18:51:03.734Z
 2026-11-10T19:25Z,Disneyland Resort,Disneyland Park,ff52cb64-c1d5-4feb-9d43-5dbd429bac81,Haunted Mansion Holiday,OPERATING,40,,AVAILABLE,2026-11-10T13:30:00-08:00,,,,2026-11-10T19:20:10.236Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,07952343-3498-404b-8337-734de9a185c1,Pirate's Lair on Tom Sawyer Island,OPERATING,5,,,,,,,2026-11-10T17:21:02.018Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,0d4e2297-5a79-43b4-b705-1d0bff828c6d,Disneyland Railroad - Tomorrowland,OPERATING,5,,,,,,,2026-11-10T16:12:07.539Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,0de1413a-73ee-46cf-af2e-c491cc7c7d3b,Big Thunder Mountain Railroad,OPERATING,30,,AVAILABLE,2026-11-10T13:00:00-08:00,,,,2026-11-10T19:29:03.249Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,106c1e5a-a5e7-42d7-96ab-bc100d8faf71,Walt Disney's Enchanted Tiki Room,OPERATING,,,,,,,,2026-11-10T16:01:04.361Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,1b23667a-d8fb-436d-8952-c3e3f2e56d13,Great Moments with Mr. Lincoln,OPERATING,,,,,,,,2026-11-10T16:02:09.729Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,1b83fda8-d60e-48e4-9a3d-90ddcbcd1001,Jungle Cruise,OPERATING,35,,,,,,,2026-11-10T19:27:02.707Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,1da85181-bf0f-4ccc-b98e-243142f7347b,Autopia,OPERATING,15,,AVAILABLE,2026-11-10T11:30:00-08:00,,,,2026-11-10T19:27:03.951Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,2aedc657-1ee2-4545-a1ce-14753f28cc66,Indiana Jones™ Adventure,OPERATING,50,,AVAILABLE,2026-11-10T18:15:00-08:00,,,,2026-11-10T19:21:04.010Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,34b1d70f-11c4-42df-935e-d5582c9f1a8e,Star Wars: Rise of the Resistance,OPERATING,50,,,,AVAILABLE,2026-11-10T11:25:00-08:00,3000 USD,2026-11-10T19:27:03.929Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,3638ac09-9fce-4a43-8c79-8ebbe17afce2,"""it's a small world""",REFURBISHMENT,,,,,,,,2026-10-30T07:29:13.746Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,37858b2a-9c11-4ac6-9f8d-db7fa9088703,The Disney Gallery,OPERATING,,,,,,,,2026-11-10T16:00:02.039Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,4f0053e7-b8db-4833-b02f-35e1c91b4523,Snow White's Enchanted Wish,OPERATING,25,,,,,,,2026-11-10T18:55:03.486Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,52a8ef64-d54c-4974-883f-027c3026e3f1,The Many Adventures of Winnie the Pooh,OPERATING,20,,,,,,,2026-11-10T19:25:03.144Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,56d0bd6d-5106-4420-8f60-0005475c04c3,Disneyland Monorail,OPERATING,5,,,,,,,2026-11-10T16:01:04.302Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,59647168-d239-4161-8b24-92eb128e96fb,Chip 'n' Dale's GADGETcoaster,OPERATING,25,,,,,,,2026-11-10T19:29:03.265Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,64d44aaa-6857-4693-b24b-bcff6c6dcfa1,Finding Nemo Submarine Voyage,OPERATING,20,,,,,,,2026-11-10T18:32:08.255Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,6a672487-2718-473e-869c-d1a36f54e28c,Disneyland Railroad - Mickey's Toontown,OPERATING,5,,,,,,,2026-11-10T16:12:07.558Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,6c225598-91c9-44a3-95e2-7c423475db61,Astro Orbitor,OPERATING,20,,,,,,,2026-11-10T19:13:04.992Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,6c30d5b0-8c0a-406f-9258-0b6c55d4a5e4,Mark Twain Riverboat,OPERATING,10,,,,,,,2026-11-10T17:01:02.897Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,6ce9cdd1-0a43-459e-83cd-f4cace9cfa7b,Roger Rabbit's Car Toon Spin,OPERATING,40,,AVAILABLE,2026-11-10T12:50:00-08:00,,,,2026-11-10T19:27:03.995Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,6e2af074-3a67-4f38-9bcf-2f5a572c87df,Opera House - Walt Disney - A Magical Life,OPERATING,,,,,,,,2026-11-10T16:01:04.816Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,7f19e65c-6b39-493b-88b3-de3a6537150d,Disneyland Railroad - New Orleans Square,OPERATING,5,,,,,,,2026-11-10T16:12:07.530Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,82aeb29b-504a-416f-b13f-f41fa5b766aa,Pirates of the Caribbean,OPERATING,35,,,,,,,2026-11-10T19:21:02.807Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,835deb74-de54-4d7f-9dc4-dacab90fcb60,Frontierland Shootin' Exposition,OPERATING,,,,,,,,2026-11-10T16:00:02.187Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,88197808-3c56-4198-a5a4-6066541251cf,Buzz Lightyear Astro Blasters,OPERATING,20,,AVAILABLE,2026-11-10T11:30:00-08:00,,,,2026-11-10T19:27:03.975Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,8e686e4c-f3db-4d9c-a185-2d54b1fa8899,Casey Jr. Circus Train,OPERATING,10,,,,,,,2026-11-10T18:27:03.344Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,90d5a091-478c-4df1-adfe-c605b4005013,Sleeping Beauty Castle Walkthrough,OPERATING,,,,,,,,2026-11-10T16:00:02.285Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,90ee50d4-7cc9-4824-b29d-2aac801acc29,Pinocchio's Daring Journey,OPERATING,15,,,,,,,2026-11-10T18:55:03.466Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,9167db1d-e5e7-46da-a07f-ae30a87bc4c4,Space Mountain,REFURBISHMENT,,,,,,,,2026-11-10T10:08:25.931Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,9d401ad3-49b2-469f-ac73-93eb429428fb,Mr. Toad's Wild Ride,OPERATING,20,,,,,,,2026-11-10T18:30:10.774Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,a07f3110-013e-43bb-a182-e66bb8b5e28d,Alice in Wonderland,OPERATING,25,,,,,,,2026-11-10T18:47:05.143Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,a9076acd-7630-4bad-a8da-e6bd689ddcac,Tiana's Bayou Adventure,OPERATING,40,,AVAILABLE,2026-11-10T14:05:00-08:00,,,,2026-11-10T19:27:04.035Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,b0eca3d3-a519-47f9-a5a7-9911126da2df,Goofy's How-to-Play Yard,OPERATING,,,,,,,,2026-11-10T16:01:04.398Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,b2c2549c-e9da-4fdd-98ea-1dcff596fed7,Millennium Falcon: Smugglers Run,OPERATING,25,,AVAILABLE,2026-11-10T11:25:00-08:00,,,,2026-11-10T19:27:03.919Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,bcfd1e17-3eab-4203-b597-6257a257d427,Main Street Vehicles,OPERATING,,,,,,,,2026-11-10T16:00:02.571Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,c02fb82d-0860-4e95-8c61-899fa594d20e,Minnie's House,OPERATING,,,,,,,,2026-11-10T17:00:00.549Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,c23af6ba-8515-406a-8a48-d0818ba0bfc9,Peter Pan's Flight,OPERATING,30,,,,,,,2026-11-10T18:50:07.189Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,ca32ef8a-ae0d-4c24-bf4f-e59192122e01,Donald's Duck Pond,OPERATING,,,,,,,,2026-11-10T16:00:02.139Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,cb929138-d77a-4dd2-983c-f651bbd1bd92,Storybook Land Canal Boats,OPERATING,15,,,,,,,2026-11-10T18:46:07.819Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,cc718d11-fa15-44ee-87d0-ded989ad61bc,Star Tours - The Adventures Continue,OPERATING,25,,AVAILABLE,2026-11-10T11:30:00-08:00,,,,2026-11-10T19:27:04.006Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,cc980e8e-192f-48b6-848c-27784084e54b,Dumbo the Flying Elephant,OPERATING,30,,,,,,,2026-11-10T18:29:02.233Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,cd670bff-81d1-4f34-8676-7bafdf49220a,Mickey & Minnie's Runaway Railway,OPERATING,45,,AVAILABLE,2026-11-10T13:20:00-08:00,,,,2026-11-10T19:29:03.303Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,d252b408-1411-4822-a070-bee8a0ee6480,"Disneyland Railroad Main Street, U.S.A. Station",OPERATING,5,,,,,,,2026-11-10T16:12:07.568Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,e0cfed11-96d7-40f3-907f-5cfed172592a,Mad Tea Party,OPERATING,10,,,,,,,2026-11-10T18:14:04.567Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,e27b1db8-9ec9-4f8b-9ca6-fd6377de66ee,Adventureland Treehouse inspired by Walt Disney’s Swiss Family Robinson,OPERATING,,,,,,,,2026-11-10T16:02:09.752Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,e2d460e9-2bef-4613-b126-092ab7cb37e5,Disneyland Railroad,OPERATING,5,,,,,,,2026-11-10T16:12:07.521Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,f5bb0d14-7eee-4ede-9230-eb256ce3664c,Main Street Cinema,OPERATING,,,,,,,,2026-11-10T16:00:02.224Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,f7904912-3f08-4563-b99e-fd59f43cc9f2,King Arthur Carrousel,OPERATING,10,,,,,,,2026-11-10T17:56:07.712Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,faaa8be9-cc1e-4535-ac20-04a535654bd0,Matterhorn Bobsleds,DOWN,,,AVAILABLE,2026-11-10T11:25:00-08:00,,,,2026-11-10T18:51:03.734Z
+2026-11-10T19:30Z,Disneyland Resort,Disneyland Park,ff52cb64-c1d5-4feb-9d43-5dbd429bac81,Haunted Mansion Holiday,DOWN,,,AVAILABLE,2026-11-10T13:30:00-08:00,,,,2026-11-10T19:26:11.775Z

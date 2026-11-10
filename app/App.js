@@ -22,15 +22,15 @@ const RESORTS = {
     key: 'dlr', name: 'Disneyland Resort', short: 'Disneyland', city: 'Anaheim', country: 'California, USA',
     parks: 'Disneyland Park · Disney California Adventure', dataUrl: `${DATA_BASE}disneyland-resort.json`,
     diningUrl: 'https://disneyland.disney.go.com/dining/', cur: '$', payName: 'Lightning Lane Single Pass',
-    payShort: 'Lightning Lane', hasMulti: true, metric: false, switchName: 'Rider Switch',
-    heightOptions: [null, 32, 35, 38, 40, 42, 46, 48], // inches
+    payShort: 'Lightning Lane', hasMulti: true, metric: true, clock24: false, switchName: 'Rider Switch',
+    heightOptions: [null, 81, 89, 97, 102, 107, 117, 122], // cm (Disney's 32-48 inch limits)
     hopMin: 12, hopLabel: 'Walk',
   },
   dlp: {
     key: 'dlp', name: 'Disneyland Paris', short: 'Disneyland Paris', city: 'Paris', country: 'France',
     parks: 'Disneyland Park · Disney Adventure World', dataUrl: `${DATA_BASE}disneyland-paris.json`,
     diningUrl: 'https://www.disneylandparis.com/en-gb/dining/advance-table-booking', cur: '€', payName: 'Premier Access One',
-    payShort: 'Premier Access', hasMulti: false, metric: true, switchName: 'Baby Switch',
+    payShort: 'Premier Access', hasMulti: false, metric: true, clock24: true, switchName: 'Baby Switch',
     heightOptions: [null, 81, 95, 102, 107, 120, 132, 140], // cm
     hopMin: 10, hopLabel: 'Walk',
   },
@@ -38,7 +38,7 @@ const RESORTS = {
     key: 'wdw', name: 'Walt Disney World', short: 'Disney World', city: 'Orlando', country: 'Florida, USA',
     parks: 'Magic Kingdom · EPCOT · Hollywood Studios · Animal Kingdom', dataUrl: `${DATA_BASE}walt-disney-world.json`,
     diningUrl: 'https://disneyworld.disney.go.com/dining/', cur: '$', payName: 'Lightning Lane Single Pass',
-    payShort: 'Lightning Lane', hasMulti: true, metric: false, switchName: 'Rider Switch',
+    payShort: 'Lightning Lane', hasMulti: true, metric: false, clock24: false, switchName: 'Rider Switch',
     heightOptions: [null, 32, 35, 38, 40, 42, 44, 48], // inches
     hopMin: 40, hopLabel: 'Travel', // parks are miles apart: bus, monorail or Skyliner
   },
@@ -559,7 +559,7 @@ export default function App() {
   const loaded = useRef(false);
 
   const R = RESORTS[saved.resort] || RESORTS.dlr;
-  CLOCK24 = !!R.metric;
+  CLOCK24 = !!R.clock24;
   const park = data ? (data.parks[parkIdx] || data.parks[0]) : null;
   const now = data ? parkNow(data.utcOffsetMinutes) : null;
 

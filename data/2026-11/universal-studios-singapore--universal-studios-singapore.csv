@@ -1,3 +1,5 @@
 timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wait,return_time_state,return_time_start,paid_return_state,paid_return_start,paid_return_price,source_last_updated
 2026-11-11T12:20Z,Universal Studios Singapore,Universal Studios Singapore,3beb3629-aa85-44d4-93f1-139e736e57f4,Sesame Street Spaghetti Space Chase,DOWN,,,,,,,,2026-11-10T12:33:36.241Z
 2026-11-11T12:20Z,Universal Studios Singapore,Universal Studios Singapore,a9ec697f-3224-452b-8402-f446228776a2,Treasure Hunters™,DOWN,,,,,,,,2026-10-11T13:25:24.749Z
+2026-11-11T12:25Z,Universal Studios Singapore,Universal Studios Singapore,3beb3629-aa85-44d4-93f1-139e736e57f4,Sesame Street Spaghetti Space Chase,DOWN,,,,,,,,2026-11-10T12:33:36.241Z
+2026-11-11T12:25Z,Universal Studios Singapore,Universal Studios Singapore,a9ec697f-3224-452b-8402-f446228776a2,Treasure Hunters™,DOWN,,,,,,,,2026-10-11T13:25:24.749Z

@@ -3,10 +3,10 @@
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Alert, Linking, Pressable, RefreshControl, SafeAreaView,
-  ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View, useWindowDimensions,
+  ActivityIndicator, Alert, Linking, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View, useWindowDimensions,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'; // replaces React Native's deprecated SafeAreaView
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
@@ -165,7 +165,7 @@ const STEP_MILES = 0.000473; // average stride ~2.5 ft
 try {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
-      shouldShowAlert: true, shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false,
+      shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false,
     }),
   });
 } catch (e) { /* not available */ }
@@ -517,7 +517,7 @@ const TONES = {
 };
 
 // ---------- app ----------
-export default function App() {
+function RideNext() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [parkIdx, setParkIdx] = useState(0);
@@ -2766,3 +2766,12 @@ const s = StyleSheet.create({
   pill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
   pillText: { fontSize: 13, fontWeight: '700' },
 });
+
+// Root: gives every screen the phone's safe edges (notch, home bar, foldables)
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <RideNext />
+    </SafeAreaProvider>
+  );
+}

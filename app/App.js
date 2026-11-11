@@ -3,7 +3,7 @@
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Alert, Linking, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View, useWindowDimensions,
+  ActivityIndicator, Alert, Linking, Platform, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View, useWindowDimensions,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'; // replaces React Native's deprecated SafeAreaView
@@ -1079,10 +1079,33 @@ function RideNext() {
     }));
     setSkippedBy((k) => ({ ...k, [p.id]: [] }));
   };
-  const confirmReset = (p) => Alert.alert(
+  // Alert buttons do nothing on web (Snack's Web preview), so use the browser's confirm there
+  const askConfirm = (title, body, okText, onOk) => {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm(`${title}\n\n${body}`)) onOk();
+      return;
+    }
+    Alert.alert(title, body, [{ text: 'Cancel', style: 'cancel' }, { text: okText, style: 'destructive', onPress: onOk }]);
+  };
+  const confirmReset = (p) => askConfirm(
     `Reset ${p.name}?`,
     'This clears the rides you picked and what you\'ve ridden today in this park.',
-    [{ text: 'Cancel', style: 'cancel' }, { text: 'Reset', style: 'destructive', onPress: () => resetPark(p) }],
+    'Reset', () => resetPark(p),
+  );
+  // clears everything logged today in every park; settings, ratings and your own snacks stay
+  const resetDay = () => {
+    setSaved((cur) => ({
+      ...cur,
+      selected: {}, done: {}, queue: null, day: null,
+      log: Object.fromEntries(Object.entries(cur.log || {}).filter(([d]) => d !== today)),
+      snackCounts: {}, meals: {}, areas: {}, stepsAndroid: {},
+    }));
+    setSkippedBy({});
+  };
+  const confirmResetDay = () => askConfirm(
+    'Reset your whole day?',
+    'This clears today\'s picked and ridden rides, snacks, meals, areas and Day Recap in every park. Your settings and ratings stay.',
+    'Reset day', resetDay,
   );
 
   const toggleRide = (id) => setSaved((s) => {
@@ -1419,6 +1442,12 @@ function RideNext() {
                   <Text style={s.recapLinkMeta}>{todayLog.length} ride{todayLog.length === 1 ? '' : 's'} so far · tap to see and share</Text>
                 </View>
                 <Text style={s.recapLinkTitle}>›</Text>
+              </Pressable>
+            ) : null}
+            {anyToday || Object.values(saved.selected || {}).some((l) => l && l.length) ? (
+              <Pressable onPress={confirmResetDay} accessibilityRole="button"
+                accessibilityLabel="Reset my whole day" style={[s.resetBtn, { alignSelf: 'center' }]}>
+                <Text style={s.resetBtnText}>Reset my day</Text>
               </Pressable>
             ) : null}
             <Text style={s.welcomeSmall}>Unofficial app. Not affiliated with or endorsed by Disney. Wait times are estimates.</Text>

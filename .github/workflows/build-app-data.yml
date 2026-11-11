@@ -32,15 +32,12 @@ jobs:
 
       # Park Queue Times history: kept in GitHub's private build cache, never committed
       # (this repo is public and their raw data can't be republished). Refreshed once a day.
-      - name: Today's date
-        id: day
-        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
-
+      # newest saved copy comes back; every build saves a new one (GitHub drops old copies by itself)
       - name: Bring back Park Queue Times history
         uses: actions/cache/restore@v4
         with:
           path: pqt-cache
-          key: pqt-${{ steps.day.outputs.date }}
+          key: pqt-${{ github.run_id }}
           restore-keys: pqt-
 
       - name: Fetch Park Queue Times history (once a day)
@@ -51,10 +48,10 @@ jobs:
       - name: Keep Park Queue Times history for later builds
         if: always()
         uses: actions/cache/save@v4
-        continue-on-error: true   # already saved today: fine
+        continue-on-error: true
         with:
           path: pqt-cache
-          key: pqt-${{ steps.day.outputs.date }}
+          key: pqt-${{ github.run_id }}
 
       - name: Build app data
         run: python3 build_app_data.py

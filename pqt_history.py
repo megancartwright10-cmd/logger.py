@@ -35,7 +35,7 @@ PARKS = {
     },
     "Disneyland Paris": {
         "Disneyland Park": ("Europe/Paris", ["Disneyland Paris"]),
-        "Disney Adventure World": ("Europe/Paris", ["Walt Disney Studios Park", "Walt Disney Studios"]),
+        # Disney Adventure World: not in Park Queue Times (Nov 2026), so it uses our own logs only
     },
     "Walt Disney World": {
         "Magic Kingdom Park": ("America/New_York", ["Magic Kingdom"]),
@@ -95,6 +95,41 @@ def find_pqt_parks():
     return found
 
 
+SHOWN = set()
+
+
+def shape(x, depth=0):
+    """the layout of a reply without any values, for the build log"""
+    if depth > 3:
+        return "…"
+    if isinstance(x, dict):
+        return {k: shape(v, depth + 1) for k, v in list(x.items())[:12]}
+    if isinstance(x, list):
+        return [shape(x[0], depth + 1)] if x else []
+    return type(x).__name__
+
+
+def flat_rows(data, inherited=None):
+    """history rows, whatever the nesting: a list of rows, {"rows"/"history"/...: [...]},
+    or rides that each hold their own hourly list"""
+    inherited = inherited or {}
+    if isinstance(data, list):
+        for item in data:
+            yield from flat_rows(item, inherited)
+    elif isinstance(data, dict):
+        own = {**inherited, **{k: v for k, v in data.items() if not isinstance(v, (list, dict))}}
+        if "id" in own and "rideId" not in own and "rideName" not in own and "name" in own:
+            own["rideName"] = own["name"]
+        if "avgWait" in data:
+            row = dict(own)
+            row.setdefault("rideName", own.get("name"))
+            yield row
+            return
+        for v in data.values():
+            if isinstance(v, (list, dict)):
+                yield from flat_rows(v, own)
+
+
 def history(park_id, start, end):
     """hourly rows [date, hour, rideName, avgWait, waitReadings] for start <= date < end"""
     rows = []
@@ -104,10 +139,13 @@ def history(park_id, start, end):
         cursor = None
         while True:
             page = get(f"/parks/{park_id}/history", {**params, **({"cursor": cursor} if cursor else {})})
-            for r in page.get("data") or []:
+            for r in flat_rows(page.get("data")):
                 if r.get("avgWait") is None or not r.get("waitReadings"):
                     continue  # closed or no numeric wait: not a zero
                 rows.append([r["date"], r["hour"], r.get("rideName"), r["avgWait"], r["waitReadings"]])
+            if "history" not in SHOWN:
+                SHOWN.add("history")
+                print(f"  history reply layout: {json.dumps(shape(page))}")
             cursor = (page.get("meta") or {}).get("nextCursor")
             if not cursor:
                 break

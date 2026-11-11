@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-Downloads the last 90 days of hourly ride waits from Park Queue Times
-(paid Developer plan) for the parks in the app.
+Downloads hourly ride waits from Park Queue Times (paid Developer plan: the
+last 90 days) for the parks in the app, plus Merlin and Universal parks that
+are collected for later (not in the app yet). Each day's fetch is added to
+what's already saved, so the history keeps growing past 90 days and is kept
+if the subscription ends.
 
 The raw data is NOT committed: this repo is public, and republishing Park Queue
 Times' raw data needs their Enterprise licence. It's saved to pqt-cache/, which
@@ -45,6 +48,18 @@ PARKS = {
     },
 }
 
+# Not in the app yet: history is collected now so they're ready when they're added.
+# Park Queue Times' own park names (Nov 2026). Universal Studios Singapore isn't covered.
+HISTORY_ONLY = {
+    "Merlin": ["Alton Towers", "Thorpe Park", "Chessington World Of Adventures", "Legoland Windsor",
+               "Gardaland", "Heide Park", "Peppa Pig Park Germany", "Peppa Pig Theme Park Florida",
+               "Legoland Billund", "Legoland Deutschland", "Legoland California", "Legoland Orlando",
+               "Legoland New York", "Legoland Japan", "Legoland Korea"],
+    "Universal": ["Universal Studios Florida Park", "Universal Islands Of Adventure", "Universal Epic Universe",
+                  "Universal Volcano Bay", "Universal Studios Hollywood", "Universal Studios Japan",
+                  "Universal Studios Beijing"],
+}
+
 
 def key_name(text):
     """loose name for matching: 'Disney's Animal Kingdom Theme Park' -> 'animal kingdom'"""
@@ -81,8 +96,7 @@ def get(path, params=None):
 def find_pqt_parks():
     """(resort, our park name) -> Park Queue Times park id"""
     listing = get("/parks").get("data") or []
-    print(f"  Park Queue Times has {len(listing)} parks: " + "; ".join(
-        f"{p.get('name')} ({p.get('country')})" for p in sorted(listing, key=lambda p: (p.get('country') or '', p.get('name') or ''))))
+    print(f"  Park Queue Times has {len(listing)} parks")
     found = {}
     for resort, parks in PARKS.items():
         for name, (tz, aliases) in parks.items():
@@ -94,6 +108,14 @@ def find_pqt_parks():
             else:
                 same_tz = [p.get("name") for p in listing if p.get("timezone") == tz]
                 print(f"  NOT FOUND: {resort} / {name}. Parks in {tz}: {same_tz}")
+    by_name = {(p.get("name") or "").lower(): p for p in listing}
+    for group, names in HISTORY_ONLY.items():
+        for name in names:
+            p = by_name.get(name.lower())
+            if p:
+                found[(group, name)] = p["id"]
+            else:
+                print(f"  NOT FOUND: {group} / {name}")
     return found
 
 
@@ -162,7 +184,11 @@ def main():
     CACHE.mkdir(exist_ok=True)
     stamp = CACHE / "fetched.txt"
     today = datetime.now(timezone.utc).date()
-    if stamp.exists() and stamp.read_text().strip() == today.isoformat():
+    wanted = [f"{r}--{n}.json" for r, ps in PARKS.items() for n in ps] + \
+             [f"{g}--{n}.json" for g, ns in HISTORY_ONLY.items() for n in ns]
+    have_all = all((CACHE / w.replace("/", "-")).exists() for w in wanted
+                   if w != "Disneyland Paris--Disney Adventure World.json")
+    if have_all and stamp.exists() and stamp.read_text().strip() == today.isoformat():
         print("Park Queue Times history already fetched today: using the cache")
         return
     print("Park Queue Times: finding parks")
@@ -171,20 +197,28 @@ def main():
     except Exception as ex:
         print(f"  couldn't list parks ({ex}): keeping the old cache")
         return
-    start, end = today - timedelta(days=DAYS - 1), today + timedelta(days=1)
+    oldest, end = today - timedelta(days=DAYS - 1), today + timedelta(days=1)
     ok = True
     for (resort, name), pid in ids.items():
+        target = CACHE / f"{resort}--{name}.json".replace("/", "-")
+        saved = json.loads(target.read_text()) if target.exists() else {}
+        kept = saved.get("rows") or []
+        # already saved: only fetch the last few days again (recent days can still fill in)
+        start = oldest
+        if kept:
+            start = max(oldest, date.fromisoformat(max(r[0] for r in kept)) - timedelta(days=3))
         try:
-            rows = history(pid, start, end)
+            new = history(pid, start, end)
         except Exception as ex:
-            print(f"  {name}: {ex} (keeping the old cache for this park)")
+            print(f"  {name}: {ex} (keeping what's saved for this park)")
             ok = False
             continue
-        target = CACHE / f"{resort}--{name}.json".replace("/", "-")
+        rows = [r for r in kept if r[0] < start.isoformat()] + new
         target.write_text(json.dumps({"resort": resort, "park": name, "pqtId": pid,
-                                      "from": start.isoformat(), "rows": rows}, separators=(",", ":")))
+                                      "from": min((r[0] for r in rows), default=start.isoformat()),
+                                      "rows": rows}, separators=(",", ":")))
         days = len({r[0] for r in rows})
-        print(f"  {resort} / {name}: {len(rows)} ride-hours over {days} days")
+        print(f"  {resort} / {name}: {days} days saved (+{len({r[0] for r in new})} fetched)")
     if ok:
         stamp.write_text(today.isoformat())
 

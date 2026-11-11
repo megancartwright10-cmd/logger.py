@@ -1,0 +1,14 @@
+name: List feed destinations
+
+# One-off helper: prints every destination and park in the ThemeParks.wiki feed.
+on:
+  workflow_dispatch:
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print destinations and parks
+        run: |
+          curl -fsS -A "personal-wait-logger/1.0" https://api.themeparks.wiki/v1/destinations \
+            | jq -r '.destinations[] | "DEST|\(.name)|\(.slug)|" + ([.parks[].name] | join(" ; "))'

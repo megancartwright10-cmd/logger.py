@@ -19,6 +19,7 @@ import csv
 import re
 import json
 import statistics
+import unicodedata
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -365,12 +366,15 @@ RIDE_ALIASES = {"jingle cruise": "jungle cruise", "haunted mansion holiday": "ha
 
 def ride_key(name):
     """loose ride name for matching Park Queue Times rides to ours"""
-    t = (name or "").lower().replace("&", " and ").replace("™", "").replace("®", "")
+    t = unicodedata.normalize("NFKD", (name or "").lower()).encode("ascii", "ignore").decode()  # é -> e
+    t = t.replace("&", " and ")
     t = re.sub(r"['’`\"]", "", t)
     t = re.sub(r"[^a-z0-9 ]+", " ", t)
     words = t.split()
     if words[:1] == ["the"]:
         words = words[1:]
+    if words[-1:] == ["new"]:      # "Soarin' Across America — New!"
+        words = words[:-1]
     t = " ".join(words)
     return RIDE_ALIASES.get(t, t)
 
@@ -433,7 +437,8 @@ def typical_waits(resort, tz, ride_ids):
     unmatched = set()
     for path in sorted(PQT_CACHE.glob(f"{resort}--*.json")):
         blob = json.loads(path.read_text(encoding="utf-8"))
-        ids = ride_ids.get(blob["park"], {})
+        # Park Queue Times sometimes lists a whole resort as one park (Paris), so fall back to any park
+        ids = {**{k: v for m in ride_ids.values() for k, v in m.items()}, **ride_ids.get(blob["park"], {})}
         for d, hour, name, avg, n in blob["rows"]:
             pqt_rows += 1
             rid = ids.get(ride_key(name))

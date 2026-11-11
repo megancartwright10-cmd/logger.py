@@ -15561,3 +15561,6 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-11T06:53Z,Disneyland Resort,Disneyland Park,f7904912-3f08-4563-b99e-fd59f43cc9f2,King Arthur Carrousel,OPERATING,5,,,,,,,2026-11-11T05:17:07.045Z
 2026-11-11T06:53Z,Disneyland Resort,Disneyland Park,faaa8be9-cc1e-4535-ac20-04a535654bd0,Matterhorn Bobsleds,OPERATING,25,,FINISHED,,,,,2026-11-11T06:24:07.975Z
 2026-11-11T06:53Z,Disneyland Resort,Disneyland Park,ff52cb64-c1d5-4feb-9d43-5dbd429bac81,Haunted Mansion Holiday,DOWN,,,FINISHED,,,,,2026-11-11T06:10:18.783Z
+2026-11-11T07:10Z,Disneyland Resort,Disneyland Park,3638ac09-9fce-4a43-8c79-8ebbe17afce2,"""it's a small world""",REFURBISHMENT,,,,,,,,2026-10-30T07:29:13.746Z
+2026-11-11T07:10Z,Disneyland Resort,Disneyland Park,90d5a091-478c-4df1-adfe-c605b4005013,Sleeping Beauty Castle Walkthrough,OPERATING,,,,,,,,2026-11-10T16:00:02.285Z
+2026-11-11T07:10Z,Disneyland Resort,Disneyland Park,9167db1d-e5e7-46da-a07f-ae30a87bc4c4,Space Mountain,REFURBISHMENT,,,,,,,,2026-11-10T10:08:25.931Z

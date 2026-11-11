@@ -2733,3 +2733,6 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-10T20:07Z,Disneyland Paris,Disney Adventure World,f710814b-232d-4469-aad7-d98b328a15b7,Spider-Man W.E.B. Adventure,DOWN,,,,,FINISHED,,1300 EUR,2026-11-10T19:31:01.045Z
 2026-11-10T20:12Z,Disneyland Paris,Disney Adventure World,f710814b-232d-4469-aad7-d98b328a15b7,Spider-Man W.E.B. Adventure,DOWN,,,,,FINISHED,,1300 EUR,2026-11-10T19:31:01.045Z
 2026-11-11T07:25Z,Disneyland Paris,Disney Adventure World,630e2675-f9fc-4984-ba83-03daf5fc89ed,Frozen Ever After,OPERATING,5,5,,,AVAILABLE,2026-11-11T12:00:00+01:00,1600 EUR,2026-11-11T07:20:04.147Z
+2026-11-11T07:30Z,Disneyland Paris,Disney Adventure World,630e2675-f9fc-4984-ba83-03daf5fc89ed,Frozen Ever After,OPERATING,5,5,,,AVAILABLE,2026-11-11T12:05:00+01:00,1600 EUR,2026-11-11T07:26:02.878Z
+2026-11-11T07:30Z,Disneyland Paris,Disney Adventure World,73e1c590-ef8f-496c-bf6c-d7e7fde0c7df,Ratatouille : L’Aventure Totalement Toquée de Rémy,OPERATING,5,5,,,AVAILABLE,2026-11-11T09:15:00+01:00,1300 EUR,2026-11-11T07:29:03.045Z
+2026-11-11T07:30Z,Disneyland Paris,Disney Adventure World,d2ec9363-a215-4904-b297-b66734ea9a00,The Twilight Zone Tower of Terror,OPERATING,5,,,,AVAILABLE,2026-11-11T09:30:00+01:00,1200 EUR,2026-11-11T07:29:03.017Z

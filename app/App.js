@@ -528,7 +528,7 @@ function RideNext() {
   const [detailId, setDetailId] = useState(null);
   const [saved, setSaved] = useState({
     selected: {}, done: {}, useLoc: false, hopper: false, useSingle: false, multiPass: false, rain: false,
-    resort: null, minHeightCm: null, watch: [], noRemind: [], locAsked: false, customSnacks: [], log: {}, ll: null, reminders: {},
+    resort: null, minHeightCm: null, watch: [], noRemind: [], locAsked: false, deviceId: null, shareStats: true, queue: null, outbox: [], customSnacks: [], log: {}, ll: null, reminders: {},
     snackCounts: {}, meals: {}, areas: {}, day: null, stepsAndroid: {}, waitAlerts: {}, ratings: {},
   });
   const [snacksOpen, setSnacksOpen] = useState(false);
@@ -556,6 +556,9 @@ function RideNext() {
   const [recapQuery, setRecapQuery] = useState('');
   const [introDone, setIntroDone] = useState(false); // show the branded loading screen for at least a moment
   useEffect(() => { const t = setTimeout(() => setIntroDone(true), 1400); return () => clearTimeout(t); }, []);
+  const [fans, setFans] = useState(null); // what Ride Next fans report: real waits, top snacks, ratings
+  const apiRef = useRef(null);
+  const sendingRef = useRef(false);
   const loaded = useRef(false);
 
   const R = RESORTS[saved.resort] || RESORTS.dlr;
@@ -577,6 +580,72 @@ function RideNext() {
       .catch(() => {})
       .finally(() => { loaded.current = true; setStoreReady(true); });
   }, []);
+
+  // ---------- anonymous fan stats ----------
+  // a random ID for this phone (not linked to the person), made once
+  useEffect(() => {
+    if (storeReady && !saved.deviceId) {
+      const id = Array.from({ length: 24 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)]).join('');
+      setSaved((cur) => ({ ...cur, deviceId: cur.deviceId || id }));
+    }
+  }, [storeReady, saved.deviceId]);
+
+  // find the stats server, then load what fans report for this resort (every 30 minutes)
+  useEffect(() => {
+    if (!saved.resort) return undefined;
+    let alive = true;
+    const load = async () => {
+      try {
+        if (!apiRef.current) {
+          const a = await fetch(`${DATA_BASE}api.json?ts=${Date.now()}`).then((r) => (r.ok ? r.json() : null));
+          apiRef.current = a && a.url ? a.url : null;
+        }
+        if (!apiRef.current) return;
+        const sum = await fetch(`${apiRef.current}/v1/summary?resort=${saved.resort}`).then((r) => (r.ok ? r.json() : null));
+        if (alive && sum) setFans(sum);
+      } catch (e) { /* offline: try again later */ }
+    };
+    load();
+    const t = setInterval(load, 30 * 60 * 1000);
+    return () => { alive = false; clearInterval(t); };
+  }, [saved.resort]);
+
+  // queue an anonymous event; sent in the background, nothing is sent if sharing is off
+  const queueEvent = (ev) => setSaved((cur) => (cur.shareStats === false ? cur
+    : { ...cur, outbox: [...(cur.outbox || []), { ...ev, resort: ev.resort || cur.resort }].slice(-200) }));
+
+  const flushOutbox = useCallback(async () => {
+    const sv = savedRef.current;
+    if (sendingRef.current || !apiRef.current || !sv.deviceId || sv.shareStats === false) return;
+    const box = sv.outbox || [];
+    if (!box.length) return;
+    const resort = box[0].resort;
+    const batch = [];
+    for (const e of box) { if (e.resort !== resort || batch.length >= 50) break; batch.push(e); }
+    sendingRef.current = true;
+    try {
+      const res = await fetch(`${apiRef.current}/v1/events`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device: sv.deviceId, resort, events: batch.map(({ resort: _r, ...e }) => e) }),
+      });
+      // sent, or rejected as bad data: drop them. Busy or offline: keep and retry later
+      if (res.ok || res.status === 400 || res.status === 413) {
+        setSaved((cur) => ({ ...cur, outbox: (cur.outbox || []).slice(batch.length) }));
+      }
+    } catch (e) { /* offline */ } finally { sendingRef.current = false; }
+  }, []);
+  useEffect(() => {
+    if ((saved.outbox || []).length) { const t = setTimeout(flushOutbox, 3000); return () => clearTimeout(t); }
+    return undefined;
+  }, [saved.outbox, flushOutbox, fans]);
+
+  // what fans actually waited, scaled to the wait posted now
+  const fanWait = (rideId, posted) => {
+    const f = fans && fans.waits && fans.waits[rideId];
+    if (!f || !posted) return null;
+    const est = Math.max(1, Math.round(posted * f.ratio));
+    return { est, n: f.n, same: Math.abs(est - posted) < 3 };
+  };
 
   // load the chosen resort's park data
   useEffect(() => {
@@ -787,7 +856,12 @@ function RideNext() {
   const startDay = () => setSaved((cur) => (cur.day && cur.day.dateKey === today ? cur
     : { ...cur, day: { dateKey: today, start: Date.now(), end: null } }));
   const endDay = () => setSaved((cur) => ({ ...cur, day: cur.day ? { ...cur.day, end: Date.now() } : cur.day }));
-  const bumpSnack = (id, delta) => setSaved((cur) => {
+  const bumpSnack = (id, delta) => {
+    const n = Math.max(0, (snackCountsToday[id] || 0) + delta);
+    if (park && !String(id).startsWith('custom-')) queueEvent({ type: 'snack', parkId: park.id, snack: id, n, day: today });
+    bumpSnackCount(id, delta);
+  };
+  const bumpSnackCount = (id, delta) => setSaved((cur) => {
     const counts = { ...((cur.snackCounts || {})[today] || {}) };
     counts[id] = Math.max(0, (counts[id] || 0) + delta);
     if (!counts[id]) delete counts[id];
@@ -1016,16 +1090,54 @@ function RideNext() {
     const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id];
     return { ...s, selected: { ...s.selected, [park.id]: next } };
   });
-  const markDone = (ride) => setSaved((s) => {
+  const markDone = (ride, actual = null) => setSaved((s) => {
     // keep only today's done lists so storage stays small
     const key = `${now.dateKey}:${ride.parkId || park.id}`;
     const keep = Object.fromEntries(Object.entries(s.done).filter(([k]) => k.startsWith(now.dateKey)));
+    const postedWait = ride.posted ? ride.wait : 0;
     const log = { [now.dateKey]: [...((s.log || {})[now.dateKey] || []),
-      { id: ride.id, name: ride.name, parkId: ride.parkId, land: ride.land, wait: ride.posted ? ride.wait : 0, at: Date.now(),
-        srSaved: ride.viaSingle ? Math.max(0, ride.standby - ride.wait) : 0,
+      { id: ride.id, name: ride.name, parkId: ride.parkId, land: ride.land, wait: actual != null ? actual : postedWait, posted: postedWait,
+        actual, at: Date.now(),
+        srSaved: ride.viaSingle ? Math.max(0, ride.standby - (actual != null ? actual : ride.wait)) : 0,
         crowd: (crowdFor(data.parks.find((p) => p.id === (ride.parkId || park.id))) || {}).level || null }] };
     return { ...s, done: { ...keep, [key]: [...(keep[key] || []), ride.id] }, log };
   });
+
+  // queue timer: "I'm in the queue" starts it, "On the ride!" stops it and logs the real wait
+  const startQueue = (ride) => setSaved((cur) => ({ ...cur, queue: {
+    id: ride.id, name: ride.name, parkId: ride.parkId || park.id, land: ride.land, posted: ride.posted ? ride.wait : 0,
+    viaSingle: !!ride.viaSingle, standby: ride.standby != null ? ride.standby : ride.wait, start: Date.now() } }));
+  const cancelQueue = () => setSaved((cur) => ({ ...cur, queue: null }));
+  const finishQueue = () => {
+    const q = saved.queue;
+    if (!q) return;
+    const actual = Math.max(1, Math.round((Date.now() - q.start) / 60000));
+    markDone({ id: q.id, name: q.name, parkId: q.parkId, land: q.land, posted: q.posted > 0, wait: q.posted, viaSingle: q.viaSingle, standby: q.standby }, actual);
+    if (actual <= 240) {
+      const t = parkNow(data.utcOffsetMinutes);
+      queueEvent({ type: 'wait', parkId: q.parkId, rideId: q.id, posted: q.posted, actual, singleRider: q.viaSingle, dow: t.dow, hour: t.hour });
+    }
+    cancelQueue();
+  };
+  const queueMinutes = saved.queue ? Math.max(0, Math.round((Date.now() - saved.queue.start) / 60000)) : 0;
+  const queueCard = saved.queue ? (
+    <View style={[s.card, { backgroundColor: C.dark, borderColor: C.dark }]}>
+      <Text style={[s.kicker, { color: C.accentSoft }]}>In the queue</Text>
+      <Text style={{ color: '#fff', fontSize: 20, fontWeight: '800' }}>{saved.queue.name}</Text>
+      <Text style={{ color: '#CBD5E1', fontSize: 15 }}>
+        {queueMinutes} min so far{saved.queue.posted ? ` · posted wait was ${saved.queue.posted} min` : ''}
+      </Text>
+      <View style={s.row}>
+        <Pressable style={[s.btnLight, { flex: 1 }]} onPress={finishQueue} accessibilityRole="button">
+          <Text style={s.btnLightText}>On the ride!</Text>
+        </Pressable>
+        <Pressable style={s.btnOutlineDark} onPress={cancelQueue} accessibilityRole="button">
+          <Text style={s.btnOutlineDarkText}>Left the queue</Text>
+        </Pressable>
+      </View>
+      {queueMinutes > 240 ? <Text style={{ color: '#FCA5A5', fontSize: 13 }}>Still in this queue? It's been over 4 hours, so this one won't count towards guests' waits.</Text> : null}
+    </View>
+  ) : null;
 
   const toggleWatch = async (id) => {
     const on = (saved.watch || []).includes(id);
@@ -1076,7 +1188,10 @@ function RideNext() {
       return { ...cur, waitAlerts: next };
     });
   };
-  const rateMeal = (name, stars) => setSaved((cur) => ({ ...cur, ratings: { ...(cur.ratings || {}), [name]: stars } }));
+  const rateMeal = (name, stars) => {
+    setSaved((cur) => ({ ...cur, ratings: { ...(cur.ratings || {}), [name]: stars } }));
+    queueEvent({ type: 'rating', place: name, stars });
+  };
   const openRecap = (from) => { setBackTo(from); setScreen('recap'); };
 
   const bookedMulti = async (ride) => {
@@ -1109,7 +1224,8 @@ function RideNext() {
       const look = outlook(r, now, l.wait);
       const walk = saved.useLoc ? walkMinutes(coords, r.loc) : null;
       const otherPark = r.parkId !== park.id;
-      let score = wait + (walk || 0) + (otherPark && walk == null ? R.hopMin : 0);
+      const fw = l.wait != null && !useSR ? fanWait(r.id, wait) : null; // fans' real standby waits beat the posted number
+      let score = (fw ? fw.est : wait) + (walk || 0) + (otherPark && walk == null ? R.hopMin : 0);
       if (look.trend === 'up') score -= Math.min(15, Math.round(look.diff / 2));
       if (look.trend === 'down') score += Math.min(20, Math.round(-look.diff / 2));
       if (saved.rain && !r.indoor) score += 30;
@@ -1125,7 +1241,7 @@ function RideNext() {
     });
     const parkClosed = rides.length > 0 && down.length === rides.length && down.every((d) => d.status === 'CLOSED');
     return { ranked, down, parkClosed };
-  }, [park, data, now && now.hour, live, saved, skippedBy, coords]);
+  }, [park, data, now && now.hour, live, saved, skippedBy, coords, fans]);
 
   // ---------- render ----------
   if (!storeReady || !introDone) {
@@ -1697,6 +1813,18 @@ function RideNext() {
           <Text style={s.big}>{l.status && l.status !== 'OPERATING' ? 'Temporarily closed' : l.wait != null ? `${l.wait} min wait now` : 'No wait posted'}</Text>
           {l.singleRider != null ? <Text style={[s.body, { fontWeight: '600', color: C.blue }]}>Single Rider: {l.singleRider} min</Text> : null}
           <Text style={s.mutedSmall}>{lastUpd ? `Wait time last updated ${lastUpd}` : updatedText}</Text>
+          {fanWait(ride.id, l.wait) ? (
+            <Text style={[s.body, { fontWeight: '700', color: C.accent }]}>
+              {fanWait(ride.id, l.wait).same ? `Ride Next guests say the posted wait is about right (${fanWait(ride.id, l.wait).n} queues)`
+                : `Ride Next guests actually wait about ${fanWait(ride.id, l.wait).est} min (${fanWait(ride.id, l.wait).n} queues)`}
+            </Text>
+          ) : null}
+          {queueCard}
+          {!saved.queue && l.status === 'OPERATING' ? (
+            <Pressable style={s.btnDark} onPress={() => startQueue({ ...ride, posted: l.wait != null, wait: l.wait || 0, standby: l.wait || 0 })} accessibilityRole="button">
+              <Text style={s.btnDarkText}>I'm in the queue</Text>
+            </Pressable>
+          ) : null}
 
           <View style={s.card}>
             <Text style={s.h3}>Wait alert</Text>
@@ -1922,6 +2050,7 @@ function RideNext() {
             ))}
           </ScrollView>
 
+          {queueCard}
           {!plan.parkClosed && crowdFor(park) ? (
             <View style={s.card}>
               <CrowdMeter c={crowdFor(park)} />
@@ -1946,18 +2075,31 @@ function RideNext() {
                 {top.look.later != null ? <Stat label="Next few hours" value={`~${top.look.later} min`} /> : null}
                 {top.walk != null ? <Stat label="Walk" value={`${top.walk} min`} /> : top.otherPark ? <Stat label={R.hopLabel} value={`~${R.hopMin} min`} /> : null}
               </View>
+              {!top.viaSingle && fanWait(top.id, top.posted ? top.wait : 0) ? (
+                <Text style={{ color: '#FDE68A', fontSize: 14, fontWeight: '700' }}>
+                  {fanWait(top.id, top.wait).same ? `Ride Next guests say the posted wait is about right (${fanWait(top.id, top.wait).n} queues)`
+                    : `Ride Next guests actually wait about ${fanWait(top.id, top.wait).est} min here (${fanWait(top.id, top.wait).n} queues)`}
+                </Text>
+              ) : null}
               <Text style={s.heroBody}>{reasonFor(top, saved.rain)}</Text>
               {!saved.useSingle && top.singleRider != null && top.singleRider + 10 <= top.standby ? (
                 <Text style={{ color: C.accentSoft, fontSize: 14 }}>Single Rider is only {top.singleRider} min here. Turn on Single Rider above to use it.</Text>
               ) : null}
-              <View style={s.row}>
-                <Pressable style={[s.btnLight, { flex: 1 }]} onPress={() => markDone(top)} accessibilityRole="button">
-                  <Text style={s.btnLightText}>Done, ridden it</Text>
-                </Pressable>
-                <Pressable style={s.btnOutlineDark} onPress={() => skipRide(top)} accessibilityRole="button">
-                  <Text style={s.btnOutlineDarkText}>Skip</Text>
-                </Pressable>
-              </View>
+              {saved.queue && saved.queue.id === top.id ? null : (
+                <>
+                  <View style={s.row}>
+                    <Pressable style={[s.btnLight, { flex: 1 }]} onPress={() => startQueue(top)} accessibilityRole="button">
+                      <Text style={s.btnLightText}>I'm in the queue</Text>
+                    </Pressable>
+                    <Pressable style={s.btnOutlineDark} onPress={() => skipRide(top)} accessibilityRole="button">
+                      <Text style={s.btnOutlineDarkText}>Skip</Text>
+                    </Pressable>
+                  </View>
+                  <Pressable onPress={() => markDone(top)} accessibilityRole="button" style={{ paddingVertical: 8 }}>
+                    <Text style={{ color: '#CBD5E1', fontWeight: '600' }}>Already ridden it? Mark as done</Text>
+                  </Pressable>
+                </>
+              )}
               <Pressable onPress={() => openRide(top.id)} accessibilityRole="button" style={{ paddingVertical: 10 }}>
                 <Text style={{ color: C.accentSoft, fontWeight: '600' }}>Wait pattern, alerts & {R.payShort} ›</Text>
               </Pressable>
@@ -2042,7 +2184,7 @@ function RideNext() {
               </View>
               <Text style={s.kicker}>Quick bites{saved.useLoc ? ', closest first' : ''}</Text>
               {openFood.length === 0 ? <Text style={s.muted}>Nothing matching is open right now.</Text> : openFood.slice(0, 12).map((f) => (
-                <FoodRow key={f.id} f={f} ateCount={mealsToday[f.name] || 0} rating={(saved.ratings || {})[f.name]}
+                <FoodRow key={f.id} f={f} fan={(fans && fans.ratings && fans.ratings[f.name]) || null} ateCount={mealsToday[f.name] || 0} rating={(saved.ratings || {})[f.name]}
                   onAte={() => ateHere(f)} onRate={(n) => rateMeal(f.name, n)}
                   right={(
                     <View style={{ alignItems: 'flex-end' }}>
@@ -2057,7 +2199,7 @@ function RideNext() {
                 <>
                   <Text style={[s.kicker, { marginTop: 12 }]}>Fancy a sit-down meal?</Text>
                   {sitDown.slice(0, 6).map((f) => (
-                    <FoodRow key={f.id} f={f} ateCount={mealsToday[f.name] || 0} rating={(saved.ratings || {})[f.name]}
+                    <FoodRow key={f.id} f={f} fan={(fans && fans.ratings && fans.ratings[f.name]) || null} ateCount={mealsToday[f.name] || 0} rating={(saved.ratings || {})[f.name]}
                       onAte={() => ateHere(f)} onRate={(n) => rateMeal(f.name, n)}
                       sub={hoursToday(f) ? `Today ${hoursToday(f).map(fmtRange).join(', ')}` : null}
                       right={(
@@ -2079,10 +2221,12 @@ function RideNext() {
             <View style={s.card}>
               {snackMenu.map((x) => {
                 const n = snackCountsToday[x.id] || 0;
+                const hot = ((fans && fans.snacks && fans.snacks[park.id]) || []).findIndex((y) => y.snack === x.id);
                 return (
                   <View key={x.id} style={s.foodRow}>
                     <View style={{ flex: 1 }}>
                       <Text style={s.rowTitle}>{x.name}</Text>
+                      {hot >= 0 && hot < 3 ? <Text style={[s.mutedSmall, { color: C.accent, fontWeight: '700' }]}>{hot === 0 ? 'Most logged by guests this week' : 'Popular with guests this week'}</Text> : null}
                       <Text style={s.mutedSmall}>{x.where}</Text>
                       {x.custom ? (
                         <Pressable onPress={() => removeCustomSnack(x.id)} accessibilityRole="button" style={{ paddingVertical: 4 }}>
@@ -2263,6 +2407,15 @@ function RideNext() {
         })}
       </ScrollView>
       <View style={s.footer}>
+        <Pressable style={s.rowBetween} onPress={() => setSaved((cur) => ({ ...cur, shareStats: cur.shareStats === false, outbox: cur.shareStats === false ? cur.outbox : [] }))}
+          accessibilityRole="switch" accessibilityState={{ checked: saved.shareStats !== false }} accessibilityLabel="Share anonymous stats">
+          <View style={{ flex: 1 }}>
+            <Text style={s.rowTitle}>Share anonymous stats</Text>
+            <Text style={s.mutedSmall}>Your real queue times, snacks and ratings help every guest. No name, no location.</Text>
+          </View>
+          <Switch value={saved.shareStats !== false}
+            onValueChange={(v) => setSaved((cur) => ({ ...cur, shareStats: v, outbox: v ? cur.outbox : [] }))} />
+        </Pressable>
         <Pressable style={s.rowBetween} onPress={() => toggleLoc(!saved.useLoc)}
           accessibilityRole="switch" accessibilityState={{ checked: !!saved.useLoc }} accessibilityLabel="Use my location">
           <View style={{ flex: 1 }}>
@@ -2280,13 +2433,14 @@ function RideNext() {
   );
 }
 
-function FoodRow({ f, ateCount, rating, onAte, onRate, right, sub }) {
+function FoodRow({ f, ateCount, rating, onAte, onRate, right, sub, fan = null }) {
   return (
     <View style={[s.foodRow, { flexDirection: 'column', alignItems: 'stretch' }]}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <View style={{ flex: 1 }}>
           <Text style={s.rowTitle}>{f.name}</Text>
           {f.fav ? <Text style={[s.mutedSmall, { color: C.accent, fontWeight: '600' }]}>★ Fan favourite · {f.fav}</Text> : null}
+          {fan ? <Text style={[s.mutedSmall, { color: '#B45309', fontWeight: '700' }]}>{`${fan.avg.toFixed(1)} ★ from ${fan.n} Ride Next guests`}</Text> : null}
           <Text style={s.mutedSmall}>{sub || `${f.moods.map((m) => MOOD_LABELS[m]).join(' · ')}${f.service === 'snack' ? ' · snack stand' : ''}`}</Text>
         </View>
         {right}

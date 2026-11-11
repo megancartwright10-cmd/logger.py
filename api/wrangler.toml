@@ -1,0 +1,11 @@
+# Ride Next fan stats API. Deployed by .github/workflows/deploy-api.yml
+# (the workflow fills in database_id; you never need to edit this by hand)
+name = "ride-next-api"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ride-next"
+database_id = "__DATABASE_ID__"

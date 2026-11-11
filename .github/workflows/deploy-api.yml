@@ -1,0 +1,84 @@
+name: Deploy guest stats API
+
+# Puts the Ride Next guest stats server (api/) on Cloudflare's free tier.
+# Needs two repository secrets: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
+# Until they exist, this job just says so and stops (no red failures).
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - api/**
+      - .github/workflows/deploy-api.yml
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check Cloudflare is set up
+        id: ready
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice::Cloudflare secrets not added yet, so the stats server was not deployed."
+            echo "go=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=yes" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.ready.outputs.go == 'yes'
+
+      - uses: actions/setup-node@v4
+        if: steps.ready.outputs.go == 'yes'
+        with:
+          node-version: 22
+
+      - name: Find or create the database
+        if: steps.ready.outputs.go == 'yes'
+        run: |
+          API="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database"
+          AUTH="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          ID=$(curl -fsS -H "$AUTH" "$API?name=ride-next" | jq -r '.result[] | select(.name=="ride-next") | .uuid' | head -1)
+          if [ -z "$ID" ]; then
+            ID=$(curl -fsS -X POST -H "$AUTH" -H "Content-Type: application/json" -d '{"name":"ride-next"}' "$API" | jq -r '.result.uuid')
+          fi
+          if [ -z "$ID" ] || [ "$ID" = "null" ]; then echo "Could not find or create the database"; exit 1; fi
+          sed -i "s/__DATABASE_ID__/$ID/" api/wrangler.toml
+
+      - name: Create or update the tables
+        if: steps.ready.outputs.go == 'yes'
+        working-directory: api
+        run: npx --yes wrangler@4 d1 execute ride-next --remote --file=schema.sql
+
+      - name: Deploy the server
+        if: steps.ready.outputs.go == 'yes'
+        working-directory: api
+        run: |
+          npx --yes wrangler@4 deploy | tee deploy.log
+          URL=$(grep -oE 'https://[A-Za-z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          if [ -z "$URL" ]; then echo "No workers.dev address in the deploy output"; exit 1; fi
+          echo "URL=$URL" >> "$GITHUB_ENV"
+
+      - name: Tell the app where the server is
+        if: steps.ready.outputs.go == 'yes'
+        run: |
+          git checkout -- api/wrangler.toml
+          mkdir -p data/app
+          printf '{"url":"%s"}\n' "$URL" > data/app/api.json
+          git config user.name "wait-logger"
+          git config user.email "wait-logger@users.noreply.github.com"
+          git add data/app/api.json
+          if git diff --cached --quiet; then echo "Address unchanged"; exit 0; fi
+          git commit -m "Guest stats API address"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          exit 1

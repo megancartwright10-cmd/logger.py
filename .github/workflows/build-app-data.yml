@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - build_app_data.py
+      - pqt_history.py
       - .github/workflows/build-app-data.yml
 
 permissions:
@@ -29,6 +30,32 @@ jobs:
           done
           python3 restore_waits.py archives
 
+      # Park Queue Times history: kept in GitHub's private build cache, never committed
+      # (this repo is public and their raw data can't be republished). Refreshed once a day.
+      - name: Today's date
+        id: day
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Bring back Park Queue Times history
+        uses: actions/cache/restore@v4
+        with:
+          path: pqt-cache
+          key: pqt-${{ steps.day.outputs.date }}
+          restore-keys: pqt-
+
+      - name: Fetch Park Queue Times history (once a day)
+        env:
+          PQT_KEY: ${{ secrets.PQT_KEY }}
+        run: python3 pqt_history.py
+
+      - name: Keep Park Queue Times history for later builds
+        if: always()
+        uses: actions/cache/save@v4
+        continue-on-error: true   # already saved today: fine
+        with:
+          path: pqt-cache
+          key: pqt-${{ steps.day.outputs.date }}
+
       - name: Build app data
         run: python3 build_app_data.py
 
@@ -44,7 +71,7 @@ jobs:
           git commit -m "App data $(date -u +%Y-%m-%d)"
           # the restored readings are only for building; set them aside so they're never committed
           git checkout -- data
-          git clean -fdq -- data archives
+          git clean -fdq -- data archives pqt-cache
           for i in 1 2 3; do
             git pull --rebase && git push && exit 0
             sleep 5

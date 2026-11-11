@@ -7,12 +7,16 @@ For each resort in APP_RESORTS it includes:
   - parks (live-data IDs) and the park's current UTC offset
   - rides with map coordinates (for walking times)
   - quick-service / snack restaurants with coordinates and food-mood tags
-  - "typical" standby waits per ride, by hour of day, split weekday/weekend,
-    worked out from everything the wait logger has saved so far
+  - "typical" standby waits per ride, by hour of day, split weekday/weekend
+    and by day of the week, worked out from everything the wait logger has
+    saved plus up to 90 days of Park Queue Times history (pqt-cache/, see
+    pqt_history.py). Each day counts once per hour, so a busy logging day
+    can't outweigh the others. "days" = how many days the ride has history for.
 
 Runs nightly from GitHub Actions. Standard library only.
 """
 import csv
+import re
 import json
 import statistics
 import sys
@@ -346,7 +350,29 @@ def land_lookup(resort, park_name):
             out[" ".join(r.split())] = (land, i)
     return out
 DATA = Path("data")
-MIN_SAMPLES = 3          # readings needed before we trust an hour's typical wait
+MIN_SAMPLES = 3          # readings needed before we trust an hour's typical wait (our logs only)
+MIN_DAYS = 2             # or: days of history for that hour
+PQT_CACHE = Path("pqt-cache")
+# Christmas to New Year is far busier than normal: left out so it doesn't skew the typical day
+def holiday(d):
+    return (d.month == 12 and d.day >= 20) or (d.month == 1 and d.day <= 2)
+
+
+# seasonal names -> everyday name, so history matches all year
+RIDE_ALIASES = {"jingle cruise": "jungle cruise", "haunted mansion holiday": "haunted mansion",
+                "its a small world holiday": "its a small world"}
+
+
+def ride_key(name):
+    """loose ride name for matching Park Queue Times rides to ours"""
+    t = (name or "").lower().replace("&", " and ").replace("™", "").replace("®", "")
+    t = re.sub(r"['’`\"]", "", t)
+    t = re.sub(r"[^a-z0-9 ]+", " ", t)
+    words = t.split()
+    if words[:1] == ["the"]:
+        words = words[1:]
+    t = " ".join(words)
+    return RIDE_ALIASES.get(t, t)
 
 
 def location_of(entity_id, cache):
@@ -383,9 +409,11 @@ def opening_hours(entity_id, days=7):
     return {d: out[d] for d in keep}
 
 
-def typical_waits(resort, tz):
-    """median standby wait per ride, per (weekday|weekend), per local hour"""
-    buckets = defaultdict(list)
+def typical_waits(resort, tz, ride_ids):
+    """median standby wait per ride, per (weekday|weekend) and per day of the week, per local hour.
+    ride_ids: our park name -> {ride_key(name): ride id}, to match Park Queue Times rides to ours"""
+    # (ride id, local date, hour) -> one value per day-hour; our own logs win where both exist
+    own = defaultdict(list)
     files = sorted(DATA.glob(f"*/{slugify(resort)}--*.csv"))
     for path in files:
         with path.open(encoding="utf-8") as f:
@@ -398,21 +426,51 @@ def typical_waits(resort, tz):
                 except ValueError:
                     continue
                 local = t.replace(tzinfo=timezone.utc).astimezone(tz)
-                day = "weekend" if local.weekday() >= 5 else "weekday"
-                dow = (local.weekday() + 1) % 7  # 0 = Sunday, like JavaScript
-                buckets[(row["ride_id"], day, local.hour)].append(wait)
-                buckets[(row["ride_id"], dow, local.hour)].append(wait)
-    out = defaultdict(lambda: {"weekday": [None] * 24, "weekend": [None] * 24,
-                               "dow": [[None] * 24 for _ in range(7)]})
-    for (ride, day, hour), waits in buckets.items():
-        if len(waits) < MIN_SAMPLES:
+                own[(row["ride_id"], local.date(), local.hour)].append(wait)
+    cells = {k: (statistics.mean(v), len(v)) for k, v in own.items()}
+
+    pqt_rows = matched = 0
+    unmatched = set()
+    for path in sorted(PQT_CACHE.glob(f"{resort}--*.json")):
+        blob = json.loads(path.read_text(encoding="utf-8"))
+        ids = ride_ids.get(blob["park"], {})
+        for d, hour, name, avg, n in blob["rows"]:
+            pqt_rows += 1
+            rid = ids.get(ride_key(name))
+            if not rid:
+                unmatched.add(name)
+                continue
+            key = (rid, datetime.strptime(d, "%Y-%m-%d").date(), int(hour))
+            if key not in cells:
+                cells[key] = (avg, n)
+                matched += 1
+
+    buckets = defaultdict(list)     # (ride, weekday|weekend|0-6, hour) -> one value per day
+    days_per_ride = defaultdict(set)
+    for (ride, d, hour), (value, n) in cells.items():
+        if holiday(d):
             continue
-        value = round(statistics.median(waits))
+        dow = (d.weekday() + 1) % 7  # 0 = Sunday, like JavaScript
+        kind = "weekend" if d.weekday() >= 5 else "weekday"
+        buckets[(ride, kind, hour)].append((value, n))
+        buckets[(ride, dow, hour)].append((value, n))
+        days_per_ride[ride].add(d)
+    out = defaultdict(lambda: {"weekday": [None] * 24, "weekend": [None] * 24,
+                               "dow": [[None] * 24 for _ in range(7)], "days": 0})
+    for (ride, day, hour), vals in buckets.items():
+        if len(vals) < MIN_DAYS and sum(n for _, n in vals) < MIN_SAMPLES:
+            continue
+        value = round(statistics.median(v for v, _ in vals))
         if isinstance(day, int):
             out[ride]["dow"][day][hour] = value
         else:
             out[ride][day][hour] = value
-    print(f"  history from {len(files)} files, {len(out)} rides with enough readings")
+    for ride in out:
+        out[ride]["days"] = len(days_per_ride[ride])
+    print(f"  history from {len(files)} log files + {pqt_rows} Park Queue Times ride-hours "
+          f"({matched} added); {len(out)} rides with enough readings")
+    if unmatched:
+        print(f"  Park Queue Times rides with no match ({len(unmatched)}): {sorted(unmatched)[:40]}")
     return out
 
 
@@ -425,14 +483,17 @@ def main():
     for resort, tz_name in APP_RESORTS.items():
         tz = ZoneInfo(tz_name)
         offset = int(datetime.now(tz).utcoffset().total_seconds() // 60)
-        history = typical_waits(resort, tz)
+        resort_parks = [(pid, pname) for pid, pname, label in parks
+                        if label == resort and pname not in SKIP_PARKS]
+        kids_by_park = {pid: fetch(f"/entity/{pid}/children").get("children", []) for pid, _ in resort_parks}
+        ride_ids = {pname: {ride_key(k.get("name")): k["id"] for k in kids_by_park[pid]
+                            if k.get("entityType") == "ATTRACTION"} for pid, pname in resort_parks}
+        history = typical_waits(resort, tz, ride_ids)
         out = {"resort": resort, "timezone": tz_name, "utcOffsetMinutes": offset,
                "builtAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
                "parks": []}
-        for park_id, park_name, label in parks:
-            if label != resort or park_name in SKIP_PARKS:
-                continue
-            kids = fetch(f"/entity/{park_id}/children").get("children", [])
+        for park_id, park_name in resort_parks:
+            kids = kids_by_park[park_id]
             lands = land_lookup(resort, park_name)
             heights, indoor = HEIGHTS.get(resort, {}), INDOOR.get(resort, set())
             rides = []

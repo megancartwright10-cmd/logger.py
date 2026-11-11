@@ -15,9 +15,19 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+
+      - name: Bring back recent readings from Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p archives
+          for tag in $(gh release list --limit 100 --json tagName -q '.[].tagName' | grep '^waits-' | sort | tail -3); do
+            gh release download "$tag" -D archives -p '*.tar.gz' --clobber || echo "Could not download $tag"
+          done
+          python3 restore_waits.py archives
 
       - name: Build app data
         run: python3 build_app_data.py

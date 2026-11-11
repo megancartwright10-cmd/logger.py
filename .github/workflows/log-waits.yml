@@ -22,25 +22,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Readings are no longer saved into the repository (it would grow by about
+      # 1 GB a year). Each hour's readings go into a small .tar.gz on a GitHub
+      # Release called waits-YYYY-MM instead; Releases don't count towards the
+      # repository's size. restore_waits.py puts them back when they're needed.
       - name: Log every 5 minutes for about an hour
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git config user.name "wait-logger"
-          git config user.email "wait-logger@users.noreply.github.com"
+          rm -rf data/20??-??          # start empty, so this hour's file holds only this hour
+          month=$(date -u +%Y-%m)
+          tag="waits-$month"
+          asset="waits-$(date -u +%Y-%m-%dT%H%M).tar.gz"
+          save() {
+            ls data/20??-??/*.csv >/dev/null 2>&1 || { echo "Nothing to save yet (parks probably closed)"; return 0; }
+            tar czf "$asset" data/20??-??/*.csv
+            gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --latest=false \
+              --title "Wait times $month" --notes "Ride wait readings, one file per hour. Merge them with restore_waits.py." \
+              || true
+            for i in 1 2 3; do
+              gh release upload "$tag" "$asset" --clobber && { echo "Saved $asset"; return 0; }
+              sleep 10
+            done
+            echo "Could not upload $asset"
+          }
           end=$(( $(date +%s) + 57*60 ))
+          n=0
           while :; do
             started=$(date +%s)
             python3 logger.py || echo "Logger reported a problem (see above)"
-            git add data
-            if ! git diff --cached --quiet; then
-              git commit -q -m "Wait times $(date -u +%Y-%m-%dT%H:%MZ)"
-              for i in 1 2 3; do
-                git pull -q --rebase && git push -q && break
-                sleep 5
-              done
-            else
-              echo "Nothing new (parks probably closed)"
-            fi
+            n=$(( n + 1 ))
+            [ $(( n % 3 )) -eq 0 ] && save    # every 15 minutes, so a crash loses little
             next=$(( started + 300 ))
             [ "$next" -ge "$end" ] && break
             sleep $(( next - $(date +%s) > 0 ? next - $(date +%s) : 0 ))
           done
+          save

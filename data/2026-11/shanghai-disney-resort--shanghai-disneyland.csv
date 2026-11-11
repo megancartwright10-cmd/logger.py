@@ -122,3 +122,23 @@ timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wai
 2026-11-11T12:45Z,Shanghai Disney Resort,Shanghai Disneyland,d0e8c1f9-1fab-4081-bb7d-920815f28aa3,Seven Dwarfs Mine Train,OPERATING,70,,,,,,,2026-11-11T12:41:14.573Z
 2026-11-11T12:45Z,Shanghai Disney Resort,Shanghai Disneyland,eef91f74-0d4e-4f58-bdc9-3236306f6707,Explorer Canoes,REFURBISHMENT,5,,,,,,,2026-11-10T23:04:21.191Z
 2026-11-11T12:45Z,Shanghai Disney Resort,Shanghai Disneyland,f2212284-daf2-4f1d-be0a-389c519b24c3,Marvel Universe,OPERATING,,,,,,,,2026-11-11T01:34:33.495Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,00e7ba97-02f1-408e-8cdc-48836b260b92,Rex’s Racer,OPERATING,40,,,,,,,2026-11-11T12:29:13.277Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,1bdf8715-64fd-4353-a1ad-5fe9b1591973,Zootopia: Hot Pursuit,OPERATING,40,,,,,,,2026-11-11T12:26:12.953Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,1eb2a711-ab84-4bbf-b351-ce2668861cd5,Jet Packs,OPERATING,40,,,,,,,2026-11-11T12:20:17.329Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,472eb06a-c684-4939-acf1-99575f959334,Become Iron Man at the Marvel Universe,OPERATING,5,,,,,,,2026-11-11T12:14:12.048Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,4c72fb0a-b1b1-409b-8d7b-7182e95ac237,Soaring Over the Horizon,OPERATING,30,,,,,,,2026-11-11T12:35:15.610Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,6d4f514e-1557-4d7b-942a-83454650365c,Slinky Dog Spin,OPERATING,30,,,,,,,2026-11-11T12:44:15.108Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,709e7684-57b3-4502-a358-f59673239854,Woody’s Roundup,OPERATING,30,,,,,,,2026-11-11T12:41:14.592Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,72d2c957-0280-4bfa-b2fc-5c70913a613b,TRON Lightcycle Power Run – Presented by Chevrolet,OPERATING,75,,,,,,,2026-11-11T12:11:12.866Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,73d08894-9a00-49ee-bd4a-9fb0979d9a65,Voyage to the Crystal Grotto,OPERATING,5,,,,,,,2026-11-11T11:59:13.692Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,75aaf016-29ce-4a74-b5c2-d25876d34a6a,Peter Pan’s Flight,OPERATING,10,,,,,,,2026-11-11T12:41:14.552Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,87e0fa71-e0e2-4af9-a175-3569b7880680,Pirates of the Caribbean Battle for the Sunken Treasure,OPERATING,5,,,,,,,2026-11-11T12:05:13.067Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,8a7b5eb4-9e3e-463b-af65-395b392ebc6f,Buzz Lightyear Planet Rescue,OPERATING,5,,,,,,,2026-11-11T11:44:11.787Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,8dede135-9a2e-4fb1-9470-4e493c96db9c,The Many Adventures of Winnie the Pooh,OPERATING,10,,,,,,,2026-11-11T12:35:15.660Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,9914dc09-741b-4df6-95e0-c260cfb6e998,Vista Trail at Camp Discovery,OPERATING,,,,,,,,2026-11-11T00:04:26.843Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,a1263174-68f3-4207-9c89-cb53860e1e0a,Hunny Pot Spin,OPERATING,10,,,,,,,2026-11-11T12:44:15.096Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,a7161ee0-90b5-42be-bc10-e2b8010fe7e7,Challenge Trails at Camp Discovery,OPERATING,10,,,,,,,2026-11-11T12:41:14.563Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,af87332e-f54c-401a-abbd-d1560e173018,Roaring Rapids,OPERATING,15,,,,,,,2026-11-11T12:14:12.065Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,d0e8c1f9-1fab-4081-bb7d-920815f28aa3,Seven Dwarfs Mine Train,OPERATING,70,,,,,,,2026-11-11T12:41:14.573Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,eef91f74-0d4e-4f58-bdc9-3236306f6707,Explorer Canoes,REFURBISHMENT,5,,,,,,,2026-11-10T23:04:21.191Z
+2026-11-11T12:50Z,Shanghai Disney Resort,Shanghai Disneyland,f2212284-daf2-4f1d-be0a-389c519b24c3,Marvel Universe,OPERATING,,,,,,,,2026-11-11T01:34:33.495Z

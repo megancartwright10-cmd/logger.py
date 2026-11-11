@@ -81,6 +81,8 @@ def get(path, params=None):
 def find_pqt_parks():
     """(resort, our park name) -> Park Queue Times park id"""
     listing = get("/parks").get("data") or []
+    print(f"  Park Queue Times has {len(listing)} parks: " + "; ".join(
+        f"{p.get('name')} ({p.get('country')})" for p in sorted(listing, key=lambda p: (p.get('country') or '', p.get('name') or ''))))
     found = {}
     for resort, parks in PARKS.items():
         for name, (tz, aliases) in parks.items():

@@ -1,0 +1,2 @@
+timestamp_utc,resort,park,ride_id,ride_name,status,standby_wait,single_rider_wait,return_time_state,return_time_start,paid_return_state,paid_return_start,paid_return_price,source_last_updated
+2026-11-11T12:20Z,Alton Towers,Alton Towers,c38db4ca-1eaa-4a25-a963-c5a52bb8e8cd,The Furchester Hotel Live Show,OPERATING,,,,,,,,2026-04-06T13:52:16.233Z

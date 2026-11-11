@@ -475,8 +475,10 @@ function outlook(ride, now, liveWait, closeHour = 24) {
   const typ = typicalFor(ride, now.dow, now.dayType);
   if (!typ) return { trend: 'unknown' };
   const when = whenToRide(typ, now, liveWait, closeHour);
-  const cur = typ[now.hour] != null ? typ[now.hour] : liveWait;
-  const next = [1, 2, 3].map((i) => typ[now.hour + i]).filter((v) => v != null);
+  const usualNow = typ[now.hour];
+  const cur = liveWait != null ? liveWait : usualNow;
+  const scale = liveWait != null && usualNow ? Math.min(1.6, Math.max(0.6, liveWait / usualNow)) : 1;
+  const next = [1, 2, 3].map((i) => typ[now.hour + i]).filter((v) => v != null).map((v) => Math.round(v * scale));
   let best = null;
   for (let h = now.hour + 1; h < 24; h++) {
     if (typ[h] != null && (!best || typ[h] < best.wait)) best = { hour: h, wait: typ[h] };

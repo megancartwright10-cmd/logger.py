@@ -42,6 +42,9 @@ jobs:
             exit 0
           fi
           git commit -m "App data $(date -u +%Y-%m-%d)"
+          # the restored readings are only for building; set them aside so they're never committed
+          git checkout -- data
+          git clean -fdq -- data archives
           for i in 1 2 3; do
             git pull --rebase && git push && exit 0
             sleep 5

@@ -1,4 +1,4 @@
-# Ride Next fan stats API. Deployed by .github/workflows/deploy-api.yml
+# Ride Next guest stats API. Deployed by .github/workflows/deploy-api.yml
 # (the workflow fills in database_id; you never need to edit this by hand)
 name = "ride-next-api"
 main = "src/index.js"

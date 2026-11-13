@@ -3,7 +3,7 @@
 // Live waits: ThemeParks.wiki (free, unofficial). History + restaurants: your GitHub repo.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Alert, Linking, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View, useWindowDimensions,
+  ActivityIndicator, Alert, Linking, Platform, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Switch, Text, TextInput, Vibration, View, useWindowDimensions,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'; // replaces React Native's deprecated SafeAreaView
@@ -471,20 +471,43 @@ function parseLive(json) {
 }
 
 // What history says about a ride right now
-function outlook(ride, now, liveWait) {
+function outlook(ride, now, liveWait, closeHour = 24) {
   const typ = typicalFor(ride, now.dow, now.dayType);
   if (!typ) return { trend: 'unknown' };
-  const cur = typ[now.hour] != null ? typ[now.hour] : liveWait;
-  const next = [1, 2, 3].map((i) => typ[now.hour + i]).filter((v) => v != null);
+  const when = whenToRide(typ, now, liveWait, closeHour);
+  const usualNow = typ[now.hour];
+  const cur = liveWait != null ? liveWait : usualNow;
+  const scale = liveWait != null && usualNow ? Math.min(1.6, Math.max(0.6, liveWait / usualNow)) : 1;
+  const next = [1, 2, 3].map((i) => typ[now.hour + i]).filter((v) => v != null).map((v) => Math.round(v * scale));
   let best = null;
   for (let h = now.hour + 1; h < 24; h++) {
     if (typ[h] != null && (!best || typ[h] < best.wait)) best = { hour: h, wait: typ[h] };
   }
-  if (cur == null || next.length === 0) return { trend: 'unknown', best };
+  if (cur == null || next.length === 0) return { trend: 'unknown', best, when };
   const later = Math.round(next.reduce((a, b) => a + b, 0) / next.length);
   const diff = later - cur;
   const trend = diff >= 8 ? 'up' : diff <= -8 ? 'down' : 'steady';
-  return { trend, later, diff, best };
+  return { trend, later, diff, best, when };
+}
+
+// Ride now, or wait for a quieter hour later today? Uses the typical curve for this
+// day, scaled by how busy today is compared with a typical day (live wait vs usual now).
+// Only says "wait" when it saves at least 10 min and a quarter of the line.
+function whenToRide(typ, now, liveWait, closeHour) {
+  const usualNow = typ[now.hour];
+  const cur = liveWait != null ? liveWait : usualNow;
+  if (cur == null) return null;
+  const scale = liveWait != null && usualNow ? Math.min(1.6, Math.max(0.6, liveWait / usualNow)) : 1;
+  const hours = [];
+  for (let h = now.hour + 1; h < Math.min(24, closeHour); h++) {
+    if (typ[h] != null) hours.push({ hour: h, wait: Math.max(5, Math.round((typ[h] * scale) / 5) * 5) });
+  }
+  const good = hours.filter((x) => cur - x.wait >= 10 && x.wait <= cur * 0.75);
+  if (!good.length) return { now: true, wait: cur };
+  // the earliest hour that gets most of the saving, so not every ride says "come back at closing"
+  const maxSave = Math.max(...good.map((x) => cur - x.wait));
+  const pick = good.find((x) => cur - x.wait >= maxSave * 0.6);
+  return { now: false, hour: pick.hour, wait: pick.wait, save: cur - pick.wait };
 }
 
 function lightningLane(live, look, R) {
@@ -679,6 +702,14 @@ function RideNext() {
     if (schedules[p.id]) return parkHoursToday(schedules[p.id], dateKey);
     const saved = p.hours && p.hours[dateKey];
     return { known: !!p.hours && Object.keys(p.hours).length > 0, main: saved || [], extras: [] };
+  };
+  // hour the park closes today (24 if unknown or past midnight), so "ride later" never points after close
+  const closeHourFor = (parkId) => {
+    const p = data && data.parks.find((x) => x.id === parkId);
+    const range = p && (hoursFor(p).main || [])[0];
+    if (!range) return 24;
+    const c = Math.ceil(toMin(range[1]) / 60);
+    return c > Math.floor(toMin(range[0]) / 60) ? c : 24;
   };
   // Crowd level: an estimate from live posted waits (Disney doesn't publish real park capacity)
   const crowdFor = (p) => {
@@ -1079,10 +1110,33 @@ function RideNext() {
     }));
     setSkippedBy((k) => ({ ...k, [p.id]: [] }));
   };
-  const confirmReset = (p) => Alert.alert(
+  // Alert buttons do nothing on web (Snack's Web preview), so use the browser's confirm there
+  const askConfirm = (title, body, okText, onOk) => {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm(`${title}\n\n${body}`)) onOk();
+      return;
+    }
+    Alert.alert(title, body, [{ text: 'Cancel', style: 'cancel' }, { text: okText, style: 'destructive', onPress: onOk }]);
+  };
+  const confirmReset = (p) => askConfirm(
     `Reset ${p.name}?`,
     'This clears the rides you picked and what you\'ve ridden today in this park.',
-    [{ text: 'Cancel', style: 'cancel' }, { text: 'Reset', style: 'destructive', onPress: () => resetPark(p) }],
+    'Reset', () => resetPark(p),
+  );
+  // clears everything logged today in every park; settings, ratings and your own snacks stay
+  const resetDay = () => {
+    setSaved((cur) => ({
+      ...cur,
+      selected: {}, done: {}, queue: null, day: null,
+      log: Object.fromEntries(Object.entries(cur.log || {}).filter(([d]) => d !== today)),
+      snackCounts: {}, meals: {}, areas: {}, stepsAndroid: {},
+    }));
+    setSkippedBy({});
+  };
+  const confirmResetDay = () => askConfirm(
+    'Reset your whole day?',
+    'This clears today\'s picked and ridden rides, snacks, meals, areas and Day Recap in every park. Your settings and ratings stay.',
+    'Reset day', resetDay,
   );
 
   const toggleRide = (id) => setSaved((s) => {
@@ -1221,7 +1275,7 @@ function RideNext() {
       const standby = l.wait != null ? l.wait : 5;
       const useSR = saved.useSingle && l.singleRider != null && l.singleRider < standby;
       const wait = useSR ? l.singleRider : standby;
-      const look = outlook(r, now, l.wait);
+      const look = outlook(r, now, l.wait, closeHourFor(r.parkId));
       const walk = saved.useLoc ? walkMinutes(coords, r.loc) : null;
       const otherPark = r.parkId !== park.id;
       const fw = l.wait != null && !useSR ? fanWait(r.id, wait) : null; // fans' real standby waits beat the posted number
@@ -1365,7 +1419,7 @@ function RideNext() {
           <View style={{ gap: 14 }}>
             {[
               ['1', 'Pick your rides', 'Tick everything you want to do today.'],
-              ['2', 'We tell you what to ride next', 'Live waits, Single Rider, walking time, and whether the line will get worse later.'],
+              ['2', 'We tell you what to ride next', 'Live waits, Single Rider, walking time, and whether to ride now or come back at a quieter time.'],
               ['3', 'Snacks, shows and your Day Recap', 'Track every churro, get show reminders, and share your day.'],
             ].map(([n, title, body]) => (
               <View key={n} style={s.stepRow}>
@@ -1419,6 +1473,12 @@ function RideNext() {
                   <Text style={s.recapLinkMeta}>{todayLog.length} ride{todayLog.length === 1 ? '' : 's'} so far · tap to see and share</Text>
                 </View>
                 <Text style={s.recapLinkTitle}>›</Text>
+              </Pressable>
+            ) : null}
+            {anyToday || Object.values(saved.selected || {}).some((l) => l && l.length) ? (
+              <Pressable onPress={confirmResetDay} accessibilityRole="button"
+                accessibilityLabel="Reset my whole day" style={[s.resetBtn, { alignSelf: 'center' }]}>
+                <Text style={s.resetBtnText}>Reset my day</Text>
               </Pressable>
             ) : null}
             <Text style={s.welcomeSmall}>Unofficial app. Not affiliated with or endorsed by Disney. Wait times are estimates.</Text>
@@ -1769,7 +1829,7 @@ function RideNext() {
   if (screen === 'detail') {
     const ride = findRide(detailId) || park.rides[0];
     const l = live[ride.id] || {};
-    const look = outlook(ride, now, l.wait);
+    const look = outlook(ride, now, l.wait, closeHourFor(ride.parkId));
     const typ = typicalFor(ride, now.dow, now.dayType);
     // every hour the park is open today, with "no data yet" for hours the logger hasn't covered
     const rideParkObj = data.parks.find((p) => p.id === ride.parkId) || park;
@@ -1932,10 +1992,16 @@ function RideNext() {
             </View>
           )}
 
-          {look.best ? (
-            <View style={[s.card, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}>
-              <Text style={s.kicker}>Best time later today</Text>
-              <Text style={s.body}>Around {fmtHour(look.best.hour)}, usually about {look.best.wait} min</Text>
+          {look.when ? (
+            <View style={[s.card, look.when.now ? { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' } : { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}>
+              <Text style={s.kicker}>When to ride</Text>
+              <Text style={[s.h3, { color: look.when.now ? C.green : C.blue }]}>
+                {look.when.now ? 'Ride now' : `Wait until about ${fmtHour(look.when.hour)}`}
+              </Text>
+              <Text style={s.body}>
+                {look.when.now ? 'Based on past days, the line won\'t get much shorter later today.'
+                  : `Based on past days, it's usually about ${look.when.wait} min then, about ${look.when.save} min less than now.`}
+              </Text>
             </View>
           ) : null}
 
@@ -2072,7 +2138,8 @@ function RideNext() {
                 ) : (
                   <Stat label="Wait now" value={top.posted ? `${top.wait} min` : 'No wait'} />
                 )}
-                {top.look.later != null ? <Stat label="Next few hours" value={`~${top.look.later} min`} /> : null}
+                {top.look.when && !top.look.when.now ? <Stat label={`At ${fmtHour(top.look.when.hour)}`} value={`~${top.look.when.wait} min`} />
+                  : top.look.when ? <Stat label="Later today" value="Not shorter" /> : null}
                 {top.walk != null ? <Stat label="Walk" value={`${top.walk} min`} /> : top.otherPark ? <Stat label={R.hopLabel} value={`~${R.hopMin} min`} /> : null}
               </View>
               {!top.viaSingle && fanWait(top.id, top.posted ? top.wait : 0) ? (
@@ -2284,7 +2351,7 @@ function RideNext() {
                   {sortBy === 'best' || r.otherPark ? (
                     <Text style={s.mutedSmall}>{[r.otherPark ? shortPark(r.parkName) : null, sortBy === 'best' ? r.land : null, r.indoor && saved.rain ? 'Indoors' : null].filter(Boolean).join(' · ')}</Text>
                   ) : null}
-                  <TrendLabel trend={r.look.trend} />
+                  <WhenLabel look={r.look} />
                   {alertFor(r.id) ? <Text style={[s.mutedSmall, { color: C.blue, fontWeight: '600' }]}>Alert at ≤ {alertFor(r.id)} min</Text> : null}
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
@@ -2479,6 +2546,9 @@ function reasonFor(r, rain) {
 }
 
 function reasonText(r, near) {
+  const w = r.look.when;
+  if (w && !w.now) return `It's usually about ${w.wait} min around ${fmtHour(w.hour)}, so you could save ${w.save} min by waiting. It's still the best pick on your list right now${near}.`;
+  if (w && w.now && r.look.trend !== 'unknown') return `History says it won't get much shorter later today, so ride it now${near}.`;
   switch (r.look.trend) {
     case 'up': return `The line usually grows to about ${r.look.later} min over the next few hours. Riding now saves you time${near}.`;
     case 'down': return r.look.best
@@ -2498,12 +2568,11 @@ function Stat({ label, value }) {
   );
 }
 
-function TrendLabel({ trend }) {
-  const map = {
-    up: ['↑ Worse later', C.accent], down: ['↓ Better later', C.blue],
-    steady: ['→ Steady', C.muted], unknown: ['Not enough history yet', C.muted],
-  };
-  const [text, color] = map[trend] || map.unknown;
+function WhenLabel({ look }) {
+  const w = look && look.when;
+  const [text, color] = !w ? ['Not enough history yet', C.muted]
+    : w.now ? ['✓ Ride now', C.green]
+      : [`⏱ Better at ${fmtHour(w.hour)} · ~${w.wait} min`, C.blue];
   return <Text style={{ color, fontSize: 13, fontWeight: '600', marginTop: 2 }}>{text}</Text>;
 }
 

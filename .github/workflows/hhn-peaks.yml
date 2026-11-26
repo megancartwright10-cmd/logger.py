@@ -1,0 +1,17 @@
+name: One-off HHN peaks
+on:
+  push:
+    paths: [tools/hhn_peaks.py, .github/workflows/hhn-peaks.yml]
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache/restore@v4
+        with:
+          path: pqt-cache
+          key: pqt-none
+          restore-keys: pqt-
+      - run: python3 tools/hhn_peaks.py

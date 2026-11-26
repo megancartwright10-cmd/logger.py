@@ -40,6 +40,25 @@ jobs:
           key: pqt-${{ github.run_id }}
           restore-keys: pqt-
 
+      # Safety net: if GitHub's cache was lost (it's deleted after 7 days unused), restore the
+      # encrypted daily backup from the "pqt-backup" release. Unreadable without PQT_BACKUP_PASSWORD.
+      - name: Restore Park Queue Times backup if the cache is gone
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PQT_BACKUP_PASSWORD: ${{ secrets.PQT_BACKUP_PASSWORD }}
+        run: |
+          if ls pqt-cache/*.json >/dev/null 2>&1; then echo "Cache is there: no restore needed"; exit 0; fi
+          if [ -z "$PQT_BACKUP_PASSWORD" ]; then echo "PQT_BACKUP_PASSWORD not set: can't restore"; exit 0; fi
+          if gh release download pqt-backup -p pqt-history.tar.gz.enc -D /tmp --clobber; then
+            mkdir -p pqt-cache
+            openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:PQT_BACKUP_PASSWORD \
+              -in /tmp/pqt-history.tar.gz.enc | tar -xz -C pqt-cache
+            rm -f pqt-cache/fetched.txt   # let today's fetch top it up
+            echo "Restored $(ls pqt-cache/*.json | wc -l) parks from the backup"
+          else
+            echo "No backup found"
+          fi
+
       - name: Fetch Park Queue Times history (once a day)
         env:
           PQT_KEY: ${{ secrets.PQT_KEY }}
@@ -52,6 +71,28 @@ jobs:
         with:
           path: pqt-cache
           key: pqt-${{ github.run_id }}
+
+      # Once a day: encrypt the history and keep it as a release file. The repo is public, so it's
+      # AES-256 encrypted with PQT_BACKUP_PASSWORD; without the password it's unreadable.
+      - name: Back up Park Queue Times history (encrypted, once a day)
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PQT_BACKUP_PASSWORD: ${{ secrets.PQT_BACKUP_PASSWORD }}
+        run: |
+          if [ -z "$PQT_BACKUP_PASSWORD" ]; then echo "PQT_BACKUP_PASSWORD not set: skipping backup"; exit 0; fi
+          if ! ls pqt-cache/*.json >/dev/null 2>&1; then echo "Nothing to back up"; exit 0; fi
+          today=$(date -u +%F)
+          gh release view pqt-backup >/dev/null 2>&1 || gh release create pqt-backup --latest=false \
+            --title "Park Queue Times history backup (encrypted)" \
+            --notes "Encrypted daily backup of the private Park Queue Times history. Not readable without the owner's password."
+          last=$(gh release view pqt-backup --json assets -q '.assets[]|select(.name=="pqt-history.tar.gz.enc")|.updatedAt' | cut -c1-10)
+          if [ "$last" = "$today" ]; then echo "Already backed up today"; exit 0; fi
+          tar -cz -C pqt-cache . | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
+            -pass env:PQT_BACKUP_PASSWORD -out /tmp/pqt-history.tar.gz.enc
+          gh release upload pqt-backup /tmp/pqt-history.tar.gz.enc --clobber
+          echo "Backed up $(ls pqt-cache/*.json | wc -l) parks ($(du -h /tmp/pqt-history.tar.gz.enc | cut -f1))"
 
       - name: Build app data
         run: python3 build_app_data.py

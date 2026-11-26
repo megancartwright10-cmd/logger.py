@@ -1,0 +1,18 @@
+name: One-off August peaks
+on:
+  push:
+    paths: [tools/august_peaks.py, .github/workflows/august-peaks.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache/restore@v4
+        with:
+          path: pqt-cache
+          key: pqt-none
+          restore-keys: pqt-
+      - run: python3 tools/august_peaks.py
